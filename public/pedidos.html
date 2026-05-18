@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hearts — Gestão de Pedidos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0a0a0a;
+            --card-bg: #141414;
+            --border: #2a2a2a;
+            --gold: #c9963c;
+            --gold-light: #d4b873;
+            --gold-dim: #8a6520;
+            --text: #e8e0d0;
+            --muted: #7a7060;
+            --white: #faf6ee;
+            --green-whatsapp: #25d366;
+        }
+
+        body {
+            background: var(--black);
+            font-family: 'Jost', sans-serif;
+            color: var(--text);
+            padding: 2.5rem 1rem;
+        }
+
+        .header-admin {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header-admin h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            color: var(--gold);
+            letter-spacing: 0.05em;
+        }
+
+        /* TABS */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 0.7rem 1.4rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+        }
+
+        .tab-btn:hover {
+            border-color: var(--gold-dim);
+            color: var(--text);
+        }
+
+        .tab-btn.active {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: rgba(201, 150, 60, 0.08);
+            box-shadow: 0 0 15px rgba(201, 150, 60, 0.1);
+        }
+
+        /* GRID DE PEDIDOS */
+        .orders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .order-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.8rem;
+            position: relative;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.5s ease both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .order-card:hover {
+            border-color: #444;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.2rem;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            padding: 0.3rem 0.7rem;
+            border-radius: 4px;
+            letter-spacing: 0.12em;
+            font-weight: 600;
+        }
+
+        .status-pendente { background: rgba(201, 150, 60, 0.1); color: var(--gold); border: 1px solid rgba(201, 150, 60, 0.3); }
+        .status-enviado { background: rgba(37, 211, 102, 0.1); color: var(--green-whatsapp); border: 1px solid rgba(37, 211, 102, 0.3); }
+        .status-approved { background: rgba(80, 160, 255, 0.1); color: #50a0ff; border: 1px solid rgba(80, 160, 255, 0.3); }
+        .status-aguardando_pagamento { background: rgba(255, 190, 60, 0.1); color: #ffbe3c; border: 1px solid rgba(255, 190, 60, 0.3); }
+
+        .customer-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.6rem;
+            margin-bottom: 0.8rem;
+            display: block;
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        .order-info {
+            font-size: 0.75rem;
+            color: var(--muted);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            max-height: 420px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .order-info strong { color: var(--gold-light); font-weight: 500; }
+
+        .actions {
+            display: flex;
+            gap: 0.8rem;
+            border-top: 1px solid var(--border);
+            padding-top: 1.2rem;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: 0.2s;
+            font-family: 'Jost', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .btn-whatsapp {
+            background: var(--green-whatsapp);
+            color: #000;
+            border: none;
+        }
+
+        .btn-whatsapp:hover { filter: brightness(1.1); }
+
+        .btn-check {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-check:hover {
+            background: var(--gold);
+            color: var(--black);
+            border-color: var(--gold);
+        }
+
+        .empty-msg {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 4rem;
+            color: var(--muted);
+            font-style: italic;
+        }
+
+        /* RESUMO DE VENDAS */
+        .resumo-container {
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        .resumo-stat {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2.2rem;
+            text-align: center;
+            margin-bottom: 1.4rem;
+            box-shadow: 0 0 0 1px rgba(201,150,60,0.07), 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .stat-label {
+            font-size: 0.62rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--gold-dim);
+            font-weight: 600;
+            margin-bottom: 0.6rem;
+        }
+
+        .stat-number {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 5rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #e8c47a, #c9963c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+
+        .stat-sub {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 0.5rem;
+        }
+
+        .resumo-table-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.8rem 2rem;
+            box-shadow: 0 0 0 1px rgba(201,150,60,0.07), 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .resumo-table-card h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.25rem;
+            color: var(--white);
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.03em;
+        }
+
+        .cor-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.1rem;
+        }
+
+        .cor-row:last-child { margin-bottom: 0; }
+
+        .cor-nome {
+            font-size: 0.78rem;
+            color: var(--text);
+            width: 140px;
+            flex-shrink: 0;
+        }
+
+        .cor-bar-wrap {
+            flex: 1;
+            background: #1c1c1c;
+            border-radius: 4px;
+            height: 7px;
+            overflow: hidden;
+        }
+
+        .cor-bar {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(to right, var(--gold-dim), var(--gold));
+            transition: width 0.7s cubic-bezier(0.22,1,0.36,1);
+        }
+
+        .cor-qtd {
+            font-size: 0.85rem;
+            color: var(--gold);
+            font-weight: 600;
+            width: 28px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 600px) {
+            .orders-grid { grid-template-columns: 1fr; }
+            .tabs { gap: 0.5rem; }
+            .tab-btn { padding: 0.6rem 1rem; font-size: 0.75rem; }
+            .cor-nome { width: 110px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-admin">
+        <h1>Gestão Hearts</h1>
+        <p style="color: var(--gold-dim); font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase; margin-top: 0.5rem;">Fila de Atendimento</p>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" data-status="pendente" onclick="filtrar('pendente')">Pendentes</button>
+        <button class="tab-btn" data-status="aguardando" onclick="filtrar('aguardando')">Aguardando</button>
+        <button class="tab-btn" data-status="pagos" onclick="filtrar('pagos')">Pagos</button>
+        <button class="tab-btn" data-status="enviado" onclick="filtrar('enviado')">Atendidos</button>
+        <button class="tab-btn" data-status="todos" onclick="filtrar('todos')">Geral (Todos)</button>
+        <button class="tab-btn" data-status="resumo" onclick="mostrarResumo()">Resumo de Vendas</button>
+    </div>
+
+    <!-- Filtro por produto (aparece só se houver mais de 1 produto) -->
+    <div id="filtro-produto" style="display:none; text-align:center; margin-bottom:1.5rem; display:flex; justify-content:center; gap:0.6rem; flex-wrap:wrap;">
+        <button class="tab-btn active" style="font-size:0.75rem; padding:0.5rem 1rem;" data-produto="todos" onclick="filtrarProduto('todos')">Todos os produtos</button>
+    </div>
+
+    <div class="orders-grid" id="grid">
+    </div>
+
+    <div class="resumo-container" id="resumo-view" style="display:none;">
+    </div>
+
+    <script>
+        let database = [];
+        let produtoAtivo = 'todos';
+
+        // 1. Busca os pedidos no servidor
+        async function carregarPedidos() {
+            try {
+                const response = await fetch('/api/pedidos');
+                database = await response.json();
+                atualizarFiltroProduto();
+                const abaAtiva = document.querySelector('.tab-btn[data-status].active')?.dataset.status || 'pendente';
+                if (abaAtiva === 'resumo') mostrarResumo();
+                else filtrar(abaAtiva);
+            } catch (error) {
+                console.error("Erro ao carregar banco de dados:", error);
+            }
+        }
+
+        const PRODUTOS_LISTA = ['Paola', 'Carol'];
+
+        function atualizarFiltroProduto() {
+            const wrap = document.getElementById('filtro-produto');
+            wrap.style.display = 'flex';
+            wrap.innerHTML = `<button class="tab-btn ${produtoAtivo === 'todos' ? 'active' : ''}" style="font-size:0.75rem;padding:0.5rem 1rem;" data-produto="todos" onclick="filtrarProduto('todos')">Todos</button>`;
+            PRODUTOS_LISTA.forEach(pr => {
+                wrap.innerHTML += `<button class="tab-btn ${produtoAtivo === pr ? 'active' : ''}" style="font-size:0.75rem;padding:0.5rem 1rem;" data-produto="${pr}" onclick="filtrarProduto('${pr}')">Ref: ${pr}</button>`;
+            });
+        }
+
+        function filtrarProduto(produto) {
+            produtoAtivo = produto;
+            document.querySelectorAll('#filtro-produto .tab-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.produto === produto);
+            });
+            const abaAtiva = document.querySelector('.tab-btn[data-status].active')?.dataset.status || 'pendente';
+            if (abaAtiva === 'resumo') mostrarResumo();
+            else filtrar(abaAtiva);
+        }
+
+        function getDadosFiltrados(status) {
+            return database
+                .filter(p => {
+                    if (status === 'todos') return true;
+                    if (status === 'pagos') return p.status === 'approved';
+                    if (status === 'aguardando') return p.status === 'aguardando_pagamento';
+                    return p.status === status;
+                })
+                .filter(p => produtoAtivo === 'todos' ? true : (!p.produto || p.produto === produtoAtivo))
+                .sort((a, b) => b.id - a.id);
+        }
+
+        function getStatusLabel(status) {
+            if (status === 'pendente') return 'Pendente';
+            if (status === 'enviado') return 'Atendido';
+            if (status === 'approved') return 'Pago';
+            if (status === 'aguardando_pagamento') return 'Aguardando';
+            return status || '—';
+        }
+
+        function getWhatsAppPhone(whatsapp) {
+            return whatsapp ? whatsapp.replace(/\D/g, '') : '';
+        }
+
+        const COR_LABELS = {
+            'White':     'Floater Off White',
+            'Preto':     'Floater Preto',
+            'Cafe':      'Floater Café',
+            'Argila':    'Floater Argila',
+            'Azul_claro':'Floater Azul Claro',
+            'Whiskey':   'Floater Whiskey',
+            'Caramelo':  'Floater Caramelo',
+            'Pink':      'Floater Pink',
+        };
+
+        // 2. Filtra e desenha os cards na tela
+        function filtrar(status) {
+            document.getElementById('resumo-view').style.display = 'none';
+            const grid = document.getElementById('grid');
+            grid.style.display = 'grid';
+            grid.innerHTML = '';
+
+            document.querySelectorAll('.tab-btn[data-status]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.status === status);
+            });
+
+            const filtrados = getDadosFiltrados(status);
+
+            if (filtrados.length === 0) {
+                grid.innerHTML = `<div class="empty-msg">Nenhum pedido encontrado nesta categoria.</div>`;
+                return;
+            }
+
+            filtrados.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'order-card';
+
+                const msgZap = encodeURIComponent(`Olá ${p.nome}! Aqui é da Hearts Couro Legítimo. Recebemos seu pedido de uma Bolsa na cor ${p.cor}. Como podemos prosseguir?`);
+                const fone = getWhatsAppPhone(p.whatsapp);
+                const linkZap = fone ? `https://wa.me/55${fone}?text=${msgZap}` : '#';
+
+                const fmtValor = v => v ? 'R$ ' + parseFloat(v).toFixed(2).replace('.', ',') : '—';
+
+                card.innerHTML = `
+                    ${p.status === 'approved'
+                        ? `<span class="status-badge status-approved" id="badge-${p.id}" onclick="handleBadgeClick(${p.id})" title="Clique 2× para cancelar pagamento" style="cursor:pointer;">Pago</span>`
+                        : `<span class="status-badge status-${p.status}">${getStatusLabel(p.status)}</span>`
+                    }
+                    <span class="customer-name">${p.nome} ${p.sobrenome || ''}</span>
+
+                    <div class="order-info">
+                        ${p.produto ? `<strong>Produto:</strong> ${p.produto}<br><br>` : ''}
+                        <strong>E-mail:</strong> ${p.email}<br>
+                        <strong>WhatsApp:</strong> ${p.whatsapp}<br>
+                        <strong>CPF:</strong> ${p.cpf || '—'}<br>
+                        <br>
+                        <strong>CEP:</strong> ${p.cep}<br>
+                        <strong>Logradouro:</strong> ${p.logradouro}, ${p.numero}${p.complemento ? ' — ' + p.complemento : ''}<br>
+                        <strong>Bairro:</strong> ${p.bairro}<br>
+                        <strong>Cidade:</strong> ${p.cidade} / ${p.estado}<br>
+                        <br>
+                        <strong>Cor:</strong> ${p.cor}<br>
+                        <strong>Pagamento:</strong> ${p.pagamento}${p.parcelas && p.parcelas > 1 ? ` — ${p.parcelas}x` : ''}<br>
+                        <strong>Frete:</strong> ${p.frete_nome || '—'} ${p.frete_valor ? '(' + fmtValor(p.frete_valor) + ')' : ''}<br>
+                        <strong>Total pago:</strong> ${fmtValor(p.valor_total)}<br>
+                        ${p.obs ? `<strong>Obs:</strong> ${p.obs}<br>` : ''}
+                        <br>
+                        <strong>Data:</strong> ${p.created_at ? new Date(p.created_at).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }) : '—'}
+                    </div>
+
+                    <div class="actions">
+                        <a href="${linkZap}" target="_blank" class="btn-action btn-whatsapp" ${fone ? '' : 'aria-disabled="true" style="opacity:.6;pointer-events:none;"'}>
+                            Chamar no Zap
+                        </a>
+                        ${p.status === 'aguardando_pagamento'
+                            ? `<button type="button" class="btn-action btn-check" id="verify-${p.id}" onclick="verificarPagamento(${p.id})" style="background:rgba(80,160,255,0.15);border-color:#50a0ff;color:#50a0ff;">Verificar Pagamento</button>`
+                            : p.status === 'approved'
+                                ? `<button type="button" class="btn-action btn-check" onclick="atualizarStatus(${p.id}, 'enviado')">Marcar Enviado</button>`
+                                : p.status === 'enviado'
+                                    ? `<button type="button" class="btn-action btn-check" onclick="atualizarStatus(${p.id}, 'pendente')" style="opacity:0.4">Reverter</button>`
+                                    : `<button type="button" class="btn-action btn-check" onclick="atualizarStatus(${p.id}, 'enviado')">Marcar Enviado</button>`
+                        }
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // 3. Resumo de Vendas
+        function mostrarResumo() {
+            document.getElementById('grid').style.display = 'none';
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.status === 'resumo');
+            });
+
+            const pagas = database.filter(p => p.status === 'approved' || p.status === 'enviado');
+            const base = produtoAtivo === 'todos' ? pagas : pagas.filter(p => p.produto === produtoAtivo);
+            const total = base.length;
+
+            const contagem = {};
+            base.forEach(p => {
+                const cor = p.cor || 'Não informada';
+                contagem[cor] = (contagem[cor] || 0) + 1;
+            });
+
+            const cores = Object.entries(contagem).sort((a, b) => b[1] - a[1]);
+            const maxQtd = cores.length > 0 ? cores[0][1] : 1;
+
+            const coresHtml = cores.map(([cor, qtd]) => {
+                const label = COR_LABELS[cor] || cor;
+                const pct = Math.round((qtd / maxQtd) * 100);
+                return `
+                    <div class="cor-row">
+                        <span class="cor-nome">${label}</span>
+                        <div class="cor-bar-wrap">
+                            <div class="cor-bar" style="width:0%" data-pct="${pct}"></div>
+                        </div>
+                        <span class="cor-qtd">${qtd}</span>
+                    </div>`;
+            }).join('');
+
+            const container = document.getElementById('resumo-view');
+            container.innerHTML = `
+                <div class="resumo-stat">
+                    <div class="stat-label">Total de Bolsas Vendidas</div>
+                    <div class="stat-number">${total}</div>
+                    <div class="stat-sub">${total === 1 ? 'bolsa vendida e paga' : 'bolsas vendidas e pagas'}</div>
+                </div>
+                <div class="resumo-table-card">
+                    <h3>Vendas por Cor</h3>
+                    ${cores.length > 0 ? coresHtml : '<p style="color:var(--muted);font-size:0.8rem;">Nenhum pedido registrado ainda.</p>'}
+                </div>`;
+            container.style.display = 'block';
+
+            // Anima as barras após render
+            requestAnimationFrame(() => {
+                container.querySelectorAll('.cor-bar').forEach(bar => {
+                    bar.style.width = bar.dataset.pct + '%';
+                });
+            });
+        }
+
+        // 4. Cancelar "Pago" com duplo clique no badge
+        const _cancelarState = {};
+
+        function handleBadgeClick(id) {
+            const badge = document.getElementById(`badge-${id}`);
+            if (_cancelarState[id]) {
+                clearTimeout(_cancelarState[id]);
+                delete _cancelarState[id];
+                atualizarStatus(id, 'aguardando_pagamento');
+            } else {
+                if (badge) {
+                    badge.textContent = 'Cancelar?';
+                    badge.style.cssText += ';background:rgba(192,97,74,0.2)!important;color:#c0614a!important;border-color:rgba(192,97,74,0.5)!important;';
+                }
+                _cancelarState[id] = setTimeout(() => {
+                    delete _cancelarState[id];
+                    if (badge) {
+                        badge.textContent = 'Pago';
+                        badge.style.cssText = 'cursor:pointer;';
+                    }
+                }, 3000);
+            }
+        }
+
+        // 5. Verificar pagamento no Mercado Pago
+        async function verificarPagamento(id) {
+            const btn = document.getElementById(`verify-${id}`);
+            if (btn) { btn.disabled = true; btn.textContent = 'Verificando...'; }
+
+            try {
+                const resp = await fetch(`/api/verificar-pagamento/${id}`);
+                const result = await resp.json();
+
+                if (result.status === 'approved') {
+                    alert('✅ Pagamento confirmado! O pedido foi movido para "Pagos".');
+                    carregarPedidos();
+                } else if (result.status === 'pending' || result.status === 'in_process') {
+                    alert('⏳ ' + result.mensagem);
+                    if (btn) { btn.disabled = false; btn.textContent = 'Verificar Pagamento'; }
+                } else {
+                    alert('❌ ' + result.mensagem);
+                    if (btn) { btn.disabled = false; btn.textContent = 'Verificar Pagamento'; }
+                }
+            } catch (e) {
+                alert('Erro ao conectar com o servidor.');
+                if (btn) { btn.disabled = false; btn.textContent = 'Verificar Pagamento'; }
+            }
+        }
+
+        // 5. Função para mudar o status no servidor
+        async function atualizarStatus(id, novoStatus) {
+            try {
+                await fetch('/api/status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, status: novoStatus })
+                });
+                // Recarrega os dados após mudar
+                carregarPedidos();
+            } catch (error) {
+                alert("Erro ao atualizar status.");
+            }
+        }
+
+        // Inicia o sistema
+        carregarPedidos();
+
+        // Auto-refresh a cada 30 segundos para novos pedidos
+        setInterval(carregarPedidos, 30000);
+    </script>
+</body>
+</html>

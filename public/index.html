@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hearts Couro Legítimo — Pré-Venda</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --black:      #0a0a0a;
+  --black-soft: #111111;
+  --card-bg:    #141414;
+  --border:     #2a2a2a;
+  --border-gold:#7a5c1e44;
+  --gold:       #c9963c;
+  --gold-light: #e8c47a;
+  --gold-dim:   #8a6520;
+  --text:       #e8e0d0;
+  --muted:      #7a7060;
+  --white:      #faf6ee;
+}
+
+body {
+  background: var(--black);
+  font-family: 'Jost', sans-serif;
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 2.5rem 1rem 4rem;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Subtle radial glow */
+body::before {
+  content: '';
+  position: fixed; top: 0; left: 50%; transform: translateX(-50%);
+  width: 900px; height: 500px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(201,150,60,0.07) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+
+.wrapper {
+  width: 100%; max-width: 620px;
+  position: relative; z-index: 1;
+  animation: fadeUp 0.9s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── HEADER LOGO ── */
+.brand-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.brand-header .clover {
+  font-size: 2.4rem;
+  line-height: 1;
+  margin-bottom: 0.4rem;
+  filter: drop-shadow(0 0 12px rgba(201,150,60,0.5));
+}
+
+.brand-header .brand-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.6rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 50%, var(--gold-dim) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+
+.brand-header .brand-sub {
+  font-size: 0.62rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  font-weight: 500;
+  margin-top: 0.3rem;
+}
+
+.gold-line {
+  width: 60px; height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold), transparent);
+  margin: 1rem auto;
+}
+
+/* ── PRODUCT CARD ── */
+.promo-banner {
+  background-color: rgba(26, 26, 26, 0.98);
+  color: var(--gold);
+  text-align: center;
+  padding: 16px 14px;
+  font-size: 0.82rem;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 18px;
+  box-shadow: 0 18px 28px rgba(0, 0, 0, 0.22);
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.product-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 0 0 1px rgba(201,150,60,0.07), 0 20px 60px rgba(0,0,0,0.6);
+}
+
+.img-zone {
+  position: relative;
+  width: 100%; height: 570px;
+  padding: 15px;
+  overflow: hidden;
+  transition: background 0.2s;
+  box-shadow: inset 0 0 40px rgba(0,0,0,0.35);
+  background: linear-gradient(180deg, rgba(32,32,32,1) 0%, rgba(14,14,14,1) 100%);
+  display: flex; align-items: center; justify-content: center;
+}
+.img-zone:hover { background: linear-gradient(180deg, rgba(40,40,40,1) 0%, rgba(18,18,18,1) 100%); }
+
+.img-zone input[type="file"] {
+  position: absolute; inset: 0; opacity: 0;
+  cursor: pointer; width: 100%; height: 100%;
+  border: none; padding: 0; background: none; box-shadow: none;
+}
+
+#prod-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center 55%;
+  display: block;
+}
+
+.img-placeholder {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 0.8rem;
+  pointer-events: none; z-index: 1; text-align: center;
+}
+
+.img-placeholder .frame {
+  width: 64px; height: 64px;
+  border: 1.5px dashed var(--gold-dim);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+  color: var(--gold-dim);
+}
+
+.img-placeholder strong {
+  font-size: 0.82rem; color: var(--gold);
+  font-weight: 500; letter-spacing: 0.04em;
+}
+
+.img-placeholder p { font-size: 0.73rem; color: var(--muted); }
+
+.img-overlay {
+  position: absolute; bottom: 10px; right: 10px;
+  background: rgba(201,150,60,0.15);
+  border: 1px solid rgba(201,150,60,0.3);
+  color: var(--gold-light); font-size: 0.7rem;
+  padding: 0.28rem 0.75rem; border-radius: 50px;
+  display: none; pointer-events: none; z-index: 2;
+}
+
+/* Product info */
+.prod-info {
+  padding: 1.6rem 2rem 1.8rem;
+  border-top: 1px solid var(--border);
+}
+
+.prod-tag {
+  font-size: 0.6rem; letter-spacing: 0.3em;
+  text-transform: uppercase; color: var(--gold-dim);
+  font-weight: 500; margin-bottom: 0.5rem;
+}
+
+.prod-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.55rem; font-weight: 600;
+  color: var(--white); margin-bottom: 0.5rem;
+  line-height: 1.2; letter-spacing: 0.02em;
+}
+
+[contenteditable="true"] {
+  outline: none;
+  border-bottom: 1px dashed #3a3020;
+  padding-bottom: 1px;
+  transition: border-color 0.2s;
+  cursor: text;
+}
+[contenteditable="true"]:focus  { border-bottom-color: var(--gold); }
+[contenteditable="true"]:hover  { border-bottom-color: var(--gold-dim); }
+
+.prod-price-block { margin-bottom: 1.1rem; }
+.price-lbl { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.25rem; }
+
+.prod-price {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem; font-weight: 700; line-height: 1;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.measures { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+.m-chip {
+  background: #1a1a1a;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.73rem; color: var(--text);
+  display: flex; align-items: center; gap: 0.28rem;
+}
+.m-chip .ml { color: var(--muted); font-size: 0.65rem; }
+.m-chip [contenteditable] { min-width: 24px; border-bottom: 1px dashed #3a3020; text-align: center; }
+
+.edit-note {
+  margin-top: 1rem; font-size: 0.65rem;
+  color: var(--muted); display: flex; align-items: center; gap: 0.3rem;
+}
+.edit-note::before { content: '✎'; color: var(--gold-dim); }
+
+/* ── FORM CARD ── */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2.4rem 2.2rem;
+  box-shadow: 0 0 0 1px rgba(201,150,60,0.07), 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.form-header { text-align: center; margin-bottom: 2.2rem; }
+
+.form-header h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem; font-weight: 600;
+  color: var(--white); line-height: 1.25;
+  letter-spacing: 0.02em;
+}
+.form-header h1 em { font-style: italic; color: var(--gold); }
+
+.form-header p {
+  font-size: 0.85rem; color: var(--muted);
+  line-height: 1.65; font-weight: 300;
+  margin-top: 0.5rem;
+}
+
+.section-label {
+  font-size: 0.62rem; letter-spacing: 0.28em;
+  text-transform: uppercase; color: var(--gold-dim);
+  font-weight: 600; margin-bottom: 1.1rem; margin-top: 1.9rem;
+  display: flex; align-items: center; gap: 0.7rem;
+}
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.row   { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.row-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1rem; }
+
+.field { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
+
+label { font-size: 0.75rem; font-weight: 500; color: #a09080; letter-spacing: 0.06em; text-transform: uppercase; }
+label span { color: var(--gold); margin-left: 2px; }
+
+input, select, textarea {
+  width: 100%; padding: 0.75rem 1rem;
+  border: 1px solid var(--border); border-radius: 8px;
+  font-family: 'Jost', sans-serif; font-size: 0.9rem;
+  color: var(--text); background: #0e0e0e;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;appearance: none;
+-webkit-appearance: none;;
+}
+input::placeholder, textarea::placeholder { color: #3a3530; }
+input:focus, select:focus, textarea:focus {
+  border-color: var(--gold-dim);
+  box-shadow: 0 0 0 3px rgba(201,150,60,0.08);
+}
+
+select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%237a5c1e' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 1rem center;
+  padding-right: 2.5rem;
+}
+
+option { background: #1a1a1a; }
+
+textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+
+/* CEP */
+.cep-wrap { display: grid; grid-template-columns: 1fr auto; gap: 0.8rem; align-items: end; }
+
+.btn-cep {
+  height: 44px; padding: 0 1.1rem;
+  background: transparent;
+  border: 1px solid var(--gold-dim);
+  color: var(--gold); border-radius: 8px;
+  font-family: 'Jost', sans-serif; font-size: 0.82rem;
+  font-weight: 500; cursor: pointer; white-space: nowrap;
+  transition: background 0.2s, color 0.2s;
+  letter-spacing: 0.04em;
+}
+.btn-cep:hover { background: rgba(201,150,60,0.1); }
+.btn-cep:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Color Picker */
+.color-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
+  gap: 0.8rem; margin-top: 0.2rem;
+}
+
+.color-option {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 0.4rem; cursor: pointer;
+}
+.color-option input[type="radio"] { display: none; }
+
+.color-swatch {
+  width: 42px; height: 42px; border-radius: 50%;
+  border: 2px solid #2a2a2a;
+  transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
+  position: relative;
+}
+.color-option input:checked + .color-swatch {
+  border-color: var(--gold);
+  transform: scale(1.15);
+  box-shadow: 0 0 0 3px rgba(201,150,60,0.2), 0 4px 14px rgba(201,150,60,0.3);
+}
+.color-option input:checked + .color-swatch::after {
+  content: '✓'; position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.95rem; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+}
+
+.color-name { font-size: 0.63rem; color: var(--muted); text-align: center; letter-spacing: 0.03em; }
+.color-option input:checked ~ .color-name { color: var(--gold); font-weight: 500; }
+
+.color-stock {
+  font-size: 0.56rem;
+  text-align: center;
+  letter-spacing: 0.03em;
+  min-height: 0.85em;
+  font-weight: 500;
+}
+
+.color-option.esgotado {
+  opacity: 0.38;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.color-option.esgotado .color-swatch {
+  filter: grayscale(1);
+}
+
+/* Seletor de produto */
+.produto-card-sel { cursor: pointer; transition: border-color 0.3s, box-shadow 0.3s; }
+.produto-card-sel.selecionado {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px rgba(201,150,60,0.15), 0 20px 60px rgba(0,0,0,0.6);
+}
+.prod-select-btn {
+  text-align: center;
+  padding: 1rem 2rem;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 500;
+  transition: color 0.2s, background 0.2s;
+}
+.produto-card-sel.selecionado .prod-select-btn { color: var(--gold); background: rgba(201,150,60,0.05); }
+.prod-select-btn::before { content: '○  '; }
+.produto-card-sel.selecionado .prod-select-btn::before { content: '✦  '; }
+
+/* Submit */
+.submit-area { margin-top: 2.2rem; }
+
+.btn-submit {
+  width: 100%; padding: 1rem;
+  background: linear-gradient(135deg, var(--gold-dim) 0%, var(--gold) 50%, var(--gold-light) 100%);
+  color: var(--black); border: none; border-radius: 8px;
+  font-family: 'Jost', sans-serif; font-size: 0.9rem;
+  font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+  cursor: pointer; position: relative; overflow: hidden;
+  transition: transform 0.18s, box-shadow 0.18s, filter 0.18s;
+}
+.btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(201,150,60,0.35);
+  filter: brightness(1.05);
+}
+.btn-submit:active { transform: translateY(0); }
+
+.note {
+  text-align: center; font-size: 0.73rem;
+  color: var(--muted); margin-top: 1rem; line-height: 1.6;
+}
+.note strong { color: var(--gold-dim); }
+
+/* Errors */
+.error-msg { font-size: 0.72rem; color: #c0614a; margin-top: 0.25rem; display: none; }
+input.invalid, select.invalid { border-color: #7a3020 !important; }
+
+/* Success / PIX screens */
+.success-screen, .pix-screen {
+  display: none; text-align: center;
+  padding: 3rem 1rem;
+  animation: fadeUp 0.5s ease both;
+}
+
+.success-icon {
+  font-size: 2.5rem; line-height: 1;
+  margin-bottom: 1.2rem;
+  filter: drop-shadow(0 0 16px rgba(201,150,60,0.6));
+}
+
+.success-screen h2, .pix-screen h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem; font-weight: 600;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+}
+
+.success-screen p { color: var(--muted); font-size: 0.88rem; line-height: 1.8; }
+.success-screen strong { color: var(--text); }
+
+/* PIX Screen */
+.pix-qr-img {
+  width: 200px; height: 200px;
+  margin: 1.2rem auto;
+  border-radius: 12px;
+  border: 2px solid var(--border-gold);
+  display: block;
+  background: #fff;
+}
+
+.pix-code-box {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.6rem;
+  margin: 0.8rem 0 1.4rem;
+  align-items: center;
+}
+
+.pix-code-box input {
+  font-size: 0.68rem;
+  color: var(--muted);
+  background: #0e0e0e;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.65rem 0.8rem;
+  word-break: break-all;
+}
+
+.btn-copiar {
+  height: 44px; padding: 0 1rem;
+  background: transparent;
+  border: 1px solid var(--gold-dim);
+  color: var(--gold); border-radius: 8px;
+  font-family: 'Jost', sans-serif; font-size: 0.82rem;
+  font-weight: 500; cursor: pointer; white-space: nowrap;
+  transition: background 0.2s;
+}
+.btn-copiar:hover { background: rgba(201,150,60,0.1); }
+.btn-copiar.copiado { color: #5a9; border-color: #5a9; }
+
+.pix-info {
+  font-size: 0.78rem; color: var(--muted);
+  line-height: 1.7; margin-top: 0.4rem;
+}
+.pix-info strong { color: var(--text); }
+
+/* ── Frete ── */
+.frete-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.2rem;
+}
+
+.frete-option { display: contents; }
+.frete-option input[type="radio"] { display: none; }
+
+.frete-card {
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: #0e0e0e;
+}
+
+.frete-card:hover { border-color: var(--gold-dim); background: #111; }
+
+.frete-option input:checked ~ .frete-card {
+  border-color: var(--gold);
+  background: rgba(201,150,60,0.05);
+  box-shadow: 0 0 0 1px rgba(201,150,60,0.2);
+}
+
+.frete-check {
+  width: 18px; height: 18px; flex-shrink: 0;
+  border-radius: 50%;
+  border: 1.5px solid #3a3a3a;
+  background: #1a1a1a;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.6rem; color: transparent;
+  transition: all 0.2s;
+}
+.frete-option input:checked ~ .frete-card .frete-check {
+  background: var(--gold); border-color: var(--gold); color: #000;
+}
+
+.frete-info { flex: 1; }
+.frete-nome { font-size: 0.88rem; font-weight: 500; color: var(--white); }
+.frete-prazo { font-size: 0.72rem; color: var(--muted); margin-top: 0.1rem; }
+
+.frete-preco {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.15rem; font-weight: 700;
+  color: var(--gold);
+}
+
+.frete-loading {
+  font-size: 0.82rem; color: var(--muted);
+  padding: 0.8rem 0; display: flex; align-items: center; gap: 0.5rem;
+}
+
+/* ── Total ── */
+.total-box {
+  margin-top: 1.4rem;
+  padding: 1.2rem 1.4rem;
+  background: rgba(201,150,60,0.04);
+  border: 1px solid rgba(201,150,60,0.25);
+  border-radius: 12px;
+  display: none;
+}
+
+.total-box .total-titulo {
+  font-size: 0.62rem; letter-spacing: 0.28em;
+  text-transform: uppercase; color: var(--gold-dim);
+  font-weight: 600; margin-bottom: 0.6rem;
+}
+
+.total-linhas { display: flex; flex-direction: column; gap: 0.3rem; }
+
+.total-linha {
+  display: flex; justify-content: space-between;
+  font-size: 0.82rem; color: var(--muted);
+}
+
+.total-linha.destaque {
+  border-top: 1px solid var(--border);
+  margin-top: 0.4rem; padding-top: 0.6rem;
+  font-size: 1rem; font-weight: 600; color: var(--white);
+}
+
+.total-linha .t-valor {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem; font-weight: 700; color: var(--gold);
+}
+.total-linha.destaque .t-valor {
+  font-size: 1.5rem; color: var(--gold-light);
+}
+
+/* ── Payment selector ── */
+.payment-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+  margin-top: 0.2rem;
+}
+
+.pay-option { display: contents; }
+.pay-option input[type="radio"] { display: none; }
+
+.pay-card {
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 1.1rem 1rem;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  background: #0e0e0e;
+  position: relative;
+  overflow: hidden;
+}
+
+.pay-card:hover {
+  border-color: var(--gold-dim);
+  background: #111;
+}
+
+.pay-option input:checked ~ .pay-card {
+  border-color: var(--gold);
+  background: rgba(201,150,60,0.05);
+  box-shadow: 0 0 0 1px rgba(201,150,60,0.2), inset 0 0 20px rgba(201,150,60,0.04);
+}
+
+.pay-card .pay-check {
+  position: absolute;
+  top: 0.6rem; right: 0.7rem;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid #3a3a3a;
+  background: #1a1a1a;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.6rem; color: transparent;
+  transition: all 0.2s;
+}
+
+.pay-option input:checked ~ .pay-card .pay-check {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #000;
+}
+
+.pay-card .pay-icon { font-size: 1.5rem; line-height: 1; }
+
+.pay-card .pay-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.05rem; font-weight: 600;
+  color: var(--white); letter-spacing: 0.02em;
+}
+
+.pay-card .pay-desc {
+  font-size: 0.72rem; color: var(--muted);
+  line-height: 1.5; font-weight: 300;
+}
+
+.pay-card .pay-tag {
+  display: inline-block;
+  margin-top: 0.2rem;
+  background: rgba(201,150,60,0.12);
+  border: 1px solid rgba(201,150,60,0.2);
+  color: var(--gold);
+  font-size: 0.62rem; letter-spacing: 0.12em;
+  text-transform: uppercase; font-weight: 500;
+  padding: 0.18rem 0.55rem; border-radius: 4px;
+}
+
+/* Parcelas dropdown — aparece quando link é selecionado */
+.parcelas-wrap {
+  margin-top: 0.8rem;
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.35s ease, opacity 0.3s ease, margin 0.3s ease;
+}
+.parcelas-wrap.visible {
+  max-height: 80px;
+  opacity: 1;
+}
+
+@media (max-width: 520px) {
+  .card { padding: 1.6rem 1.2rem; }
+  .prod-info { padding: 1.3rem 1.2rem 1.5rem; }
+  .row, .row-3 { grid-template-columns: 1fr; }
+  .cep-wrap { grid-template-columns: 1fr; }
+  .form-header h1 { font-size: 1.55rem; }
+  .color-grid { grid-template-columns: repeat(4, 1fr); }
+  .img-zone { height: 415px; }
+}
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- BRAND HEADER -->
+
+  <div class="brand-header">
+    <div class="clover">🍀</div>
+    <div class="brand-name">Hearts</div>
+    <div class="brand-sub">Couro Legítimo</div>
+    <div class="gold-line"></div>
+  </div>
+
+  <!-- ══ PRODUCT CARD ══ -->
+   <div class="promo-banner">
+  O sucesso do filme “O Diabo Veste Prada” está de volta!!!
+</div>
+
+  <!-- ══ PAOLA ══ -->
+  <div class="product-card produto-card-sel" id="card-Paola" onclick="selecionarProduto('Paola')">
+    <div class="img-zone">
+      <img alt="Bolsa Paola" src="produto.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;">
+    </div>
+    <div class="prod-info">
+      <div class="prod-tag">✦ Hearts Couro Legítimo — Pré-Venda Exclusiva</div>
+      <div class="prod-name">Ref: Paola</div>
+      <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
+      <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
+        • Bolsão c/ Abertura p/ o Braço<br>
+        • Super Chique!<br>
+        • Bolso Interno<br>
+        • Fechamento em Ímã<br>
+        • Carregue tudo que precisa!
+      </div>
+      <div class="prod-price-block">
+        <div class="price-lbl">Valor especial de pré-venda</div>
+        <div class="prod-price">R$ 229,00</div>
+      </div>
+      <div class="measures">
+        <div class="m-chip"><span class="ml">Altura</span><span>51</span> cm</div>
+        <div class="m-chip"><span class="ml">Largura</span><span>33</span> cm</div>
+      </div>
+    </div>
+    <div class="prod-select-btn">Selecionar esta bolsa</div>
+  </div>
+
+  <!-- ══ CAROL ══ -->
+  <div class="product-card produto-card-sel" id="card-Carol" onclick="selecionarProduto('Carol')" style="margin-bottom:1.2rem;">
+    <div class="img-zone">
+      <img alt="Bolsa Carol" src="carol.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;">
+    </div>
+    <div class="prod-info">
+      <div class="prod-tag">✦ Hearts Couro Legítimo — Pré-Venda Exclusiva</div>
+      <div class="prod-name">Ref: Carol</div>
+      <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
+      <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
+        • Ela pode ser usada de duas formas: braço e transversal dobrada<br>
+        • Uma das nossas campeãs de vendas<br>
+        • Fechamento em Zíper<br>
+        • Bolso Externo<br>
+        • Bolso Interno
+      </div>
+      <div class="prod-price-block">
+        <div class="price-lbl">Valor especial de pré-venda</div>
+        <div class="prod-price">R$ 289,00</div>
+      </div>
+      <div class="measures">
+        <div class="m-chip"><span class="ml">Largura</span><span>38</span> cm</div>
+        <div class="m-chip"><span class="ml">Altura aberta</span><span>40</span> cm</div>
+        <div class="m-chip"><span class="ml">Altura dobrada</span><span>23</span> cm</div>
+      </div>
+    </div>
+    <div class="prod-select-btn">Selecionar esta bolsa</div>
+  </div>
+
+  <!-- ══ FORM CARD ══ -->
+
+  <div class="card">
+    <div id="form-view">
+
+      <div class="form-header">
+        <h1>Reserve a sua peça<br><em>com exclusividade</em></h1>
+        <div class="gold-line"></div>
+        <p>Preencha os dados abaixo para garantir sua unidade com prioridade de entrega e condições especiais de lançamento.</p>
+      </div>
+
+      <form id="prevenda-form" novalidate>
+
+        <!-- Dados pessoais -->
+        <div class="section-label">Seus dados</div>
+
+        <div class="row">
+          <div class="field">
+            <label for="nome">Nome <span>*</span></label>
+            <input type="text" id="nome" placeholder="Ex: Ana" required>
+            <span class="error-msg">Por favor, insira seu nome.</span>
+          </div>
+          <div class="field">
+            <label for="sobrenome">Sobrenome <span>*</span></label>
+            <input type="text" id="sobrenome" placeholder="Ex: Lima" required>
+            <span class="error-msg">Por favor, insira seu sobrenome.</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="email">E-mail <span>*</span></label>
+          <input type="email" id="email" placeholder="seuemail@exemplo.com" required>
+          <span class="error-msg">Insira um e-mail válido.</span>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="whatsapp">WhatsApp <span>*</span></label>
+            <input type="tel" id="whatsapp" placeholder="(11) 99999-0000" required maxlength="15">
+            <span class="error-msg">Insira seu WhatsApp.</span>
+          </div>
+          <div class="field">
+            <label for="cpf">CPF</label>
+            <input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14">
+          </div>
+        </div>
+
+        <!-- Endereço -->
+        <div class="section-label">Endereço de entrega</div>
+
+        <div class="field">
+          <label for="cep">CEP <span>*</span></label>
+          <div class="cep-wrap">
+            <input type="text" id="cep" placeholder="00000-000" required maxlength="9">
+            <button type="button" class="btn-cep" id="btn-cep">🔍 Buscar CEP</button>
+          </div>
+          <span class="error-msg" id="cep-err">Insira um CEP válido com 8 dígitos.</span>
+        </div>
+
+        <div class="row-3">
+          <div class="field">
+            <label for="logradouro">Logradouro <span>*</span></label>
+            <input type="text" id="logradouro" placeholder="Rua, Av., Alameda..." required>
+            <span class="error-msg">Insira o logradouro.</span>
+          </div>
+          <div class="field">
+            <label for="numero">Número <span>*</span></label>
+            <input type="text" id="numero" placeholder="142" required>
+            <span class="error-msg">Insira o número.</span>
+          </div>
+          <div class="field">
+            <label for="complemento">Complemento</label>
+            <input type="text" id="complemento" placeholder="Apto, Casa...">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="bairro">Bairro <span>*</span></label>
+          <input type="text" id="bairro" placeholder="Ex: Jardim Paulista" required>
+          <span class="error-msg">Insira o bairro.</span>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="cidade">Cidade <span>*</span></label>
+            <input type="text" id="cidade" placeholder="Ex: São Paulo" required>
+            <span class="error-msg">Insira a cidade.</span>
+          </div>
+          <div class="field">
+            <label for="estado">Estado <span>*</span></label>
+            <select id="estado" required>
+              <option value="">Selecione...</option>
+              <option>AC</option><option>AL</option><option>AP</option><option>AM</option>
+              <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
+              <option>GO</option><option>MA</option><option>MT</option><option>MS</option>
+              <option>MG</option><option>PA</option><option>PB</option><option>PR</option>
+              <option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
+              <option>RS</option><option>RO</option><option>RR</option><option>SC</option>
+              <option>SP</option><option>SE</option><option>TO</option>
+            </select>
+            <span class="error-msg">Selecione o estado.</span>
+          </div>
+        </div>
+
+        <!-- Frete -->
+        <div class="section-label">Opções de entrega <span style="color:var(--gold);font-size:0.7rem">*</span></div>
+        <div class="frete-grid" style="margin-bottom:0.6rem;">
+          <label class="frete-option">
+            <input type="radio" name="frete" value="retirada" data-preco="0" data-nome="Retirada na Loja" data-prazo="0" onchange="selecionarRetirada()">
+            <div class="frete-card">
+              <span class="frete-check">✓</span>
+              <div class="frete-info">
+                <div class="frete-nome">Retirada na Loja</div>
+                <div class="frete-prazo">Combine o horário via WhatsApp</div>
+              </div>
+              <span class="frete-preco">Grátis</span>
+            </div>
+          </label>
+        </div>
+        <div class="section-label" id="frete-label" style="display:none;margin-top:0.5rem;">Ou escolha a entrega</div>
+        <div id="frete-loading" class="frete-loading" style="display:none">
+          <span>⏳</span> Calculando frete...
+        </div>
+        <div class="frete-grid" id="frete-opcoes" style="display:none"></div>
+        <span class="error-msg" id="frete-err" style="display:none;">Selecione uma opção de entrega.</span>
+
+        <!-- Cor -->
+        <div class="section-label">Escolha a cor <span style="color:var(--gold);font-size:0.7rem">*</span></div>
+        <div id="cor-err" style="display:none;color:red;font-size:0.8rem;">Por favor, selecione uma cor.</div>
+        <div id="cor-aviso-produto" style="color:var(--muted);font-size:0.8rem;font-style:italic;padding:0.5rem 0;">Selecione uma bolsa acima para ver as cores disponíveis.</div>
+
+        <!-- Cores Paola -->
+        <div class="color-grid" id="cores-Paola" style="display:none;">
+          <label class="color-option">
+            <input type="radio" name="cor" value="White">
+            <div class="color-swatch" style="background-image:url('White.jpg');background-size:cover;"></div>
+            <span class="color-name">Floater Off White</span>
+          </label>
+          <label class="color-option">
+            <input type="radio" name="cor" value="Preto">
+            <div class="color-swatch" style="background-image:url('Preto.jpg');background-size:cover;"></div>
+            <span class="color-name">Floater Preto</span>
+          </label>
+          <label class="color-option">
+            <input type="radio" name="cor" value="Cafe">
+            <div class="color-swatch" style="background-image:url('Café.jpg');background-size:cover;"></div>
+            <span class="color-name">Floater Café</span>
+          </label>
+          <label class="color-option">
+            <input type="radio" name="cor" value="Argila">
+            <div class="color-swatch" style="background-image:url('Argila.jpg');background-size:cover;"></div>
+            <span class="color-name">Floater Argila</span>
+          </label>
+          <label class="color-option">
+            <input type="radio" name="cor" value="Azul_claro">
+            <div class="color-swatch" style="background-image:url('Azulclaro.jpg');background-size:cover;"></div>
+            <span class="color-name">Floater Azul Claro</span>
+          </label>
+          <label class="color-option">
+            <input type="radio" name="cor" value="Whiskey">
+            <div class="color-swatch" style="background-image:url('Whiskey.jpg');background-size:cover;"></div>
+            <span class="color-name">Floater Whiskey</span>
+          </label>
+          <label class="color-option">
+            <input type="radio" name="cor" value="Caramelo">
+            <div class="color-swatch" style="background-image:url('Caramelo.jpg');background-size:cover;"></div>
+            <span class="color-name">Floater Caramelo</span>
+          </label>
+          <label class="color-option">
+            <input type="radio" name="cor" value="Pink">
+            <div class="color-swatch" style="background-image:url('Pink.jpg');background-size:cover;"></div>
+            <span class="color-name">Floater Pink</span>
+          </label>
+        </div>
+
+        <!-- Cores Carol -->
+        <div class="color-grid" id="cores-Carol" style="display:none;">
+          <label class="color-option">
+            <input type="radio" name="cor" value="Preto">
+            <div class="color-swatch" style="background-image:url('Preto.jpg');background-size:cover;"></div>
+            <span class="color-name">Floater Preto</span>
+          </label>
+          <label class="color-option">
+            <input type="radio" name="cor" value="Caramelo_brilho">
+            <div class="color-swatch" style="background-image:url('caramelo.png');background-size:cover;"></div>
+            <span class="color-name">Caramelo Brilho</span>
+          </label>
+        </div>
+        <!-- Forma de pagamento -->
+        <div class="section-label">Forma de pagamento <span style="color:var(--gold);font-size:0.7rem">*</span></div>
+
+        <div class="payment-grid">
+          <label class="pay-option">
+            <input type="radio" name="pagamento" value="Pix" id="pay-pix">
+            <div class="pay-card">
+              <span class="pay-check">✓</span>
+              <span class="pay-icon">⚡</span>
+              <span class="pay-title">Pix</span>
+              <span class="pay-desc">Aprovação imediata. Chave enviada após confirmação.</span>
+              <span class="pay-tag">Pagamento à vista</span>
+            </div>
+          </label>
+
+          <label class="pay-option">
+            <input type="radio" name="pagamento" value="Link de pagamento" id="pay-link">
+            <div class="pay-card">
+              <span class="pay-check">✓</span>
+              <span class="pay-icon">💳</span>
+              <span class="pay-title">Link</span>
+              <span class="pay-desc">Cartão de crédito pelo link. Sem juros.</span>
+              <span class="pay-tag">Até 6x sem juros</span>
+            </div>
+          </label>
+        </div>
+        <span class="error-msg" id="pag-err" style="margin-top:0.5rem;display:none;">Selecione uma forma de pagamento.</span>
+
+        <!-- Parcelas (aparece só se Link for selecionado) -->
+        <div class="parcelas-wrap" id="parcelas-wrap">
+          <div class="field" style="margin-top:0.2rem;margin-bottom:0;">
+            <label for="parcelas">Número de parcelas</label>
+            <select id="parcelas">
+              <option value="1">1x — à vista</option>
+              <option value="2">2x sem juros</option>
+              <option value="3">3x sem juros</option>
+              <option value="4">4x sem juros</option>
+              <option value="5">5x sem juros</option>
+              <option value="6">6x sem juros</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Observações -->
+        <div class="section-label">Observações</div>
+
+        <div class="field">
+          <label for="obs">Dúvida ou pedido especial?</label>
+          <textarea id="obs" placeholder="Ex: Prazo de entrega, embalagem para presente..."></textarea>
+        </div>
+
+        <div class="field">
+          <label for="origem">Como nos conheceu?</label>
+          <select id="origem">
+            <option value="">Selecione (opcional)</option>
+            <option>Instagram</option>
+            <option>TikTok</option>
+            <option>Indicação</option>
+            <option>Google</option>
+            <option>WhatsApp</option>
+            <option>Outro</option>
+          </select>
+        </div>
+
+        <!-- Total -->
+        <div class="total-box" id="total-box">
+          <div class="total-titulo">Resumo do pedido</div>
+          <div class="total-linhas">
+            <div class="total-linha">
+              <span id="total-prod-nome">Bolsa Hearts Couro</span>
+              <span class="t-valor" id="total-prod-valor">—</span>
+            </div>
+            <div class="total-linha" id="total-frete-linha">
+              <span id="total-frete-nome">Frete</span>
+              <span class="t-valor" id="total-frete-valor">—</span>
+            </div>
+            <div class="total-linha destaque">
+              <span>Total</span>
+              <span class="t-valor" id="total-geral">—</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="submit-area">
+          <button type="submit" class="btn-submit">✦ &nbsp; Confirmar minha reserva</button>
+          <p class="note">Ao reservar, você concorda com nossa política de privacidade.<br>
+          Entraremos em contato via <strong>WhatsApp ou e-mail</strong> para confirmar sua pré-venda.</p>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- Sucesso (pós-redirect cartão / fallback) -->
+    <div class="success-screen" id="success-view">
+      <div class="success-icon">🍀</div>
+      <h2>Reserva confirmada!</h2>
+      <div class="gold-line"></div>
+      <p id="success-msg" style="margin-top:0.8rem"></p>
+    </div>
+
+    <!-- PIX -->
+    <div class="pix-screen" id="pix-view">
+      <div class="success-icon">⚡</div>
+      <h2>Pague via PIX</h2>
+      <div class="gold-line"></div>
+      <p style="color:var(--muted);font-size:0.85rem;margin-top:0.6rem">
+        Escaneie o QR Code ou copie o código abaixo
+      </p>
+      <img id="pix-qr-img" class="pix-qr-img" src="" alt="QR Code PIX">
+      <div class="pix-code-box">
+        <input id="pix-code-input" type="text" readonly>
+        <button class="btn-copiar" id="btn-copiar" onclick="copiarPix()">Copiar</button>
+      </div>
+      <div class="pix-info">
+        Valor: <strong>R$ 229,00</strong><br>
+        O código expira em <strong>30 minutos</strong>.<br>
+        Após confirmar o pagamento, nossa equipe entrará em contato<br>via <strong>WhatsApp</strong> com a atualização do seu pedido.
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+const prodImg = document.getElementById('prod-img');
+if (prodImg && !prodImg.src) prodImg.src = 'produto.jpg';
+
+/* ── Produto selecionado ── */
+let produtoSelecionado = null;
+let estoqueGlobal = {};
+const PRECOS = { 'Paola': 229, 'Carol': 289 };
+
+function selecionarProduto(produto) {
+  produtoSelecionado = produto;
+
+  document.querySelectorAll('.produto-card-sel').forEach(c => c.classList.remove('selecionado'));
+  document.getElementById(`card-${produto}`)?.classList.add('selecionado');
+
+  document.getElementById('cores-Paola').style.display = produto === 'Paola' ? 'grid' : 'none';
+  document.getElementById('cores-Carol').style.display = produto === 'Carol' ? 'grid' : 'none';
+  document.getElementById('cor-aviso-produto').style.display = 'none';
+
+  document.querySelectorAll('input[name="cor"]').forEach(r => r.checked = false);
+
+  const preco = PRECOS[produto];
+  document.getElementById('total-prod-nome').textContent = `Bolsa Hearts Couro — Ref: ${produto}`;
+  document.getElementById('total-prod-valor').textContent = `R$ ${preco},00`;
+
+  resetFrete();
+  atualizarEstoqueProduto(produto);
+
+  document.querySelector('.card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ── Estoque ── */
+async function carregarEstoque() {
+  try {
+    const resp = await fetch('/api/estoque');
+    if (!resp.ok) return;
+    estoqueGlobal = await resp.json();
+    if (produtoSelecionado) atualizarEstoqueProduto(produtoSelecionado);
+  } catch (e) {
+    console.error('Erro ao carregar estoque:', e);
+  }
+}
+
+function atualizarEstoqueProduto(produto) {
+  document.querySelectorAll(`#cores-${produto} input[name="cor"]`).forEach(input => {
+    const cor = input.value;
+    const key = `${produto}_${cor}`;
+    const qtd = estoqueGlobal[key] ?? null;
+    const label = input.closest('.color-option');
+    if (!label) return;
+
+    label.querySelector('.color-stock')?.remove();
+    label.classList.remove('esgotado');
+    input.disabled = false;
+
+    const stockEl = document.createElement('span');
+    stockEl.className = 'color-stock';
+
+    if (qtd === 0) {
+      label.classList.add('esgotado');
+      input.disabled = true;
+      stockEl.textContent = 'Esgotado';
+      stockEl.style.color = '#c0614a';
+    } else if (qtd !== null && qtd <= 3) {
+      stockEl.textContent = `Últimas ${qtd}!`;
+      stockEl.style.color = '#ffbe3c';
+    }
+
+    label.appendChild(stockEl);
+  });
+}
+
+carregarEstoque();
+
+/* ── Tela de sucesso após retorno do Checkout Pro ── */
+(function () {
+  const p = new URLSearchParams(location.search);
+  if (p.get('pago') === 'ok') {
+    document.getElementById('form-view').style.display = 'none';
+    document.getElementById('success-view').style.display = 'block';
+    document.getElementById('success-msg').innerHTML =
+      'Seu pagamento foi <strong>aprovado</strong>! 🎉<br>Nossa equipe entrará em contato via WhatsApp em breve.';
+  }
+})();
+
+/* ── Máscaras ── */
+document.getElementById('whatsapp').addEventListener('input', function (e) {
+  let v = e.target.value.replace(/\D/g, '');
+  if (v.length <= 10) v = v.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+  else                v = v.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+  e.target.value = v.trim().replace(/-$/, '');
+});
+
+document.getElementById('cpf').addEventListener('input', function (e) {
+  let v = e.target.value.replace(/\D/g, '');
+  v = v.replace(/(\d{3})(\d)/, '$1.$2');
+  v = v.replace(/(\d{3})(\d)/, '$1.$2');
+  v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+  e.target.value = v;
+});
+
+document.getElementById('cep').addEventListener('input', function (e) {
+  let v = e.target.value.replace(/\D/g, '').slice(0, 8);
+  if (v.length > 5) v = v.slice(0, 5) + '-' + v.slice(5);
+  e.target.value = v;
+});
+
+/* ── Frete ── */
+let freteOpcoes = [];
+
+function selecionarRetirada() {
+  document.querySelectorAll('#frete-opcoes input[type="radio"]').forEach(r => r.checked = false);
+  const precoProd = PRECOS[produtoSelecionado] || 229;
+  const fmt = v => 'R$ ' + v.toFixed(2).replace('.', ',');
+  document.getElementById('total-prod-nome').textContent = `Bolsa Hearts Couro — Ref: ${produtoSelecionado || ''}`;
+  document.getElementById('total-prod-valor').textContent = fmt(precoProd);
+  document.getElementById('total-frete-nome').textContent = 'Retirada na Loja';
+  document.getElementById('total-frete-valor').textContent = 'Grátis';
+  document.getElementById('total-geral').textContent = fmt(precoProd);
+  document.getElementById('total-box').style.display = 'block';
+}
+
+function resetFrete() {
+  freteOpcoes = [];
+  document.getElementById('frete-label').style.display = 'none';
+  document.getElementById('frete-loading').style.display = 'none';
+  document.getElementById('frete-opcoes').style.display = 'none';
+  document.getElementById('frete-opcoes').innerHTML = '';
+  document.getElementById('frete-err').style.display = 'none';
+  const isRetirada = document.querySelector('input[name="frete"][value="retirada"]')?.checked;
+  if (!isRetirada) document.getElementById('total-box').style.display = 'none';
+}
+
+function renderizarFrete(opcoes) {
+  const container = document.getElementById('frete-opcoes');
+  container.innerHTML = '';
+
+  opcoes.forEach((op, i) => {
+    const label = document.createElement('label');
+    label.className = 'frete-option';
+    label.innerHTML = `
+      <input type="radio" name="frete" value="${op.id}" data-preco="${op.preco}" data-nome="${op.nome}" data-prazo="${op.dias}">
+      <div class="frete-card">
+        <span class="frete-check">✓</span>
+        <div class="frete-info">
+          <div class="frete-nome">${op.nome}</div>
+          <div class="frete-prazo">Prazo: até ${op.dias} dia${op.dias > 1 ? 's' : ''} úteis</div>
+        </div>
+        <span class="frete-preco">R$ ${op.preco.toFixed(2).replace('.', ',')}</span>
+      </div>`;
+    container.appendChild(label);
+  });
+
+  // Pré-seleciona o mais barato
+  const radios = container.querySelectorAll('input[type="radio"]');
+  if (radios.length > 0) {
+    radios[0].checked = true;
+    atualizarTotal(radios[0]);
+  }
+
+  // Atualiza total ao trocar opção e desmarca retirada
+  radios.forEach(r => r.addEventListener('change', () => {
+    const ret = document.querySelector('input[name="frete"][value="retirada"]');
+    if (ret) ret.checked = false;
+    atualizarTotal(r);
+  }));
+
+  document.getElementById('frete-loading').style.display = 'none';
+  container.style.display = 'flex';
+}
+
+function atualizarTotal(radio) {
+  const preco = parseFloat(radio.dataset.preco);
+  const nome  = radio.dataset.nome;
+  const total = (PRECOS[produtoSelecionado] || 229) + preco;
+
+  const fmt = v => 'R$ ' + v.toFixed(2).replace('.', ',');
+  document.getElementById('total-frete-nome').textContent = nome;
+  document.getElementById('total-frete-valor').textContent = fmt(preco);
+  document.getElementById('total-geral').textContent = fmt(total);
+  document.getElementById('total-box').style.display = 'block';
+}
+
+async function calcularFrete(cep) {
+  resetFrete();
+  document.getElementById('frete-label').style.display = 'flex';
+  document.getElementById('frete-loading').style.display = 'flex';
+
+  try {
+    const resp = await fetch('/api/calcular-frete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cep })
+    });
+    const opcoes = await resp.json();
+
+    if (!resp.ok || !Array.isArray(opcoes) || opcoes.length === 0) {
+      document.getElementById('frete-loading').style.display = 'none';
+      document.getElementById('frete-opcoes').innerHTML =
+        '<p style="font-size:0.8rem;color:#c0614a;">Não foi possível calcular o frete para este CEP.</p>';
+      document.getElementById('frete-opcoes').style.display = 'flex';
+      return;
+    }
+
+    freteOpcoes = opcoes;
+    renderizarFrete(opcoes);
+  } catch {
+    document.getElementById('frete-loading').style.display = 'none';
+    document.getElementById('frete-opcoes').innerHTML =
+      '<p style="font-size:0.8rem;color:#c0614a;">Erro ao calcular frete. Verifique a conexão.</p>';
+    document.getElementById('frete-opcoes').style.display = 'flex';
+  }
+}
+
+/* ── Busca CEP ── */
+document.getElementById('btn-cep').addEventListener('click', async function () {
+  const raw = document.getElementById('cep').value.replace(/\D/g, '');
+  if (raw.length !== 8) { alert('Insira um CEP completo com 8 dígitos.'); return; }
+  this.disabled = true; this.textContent = 'Buscando...';
+  resetFrete();
+  try {
+    const data = await (await fetch(`https://viacep.com.br/ws/${raw}/json/`)).json();
+    if (data.erro) {
+      alert('CEP não encontrado. Verifique e tente novamente.');
+    } else {
+      document.getElementById('logradouro').value = data.logradouro || '';
+      document.getElementById('bairro').value     = data.bairro     || '';
+      document.getElementById('cidade').value     = data.localidade || '';
+      const sel = document.getElementById('estado');
+      [...sel.options].forEach((o, i) => { if (o.value === data.uf) sel.selectedIndex = i; });
+      document.getElementById('numero').focus();
+      calcularFrete(raw);
+    }
+  } catch { alert('Não foi possível consultar o CEP. Verifique sua conexão.'); }
+  finally { this.disabled = false; this.textContent = '🔍 Buscar CEP'; }
+});
+
+/* ── Parcelas: exibe só quando Link for selecionado ── */
+document.querySelectorAll('input[name="pagamento"]').forEach(radio => {
+  radio.addEventListener('change', function () {
+    document.getElementById('parcelas-wrap').classList.toggle('visible', this.value === 'Link de pagamento');
+  });
+});
+
+/* ── Copiar código PIX ── */
+function copiarPix() {
+  const code = document.getElementById('pix-code-input').value;
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = document.getElementById('btn-copiar');
+    btn.textContent = '✓ Copiado!';
+    btn.classList.add('copiado');
+    setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copiado'); }, 2500);
+  }).catch(() => {
+    document.getElementById('pix-code-input').select();
+    document.execCommand('copy');
+  });
+}
+
+/* ── Validação & Envio ── */
+document.getElementById('prevenda-form').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  let valid = true;
+
+  const isRetirada = document.querySelector('input[name="frete"][value="retirada"]')?.checked;
+  const camposBase = ['nome','sobrenome','email','whatsapp'];
+  const camposEntrega = ['logradouro','numero','bairro','cidade','estado'];
+  const campos = isRetirada ? camposBase : [...camposBase, ...camposEntrega];
+
+  campos.forEach(id => {
+    const el  = document.getElementById(id);
+    const err = el.nextElementSibling;
+    const bad = !el.value.trim() || (id === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value));
+    el.classList.toggle('invalid', bad);
+    if (err?.classList.contains('error-msg')) err.style.display = bad ? 'block' : 'none';
+    if (bad) valid = false;
+  });
+
+  const cepEl = document.getElementById('cep');
+  if (!isRetirada) {
+    const cepBad = cepEl.value.replace(/\D/g,'').length !== 8;
+    cepEl.classList.toggle('invalid', cepBad);
+    document.getElementById('cep-err').style.display = cepBad ? 'block' : 'none';
+    if (cepBad) valid = false;
+  } else {
+    cepEl.classList.remove('invalid');
+    document.getElementById('cep-err').style.display = 'none';
+  }
+
+  if (!produtoSelecionado) {
+    document.getElementById('card-Paola')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    alert('Selecione uma bolsa antes de continuar.');
+    return;
+  }
+
+  const cor    = document.querySelector('input[name="cor"]:checked');
+  const corErr = document.getElementById('cor-err');
+  corErr.style.display = cor ? 'none' : 'block';
+  if (!cor) valid = false;
+
+  // Frete
+  const freteRadio = document.querySelector('input[name="frete"]:checked');
+  const freteErr   = document.getElementById('frete-err');
+  if (!freteRadio) {
+    freteErr.textContent = (!isRetirada && freteOpcoes.length === 0)
+      ? 'Clique em "Buscar CEP" para calcular o frete ou selecione "Retirada na Loja".'
+      : 'Selecione uma opção de entrega.';
+    freteErr.style.display = 'block';
+    valid = false;
+  } else {
+    freteErr.style.display = 'none';
+  }
+
+  const pag    = document.querySelector('input[name="pagamento"]:checked');
+  const pagErr = document.getElementById('pag-err');
+  pagErr.style.display = pag ? 'none' : 'block';
+  if (!pag) valid = false;
+
+  if (!valid) {
+    document.querySelector('.invalid, .error-msg[style*="block"]')?.scrollIntoView({ behavior:'smooth', block:'center' });
+    return;
+  }
+
+  const btnSubmit = this.querySelector('.btn-submit');
+  btnSubmit.disabled = true;
+  btnSubmit.textContent = pag.value === 'Pix' ? 'Gerando PIX...' : 'Redirecionando...';
+
+  const dados = {
+    nome:        document.getElementById('nome').value.trim(),
+    sobrenome:   document.getElementById('sobrenome').value.trim(),
+    email:       document.getElementById('email').value.trim(),
+    whatsapp:    document.getElementById('whatsapp').value.trim(),
+    cpf:         document.getElementById('cpf').value,
+    cep:         document.getElementById('cep').value,
+    logradouro:  document.getElementById('logradouro').value,
+    numero:      document.getElementById('numero').value,
+    complemento: document.getElementById('complemento').value,
+    bairro:      document.getElementById('bairro').value,
+    cidade:      document.getElementById('cidade').value,
+    estado:      document.getElementById('estado').value,
+    produto:     produtoSelecionado,
+    cor:         cor.value,
+    pagamento:   pag.value,
+    parcelas:    document.getElementById('parcelas').value,
+    obs:         document.getElementById('obs').value,
+    frete_nome:  freteRadio ? freteRadio.dataset.nome  : '',
+    frete_valor: freteRadio ? freteRadio.dataset.preco : 0,
+    frete_prazo: freteRadio ? freteRadio.dataset.prazo : ''
+  };
+
+  try {
+    const resp = await fetch('/api/criar-pagamento', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dados)
+    });
+
+    const result = await resp.json();
+
+    if (!resp.ok) throw new Error(result.erro || 'Erro no servidor');
+
+    if (result.tipo === 'pix') {
+      document.getElementById('form-view').style.display = 'none';
+      document.getElementById('pix-view').style.display  = 'block';
+      document.getElementById('pix-qr-img').src = `data:image/png;base64,${result.qrCodeBase64}`;
+      document.getElementById('pix-code-input').value = result.qrCode;
+      // Atualiza valor exibido na tela PIX
+      const totalPix = document.querySelector('#pix-view .pix-info strong');
+      if (totalPix && result.total) {
+        totalPix.textContent = 'R$ ' + result.total.toFixed(2).replace('.', ',');
+      }
+
+    } else if (result.tipo === 'link') {
+      window.location.href = result.checkoutUrl;
+    }
+
+  } catch (err) {
+    alert('Ops! ' + (err.message || 'Tivemos um problema. Tente novamente em instantes.'));
+    btnSubmit.disabled = false;
+    btnSubmit.textContent = '✦   Confirmar minha reserva';
+  }
+});
+</script>
+
+</body>
+</html>
