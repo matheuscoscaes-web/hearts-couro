@@ -469,6 +469,7 @@ app.post('/api/gerar-etiqueta/:id', async (req, res) => {
       })
     });
     const cartData = await cartResp.json();
+    console.log('[ETIQUETA CART]', JSON.stringify(cartData));
     if (!cartData.id) return res.status(502).json({ erro: 'Erro ao criar envio no Melhor Envio.', detalhe: cartData });
 
     const orderId = cartData.id;
