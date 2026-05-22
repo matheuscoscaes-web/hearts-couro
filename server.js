@@ -22,7 +22,7 @@ const PRECO_PRODUTO = 229.00; // fallback
 const PRODUTOS = {
   'Paola':   229.00,
   'Carol':   289.00,
-  'Modelo4': 189.00,
+  'Modelo4': 199.00,
   'Lara':    209.00,
   'Adriana': 189.00,
   'Miranda': 259.00,
