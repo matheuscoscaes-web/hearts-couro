@@ -399,5 +399,118 @@ app.post('/api/status', async (req, res) => {
   }
 });
 
+// ── ROTA: Gerar Etiqueta Melhor Envio ──
+app.post('/api/gerar-etiqueta/:id', async (req, res) => {
+  const pedidoId = parseInt(req.params.id);
+
+  const { data: pedido, error: errPedido } = await supabase
+    .from('pedidos').select('*').eq('id', pedidoId).single();
+
+  if (errPedido || !pedido) return res.status(404).json({ erro: 'Pedido não encontrado.' });
+
+  const meHeaders = {
+    'Authorization': `Bearer ${process.env.ME_TOKEN}`,
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'User-Agent': `Hearts Couro (${process.env.EMAIL_USER})`
+  };
+
+  try {
+    // 1. Descobre o ID do serviço PAC para este CEP
+    const calcResp = await fetch('https://melhorenvio.com.br/api/v2/me/shipment/calculate', {
+      method: 'POST', headers: meHeaders,
+      body: JSON.stringify({
+        from: { postal_code: process.env.CEP_ORIGEM },
+        to:   { postal_code: pedido.cep.replace(/\D/g, '') },
+        package: PACOTE,
+        options: { insurance_value: pedido.valor_total || PRECO_PRODUTO, receipt: false, own_hand: false }
+      })
+    });
+    const calcData = await calcResp.json();
+    const pac = Array.isArray(calcData) && calcData.find(
+      s => !s.error && s.price && s.name?.toUpperCase() === 'PAC' && s.company?.name?.toUpperCase().includes('CORREI')
+    );
+    if (!pac) return res.status(400).json({ erro: 'Serviço PAC não disponível para este CEP.' });
+
+    // 2. Adiciona ao carrinho ME
+    const cartResp = await fetch('https://melhorenvio.com.br/api/v2/me/cart', {
+      method: 'POST', headers: meHeaders,
+      body: JSON.stringify({
+        service: pac.id,
+        from: {
+          name:        process.env.ME_NOME_REMETENTE  || 'Hearts Couro',
+          phone:       process.env.ME_TEL_REMETENTE   || '',
+          email:       process.env.EMAIL_USER          || '',
+          document:    process.env.ME_CPF_REMETENTE   || '',
+          address:     process.env.ME_LOGRADOURO       || '',
+          number:      process.env.ME_NUMERO           || '',
+          complement:  process.env.ME_COMPLEMENTO     || '',
+          district:    process.env.ME_BAIRRO           || '',
+          city:        process.env.ME_CIDADE           || '',
+          state_abbr:  process.env.ME_ESTADO           || '',
+          country_id:  'BR',
+          postal_code: process.env.CEP_ORIGEM
+        },
+        to: {
+          name:        `${pedido.nome} ${pedido.sobrenome || ''}`.trim(),
+          phone:       (pedido.whatsapp || '').replace(/\D/g, ''),
+          email:       pedido.email || '',
+          document:    (pedido.cpf  || '').replace(/\D/g, ''),
+          address:     pedido.logradouro || '',
+          number:      pedido.numero     || '',
+          complement:  pedido.complemento || '',
+          district:    pedido.bairro     || '',
+          city:        pedido.cidade     || '',
+          state_abbr:  pedido.estado     || '',
+          country_id:  'BR',
+          postal_code: pedido.cep.replace(/\D/g, '')
+        },
+        products: [{
+          name: `Bolsa Hearts Couro - ${pedido.produto || 'Paola'} (${pedido.cor || ''})`,
+          quantity: 1,
+          unitary_value: pedido.valor_total || PRECO_PRODUTO
+        }],
+        volumes: [PACOTE],
+        options: {
+          insurance_value: pedido.valor_total || PRECO_PRODUTO,
+          receipt: false, own_hand: false, collect: false, reverse: false, non_commercial: false
+        }
+      })
+    });
+    const cartData = await cartResp.json();
+    if (!cartData.id) return res.status(502).json({ erro: 'Erro ao criar envio no Melhor Envio.', detalhe: cartData });
+
+    const orderId = cartData.id;
+
+    // 3. Checkout (debita saldo ME)
+    await fetch('https://melhorenvio.com.br/api/v2/me/shipment/checkout', {
+      method: 'POST', headers: meHeaders,
+      body: JSON.stringify({ orders: [orderId] })
+    });
+
+    // 4. Gera etiqueta
+    await fetch('https://melhorenvio.com.br/api/v2/me/shipment/generate', {
+      method: 'POST', headers: meHeaders,
+      body: JSON.stringify({ orders: [orderId] })
+    });
+
+    // 5. Obtém link de impressão
+    const printResp = await fetch('https://melhorenvio.com.br/api/v2/me/shipment/print', {
+      method: 'POST', headers: meHeaders,
+      body: JSON.stringify({ mode: 'public', orders: [orderId] })
+    });
+    const printData = await printResp.json();
+
+    // Marca pedido como enviado
+    await supabase.from('pedidos').update({ status: 'enviado' }).eq('id', pedidoId);
+
+    return res.json({ url: printData.url || printData });
+
+  } catch (err) {
+    console.error('Erro ao gerar etiqueta:', err);
+    return res.status(500).json({ erro: 'Erro ao gerar etiqueta.' });
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🔥 Hearts Online na porta ${PORT}`));

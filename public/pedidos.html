@@ -181,6 +181,15 @@
             border-color: var(--gold);
         }
 
+        .btn-etiqueta {
+            background: rgba(201,150,60,0.15);
+            border: 1px solid var(--gold-dim);
+            color: var(--gold);
+        }
+
+        .btn-etiqueta:hover { background: var(--gold); color: var(--black); border-color: var(--gold); }
+        .btn-etiqueta:disabled { opacity: 0.5; cursor: not-allowed; }
+
         .empty-msg {
             grid-column: 1/-1;
             text-align: center;
@@ -458,7 +467,7 @@
                         ${p.status === 'aguardando_pagamento'
                             ? `<button type="button" class="btn-action btn-check" id="verify-${p.id}" onclick="verificarPagamento(${p.id})" style="background:rgba(80,160,255,0.15);border-color:#50a0ff;color:#50a0ff;">Verificar Pagamento</button>`
                             : p.status === 'approved'
-                                ? `<button type="button" class="btn-action btn-check" onclick="atualizarStatus(${p.id}, 'enviado')">Marcar Enviado</button>`
+                                ? `<button type="button" class="btn-action btn-etiqueta" id="etiqueta-${p.id}" onclick="gerarEtiqueta(${p.id})">📦 Gerar Etiqueta</button>`
                                 : p.status === 'enviado'
                                     ? `<button type="button" class="btn-action btn-check" onclick="atualizarStatus(${p.id}, 'pendente')" style="opacity:0.4">Reverter</button>`
                                     : `<button type="button" class="btn-action btn-check" onclick="atualizarStatus(${p.id}, 'enviado')">Marcar Enviado</button>`
@@ -570,6 +579,27 @@
             } catch (e) {
                 alert('Erro ao conectar com o servidor.');
                 if (btn) { btn.disabled = false; btn.textContent = 'Verificar Pagamento'; }
+            }
+        }
+
+        // 6. Gerar etiqueta no Melhor Envio
+        async function gerarEtiqueta(id) {
+            if (!confirm('Isso vai gerar a etiqueta PAC no Melhor Envio e debitar o valor do seu saldo. Confirmar?')) return;
+            const btn = document.getElementById(`etiqueta-${id}`);
+            if (btn) { btn.disabled = true; btn.textContent = 'Gerando...'; }
+            try {
+                const resp = await fetch(`/api/gerar-etiqueta/${id}`, { method: 'POST' });
+                const result = await resp.json();
+                if (result.url) {
+                    window.open(result.url, '_blank');
+                    carregarPedidos();
+                } else {
+                    alert('Erro: ' + (result.erro || 'Não foi possível gerar a etiqueta.'));
+                    if (btn) { btn.disabled = false; btn.textContent = '📦 Gerar Etiqueta'; }
+                }
+            } catch (e) {
+                alert('Erro ao conectar com o servidor.');
+                if (btn) { btn.disabled = false; btn.textContent = '📦 Gerar Etiqueta'; }
             }
         }
 
