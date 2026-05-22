@@ -121,7 +121,8 @@ app.post('/api/calcular-frete', async (req, res) => {
     // Log de todos os serviços retornados para diagnóstico
     data.forEach(s => console.log(`[ME] id:${s.id} | ${s.company?.name} ${s.name} | R$${s.price} | erro:${s.error || 'nenhum'}`));
 
-    const SERVICOS_PERMITIDOS = [1, 2, 4]; // SEDEX, PAC, Jadlog .com
+    const SERVICOS_PERMITIDOS = [2]; // somente PAC
+    const TAXA_EMBALAGEM = 7.00;
 
     const opcoes = data
       .filter(s => !s.error && s.price && SERVICOS_PERMITIDOS.includes(s.id))
@@ -129,7 +130,7 @@ app.post('/api/calcular-frete', async (req, res) => {
       .map(s => ({
         id: s.id,
         nome: `${s.company.name} ${s.name}`,
-        preco: parseFloat(s.price),
+        preco: parseFloat(s.price) + TAXA_EMBALAGEM,
         dias: s.delivery_time
       }));
 
