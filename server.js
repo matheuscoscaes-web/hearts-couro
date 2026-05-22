@@ -134,6 +134,10 @@ app.post('/api/calcular-frete', async (req, res) => {
       }));
 
     console.log('ME opções válidas:', opcoes.length);
+    if (opcoes.length === 0) {
+      const diagnostico = data.map(s => ({ id: s.id, empresa: s.company?.name, nome: s.name, preco: s.price, erro: s.error }));
+      return res.status(200).json({ _diagnostico: diagnostico });
+    }
     res.json(opcoes);
   } catch (err) {
     console.error('Erro ao calcular frete:', err.message);
