@@ -423,7 +423,7 @@ app.post('/api/gerar-etiqueta/:id', async (req, res) => {
         from: { postal_code: process.env.CEP_ORIGEM },
         to:   { postal_code: pedido.cep.replace(/\D/g, '') },
         package: PACOTE,
-        options: { insurance_value: pedido.valor_total || PRECO_PRODUTO, receipt: false, own_hand: false }
+        options: { insurance_value: PRODUTOS[pedido.produto] || PRECO_PRODUTO, receipt: false, own_hand: false }
       })
     });
     const calcData = await calcResp.json();
