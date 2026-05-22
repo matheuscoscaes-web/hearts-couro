@@ -121,11 +121,10 @@ app.post('/api/calcular-frete', async (req, res) => {
     // Log de todos os serviços retornados para diagnóstico
     data.forEach(s => console.log(`[ME] id:${s.id} | ${s.company?.name} ${s.name} | R$${s.price} | erro:${s.error || 'nenhum'}`));
 
-    const SERVICOS_PERMITIDOS = [2]; // somente PAC
     const TAXA_EMBALAGEM = 7.00;
 
     const opcoes = data
-      .filter(s => !s.error && s.price && SERVICOS_PERMITIDOS.includes(s.id))
+      .filter(s => !s.error && s.price && s.name?.toUpperCase().includes('PAC'))
       .sort((a, b) => parseFloat(a.price) - parseFloat(b.price))
       .map(s => ({
         id: s.id,
