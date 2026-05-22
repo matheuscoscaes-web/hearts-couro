@@ -124,7 +124,7 @@ app.post('/api/calcular-frete', async (req, res) => {
     const TAXA_EMBALAGEM = 7.00;
 
     const opcoes = data
-      .filter(s => !s.error && s.price && s.name?.toUpperCase().includes('PAC'))
+      .filter(s => !s.error && s.price && s.company?.name?.toUpperCase().includes('CORREI') && s.name?.toUpperCase() === 'PAC')
       .sort((a, b) => parseFloat(a.price) - parseFloat(b.price))
       .map(s => ({
         id: s.id,
