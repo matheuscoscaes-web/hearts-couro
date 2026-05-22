@@ -427,8 +427,13 @@ app.post('/api/gerar-etiqueta/:id', async (req, res) => {
       })
     });
     const calcData = await calcResp.json();
+    if (Array.isArray(calcData)) {
+      calcData.forEach(s => console.log(`[ETIQUETA] id:${s.id} | ${s.company?.name} ${s.name} | erro:${s.error || 'nenhum'}`));
+    } else {
+      console.log('[ETIQUETA] calcData inesperado:', JSON.stringify(calcData));
+    }
     const pac = Array.isArray(calcData) && calcData.find(
-      s => !s.error && s.price && s.name?.toUpperCase() === 'PAC' && s.company?.name?.toUpperCase().includes('CORREI')
+      s => !s.error && s.price && s.name?.toUpperCase().includes('PAC') && !s.name?.toUpperCase().includes('PACKAGE')
     );
     if (!pac) return res.status(400).json({ erro: 'Serviço PAC não disponível para este CEP.' });
 
