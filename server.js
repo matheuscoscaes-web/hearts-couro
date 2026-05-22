@@ -28,7 +28,7 @@ const PRODUTOS = {
   'Lara':     209.00,
   'Adriana':  189.00,
   'Renata':   269.00,
-  'Miranda':  249.00,
+  'Miranda':  259.00,
   'Megan':    289.00,
 };
 
