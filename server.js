@@ -24,15 +24,12 @@ const PRODUTOS = {
   'Carol':    289.00,
   'Modelo3':  189.00,
   'Modelo4':  189.00,
-  'Modelo5':  249.00,
-  'Modelo6':  279.00,
-  'Modelo7':  259.00,
-  'Modelo8':  269.00,
-  'Modelo9':  249.00,
-  'Modelo10': 289.00,
+  'Julia':    299.00,
   'Lara':     209.00,
   'Adriana':  189.00,
-  'Julia':    299.00,
+  'Renata':   269.00,
+  'Miranda':  249.00,
+  'Megan':    289.00,
 };
 
 // Embalagem da bolsa (para cálculo de frete)
