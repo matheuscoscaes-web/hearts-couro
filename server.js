@@ -123,25 +123,28 @@ app.post('/api/calcular-frete', async (req, res) => {
 
     const TAXA_EMBALAGEM = 7.00;
 
-    const opcoes = data
-      .filter(s => !s.error && s.price && s.name?.toUpperCase().includes('PAC') && !s.name?.toUpperCase().includes('PACKAGE'))
-      .sort((a, b) => parseFloat(a.price) - parseFloat(b.price))
-      .map(s => ({
-        id: s.id,
-        nome: `${s.company.name} ${s.name}`,
-        preco: parseFloat(s.price) + TAXA_EMBALAGEM,
-        dias: s.delivery_time
-      }));
+    const disponiveis = data.filter(s => !s.error && s.price);
+
+    const servicosFiltrar = (nomes, excluir = []) =>
+      disponiveis
+        .filter(s => nomes.some(n => s.name?.toUpperCase().includes(n)) && !excluir.some(e => s.name?.toUpperCase().includes(e)))
+        .sort((a, b) => parseFloat(a.price) - parseFloat(b.price))
+        .map(s => ({
+          id: s.id,
+          nome: `${s.company.name} ${s.name}`,
+          preco: parseFloat(s.price) + TAXA_EMBALAGEM,
+          dias: s.delivery_time
+        }));
+
+    let opcoes = servicosFiltrar(['PAC'], ['PACKAGE']);
+    if (opcoes.length === 0) opcoes = servicosFiltrar(['SEDEX']);
 
     console.log('ME opções válidas:', opcoes.length);
-    if (opcoes.length === 0) {
-      const diagnostico = data.map(s => ({ id: s.id, empresa: s.company?.name, nome: s.name, preco: s.price, erro: s.error }));
-      return res.status(200).json({ _diagnostico: diagnostico });
-    }
+    if (opcoes.length === 0) return res.status(400).json({ erro: 'Não foi possível calcular o frete para este CEP.' });
     res.json(opcoes);
   } catch (err) {
     console.error('Erro ao calcular frete:', err.message);
-    res.status(500).json({ erro: 'Erro ao calcular frete.' });
+    res.status(500).json({ erro: 'Erro ao calcular frete.', detalhe: err.message });
   }
 });
 
@@ -436,16 +439,29 @@ app.post('/api/gerar-etiqueta/:id', async (req, res) => {
     } else {
       console.log('[ETIQUETA] calcData inesperado:', JSON.stringify(calcData));
     }
-    const pac = Array.isArray(calcData) && calcData.find(
-      s => !s.error && s.price && s.name?.toUpperCase().includes('PAC') && !s.name?.toUpperCase().includes('PACKAGE')
-    );
-    if (!pac) return res.status(400).json({ erro: 'Serviço PAC não disponível para este CEP.' });
+    const disponiveis = Array.isArray(calcData) ? calcData.filter(s => !s.error && s.price) : [];
+    const pac = disponiveis.find(s => s.name?.toUpperCase().includes('PAC') && !s.name?.toUpperCase().includes('PACKAGE'))
+             || disponiveis.find(s => s.name?.toUpperCase().includes('SEDEX'));
+    if (!pac) return res.status(400).json({ erro: 'Serviço PAC/SEDEX não disponível para este CEP.' });
 
     // 2. Adiciona ao carrinho ME
     const cartResp = await fetch('https://melhorenvio.com.br/api/v2/me/cart', {
       method: 'POST', headers: meHeaders,
       body: JSON.stringify({
         service: pac.id,
+        from: {
+          name:        process.env.ME_NOME_REMETENTE,
+          phone:       (process.env.ME_TEL_REMETENTE || '').replace(/\D/g, ''),
+          document:    (process.env.ME_CPF_REMETENTE || '').replace(/\D/g, ''),
+          address:     process.env.ME_LOGRADOURO,
+          number:      process.env.ME_NUMERO,
+          complement:  process.env.ME_COMPLEMENTO || '',
+          district:    process.env.ME_BAIRRO,
+          city:        process.env.ME_CIDADE,
+          state_abbr:  process.env.ME_ESTADO,
+          country_id:  'BR',
+          postal_code: (process.env.CEP_ORIGEM || '').replace(/\D/g, '')
+        },
         to: {
           name:        `${pedido.nome} ${pedido.sobrenome || ''}`.trim(),
           phone:       (pedido.whatsapp || '').replace(/\D/g, ''),
