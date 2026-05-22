@@ -36,7 +36,7 @@ const PRODUTOS = {
 };
 
 // Embalagem da bolsa (para cálculo de frete)
-const PACOTE = { height: 10, width: 35, length: 40, weight: 0.8 };
+const PACOTE = { height: 11, width: 30, length: 32, weight: 1.0 };
 
 // Estoque inicial por produto_cor
 const ESTOQUE_INICIAL = {
