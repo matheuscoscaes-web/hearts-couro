@@ -186,7 +186,6 @@ app.post('/api/criar-pagamento', async (req, res) => {
         frete_prazo: body.frete_prazo || null,
         valor_total: total,
         produto: body.produto || process.env.NOME_PRODUTO || null,
-        itens: itens.length > 1 ? JSON.stringify(itens) : null,
         status: 'aguardando_pagamento'
       }])
       .select()
