@@ -437,20 +437,6 @@ app.post('/api/gerar-etiqueta/:id', async (req, res) => {
       method: 'POST', headers: meHeaders,
       body: JSON.stringify({
         service: pac.id,
-        from: {
-          name:        process.env.ME_NOME_REMETENTE  || 'Hearts Couro',
-          phone:       process.env.ME_TEL_REMETENTE   || '',
-          email:       process.env.EMAIL_USER          || '',
-          document:    process.env.ME_CPF_REMETENTE   || '',
-          address:     process.env.ME_LOGRADOURO       || '',
-          number:      process.env.ME_NUMERO           || '',
-          complement:  process.env.ME_COMPLEMENTO     || '',
-          district:    process.env.ME_BAIRRO           || '',
-          city:        process.env.ME_CIDADE           || '',
-          state_abbr:  process.env.ME_ESTADO           || '',
-          country_id:  'BR',
-          postal_code: process.env.CEP_ORIGEM
-        },
         to: {
           name:        `${pedido.nome} ${pedido.sobrenome || ''}`.trim(),
           phone:       (pedido.whatsapp || '').replace(/\D/g, ''),
