@@ -835,6 +835,25 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
   width: 100%; height: 100%; object-fit: cover; object-position: center 55%;
   display: block;
 }
+.modal-img-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: rgba(0,0,0,0.45); color: #fff;
+  border: none; cursor: pointer; font-size: 1.2rem;
+  padding: 0.4rem 0.7rem; border-radius: 50%;
+  z-index: 10; transition: background 0.2s;
+}
+.modal-img-nav:hover { background: rgba(0,0,0,0.7); }
+.modal-img-nav.prev { left: 0.6rem; }
+.modal-img-nav.next { right: 0.6rem; }
+.modal-img-dots {
+  position: absolute; bottom: 0.5rem; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 0.4rem;
+}
+.modal-img-dots span {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: rgba(255,255,255,0.4); cursor: pointer; transition: background 0.2s;
+}
+.modal-img-dots span.ativo { background: var(--gold); }
 
 .modal-info {
   padding: 1.4rem 1.6rem 2rem;
@@ -1611,6 +1630,9 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
     <button class="modal-close" onclick="fecharModal()">✕</button>
     <div class="modal-img-zone">
       <img id="modal-img" src="" alt="">
+      <button class="modal-img-nav prev" id="modal-prev" onclick="navegarImgModal(-1)" style="display:none;">‹</button>
+      <button class="modal-img-nav next" id="modal-next" onclick="navegarImgModal(1)"  style="display:none;">›</button>
+      <div class="modal-img-dots" id="modal-dots"></div>
     </div>
     <div class="modal-info">
       <div class="modal-nome" id="modal-nome"></div>
@@ -1679,16 +1701,16 @@ const CORES_BASE   = ['Preto','Caramelo'];
 const CORES_MAMUTE = ['Preto_mamute','Caramelo_mamute','Rubi_mamute','Whiskey_mamute','Azul_mamute','Cafe_mamute'];
 
 const PRODUTOS_INFO = {
-  Paola:   { preco: 229, img: 'produto.jpg',  nome: 'Paola',   cores: CORES_PAOLA, desc: ['Bolsão c/ Abertura p/ o Braço','Super Chique!','Bolso Interno','Fechamento em Ímã','Carregue tudo que precisa!'] },
-  Carol:   { preco: 289, img: 'carol.jpg',    nome: 'Carol',   cores: CORES_MAMUTE, desc: ['Duas formas: braço e transversal','Campeã de vendas','Fechamento em Zíper','Bolso Externo','Bolso Interno'] },
-  Modelo4: { preco: 199, img: 'Celina.jpg',   nome: 'Celina',  cores: CORES_MAMUTE, desc: ['Bolsa média com bolso frontal','Fechamento em Zíper','Alça regulável'] },
-  Miranda: { preco: 259, img: 'Miranda.jpg',  nome: 'Miranda', cores: CORES_BASE,  desc: ['Couro Legítimo','Qualidade Hearts'] },
-  Lara:    { preco: 209, img: 'Lara.jpg',     nome: 'Lara',    cores: CORES_BASE,  desc: ['Abertura principal nas costas','Bolso frontal','Fechamento nas costas, pega ladrão'] },
-  Adriana: { preco: 189, img: 'Adriana.jpg',  nome: 'Adriana', cores: CORES_BASE,  desc: ['Bolsa lateral estruturada','Pode ser usada como bolsa de mão','Fechamento em zíper'] },
-  Modelo3: { preco: 189, img: 'Bolsa-preta.jpg', nome: 'Denise',  cores: CORES_BASE,  desc: ['Couro Legítimo','Qualidade Hearts'] },
-  Julia:   { preco: 299, img: 'produto.jpg',     nome: 'Júlia',   cores: CORES_BASE,  desc: ['Duas opções de alça: mão e transversal','Vários bolsos externos','Fechamento em zíper'] },
-  Renata:  { preco: 279, img: 'Bolsa-caramelo.jpg', nome: 'Renata', cores: CORES_BASE, desc: ['Couro Legítimo','Qualidade Hearts'] },
-  Megan:   { preco: 289, img: 'carol.jpg',       nome: 'Megan',   cores: CORES_BASE,  desc: ['Couro Legítimo','Qualidade Hearts'] },
+  Paola:   { preco: 229, imgs: ['produto.jpg'],                 nome: 'Paola',   cores: CORES_PAOLA,  desc: ['Bolsão c/ Abertura p/ o Braço','Super Chique!','Bolso Interno','Fechamento em Ímã','Carregue tudo que precisa!'] },
+  Carol:   { preco: 289, imgs: ['carol.jpg'],                   nome: 'Carol',   cores: CORES_MAMUTE, desc: ['Duas formas: braço e transversal','Campeã de vendas','Fechamento em Zíper','Bolso Externo','Bolso Interno'] },
+  Modelo4: { preco: 199, imgs: ['Celina.jpg'],                  nome: 'Celina',  cores: CORES_MAMUTE, desc: ['Bolsa média com bolso frontal','Fechamento em Zíper','Alça regulável'] },
+  Miranda: { preco: 259, imgs: ['Miranda.jpg'],                 nome: 'Miranda', cores: CORES_BASE,   desc: ['Couro Legítimo','Qualidade Hearts'] },
+  Lara:    { preco: 209, imgs: ['Lara2.0.jpg','Lara.jpg'],      nome: 'Lara',    cores: CORES_BASE,   desc: ['Abertura principal nas costas','Bolso frontal','Fechamento nas costas, pega ladrão'] },
+  Adriana: { preco: 189, imgs: ['Adriana.jpg'],                 nome: 'Adriana', cores: CORES_BASE,   desc: ['Bolsa lateral estruturada','Pode ser usada como bolsa de mão','Fechamento em zíper'] },
+  Modelo3: { preco: 189, imgs: ['Bolsa-preta.jpg'],             nome: 'Denise',  cores: CORES_BASE,   desc: ['Couro Legítimo','Qualidade Hearts'] },
+  Julia:   { preco: 299, imgs: ['produto.jpg'],                 nome: 'Júlia',   cores: CORES_BASE,   desc: ['Duas opções de alça: mão e transversal','Vários bolsos externos','Fechamento em zíper'] },
+  Renata:  { preco: 279, imgs: ['Bolsa-caramelo.jpg'],          nome: 'Renata',  cores: CORES_BASE,   desc: ['Couro Legítimo','Qualidade Hearts'] },
+  Megan:   { preco: 289, imgs: ['carol.jpg'],                   nome: 'Megan',   cores: CORES_BASE,   desc: ['Couro Legítimo','Qualidade Hearts'] },
 };
 
 /* ══════════════════════════════════════════
@@ -1826,14 +1848,34 @@ function irParaFormulario() {
 ═══════════════════════════════════════════ */
 let modalProdutoAtual = null;
 let modalQtdAtual = 1;
+let modalImgIdx = 0;
+
+function atualizarImgModal(imgs, idx) {
+  modalImgIdx = idx;
+  document.getElementById('modal-img').src = imgs[idx];
+  const multi = imgs.length > 1;
+  document.getElementById('modal-prev').style.display = multi ? 'block' : 'none';
+  document.getElementById('modal-next').style.display = multi ? 'block' : 'none';
+  const dots = document.getElementById('modal-dots');
+  dots.innerHTML = multi ? imgs.map((_, i) => `<span class="${i===idx?'ativo':''}" onclick="atualizarImgModal(modalImgsAtual,${i})"></span>`).join('') : '';
+}
+
+let modalImgsAtual = [];
+
+function navegarImgModal(dir) {
+  const total = modalImgsAtual.length;
+  atualizarImgModal(modalImgsAtual, (modalImgIdx + dir + total) % total);
+}
 
 function abrirModal(produto) {
   const info = PRODUTOS_INFO[produto];
   if (!info) return;
   modalProdutoAtual = produto;
   modalQtdAtual = 1;
+  modalImgsAtual = info.imgs || [info.img || ''];
+  modalImgIdx = 0;
 
-  document.getElementById('modal-img').src          = info.img;
+  atualizarImgModal(modalImgsAtual, 0);
   document.getElementById('modal-nome').textContent  = `Ref: ${info.nome}`;
   document.getElementById('modal-preco').textContent = `R$ ${info.preco},00`;
   document.getElementById('modal-desc').innerHTML    = info.desc ? info.desc.map(d => `• ${d}`).join('<br>') : '';
