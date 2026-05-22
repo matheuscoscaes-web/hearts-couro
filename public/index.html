@@ -856,6 +856,13 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
   margin-bottom: 1.2rem;
 }
 
+.modal-desc {
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.75;
+  margin: 0.5rem 0 1.2rem;
+}
+
 .modal-section-lbl {
   font-size: 0.6rem; letter-spacing: 0.3em;
   text-transform: uppercase; color: var(--gold-dim);
@@ -1527,6 +1534,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
     <div class="modal-info">
       <div class="modal-nome" id="modal-nome"></div>
       <div class="modal-preco" id="modal-preco"></div>
+      <div class="modal-desc" id="modal-desc"></div>
       <div class="modal-section-lbl">Escolha a cor</div>
       <div class="modal-cor-err" id="modal-cor-err">Por favor, selecione uma cor.</div>
       <div class="modal-cor-grid" id="modal-cor-grid"></div>
@@ -1583,12 +1591,12 @@ const CORES_CAROL = ['Preto','Caramelo_brilho'];
 const CORES_BASE  = ['Preto','Caramelo'];
 
 const PRODUTOS_INFO = {
-  Paola:    { preco: 229, img: 'produto.jpg',       nome: 'Paola',     cores: CORES_PAOLA },
-  Carol:    { preco: 289, img: 'carol.jpg',          nome: 'Carol',     cores: CORES_CAROL },
-  Modelo4:  { preco: 189, img: 'Celina.jpg',  nome: 'Celina',  cores: CORES_BASE },
-  Miranda:  { preco: 259, img: 'Miranda.jpg', nome: 'Miranda', cores: CORES_BASE },
-  Lara:     { preco: 209, img: 'Lara.jpg',    nome: 'Lara',    cores: CORES_BASE },
-  Adriana:  { preco: 189, img: 'Adriana.jpg', nome: 'Adriana', cores: CORES_BASE },
+  Paola:   { preco: 229, img: 'produto.jpg',  nome: 'Paola',   cores: CORES_PAOLA, desc: ['Bolsão c/ Abertura p/ o Braço','Super Chique!','Bolso Interno','Fechamento em Ímã','Carregue tudo que precisa!'] },
+  Carol:   { preco: 289, img: 'carol.jpg',    nome: 'Carol',   cores: CORES_CAROL, desc: ['Duas formas: braço e transversal','Campeã de vendas','Fechamento em Zíper','Bolso Externo','Bolso Interno'] },
+  Modelo4: { preco: 189, img: 'Celina.jpg',   nome: 'Celina',  cores: CORES_BASE,  desc: ['Bolsa média com bolso frontal','Fechamento em Zíper','Alça regulável'] },
+  Miranda: { preco: 259, img: 'Miranda.jpg',  nome: 'Miranda', cores: CORES_BASE,  desc: ['Couro Legítimo','Qualidade Hearts'] },
+  Lara:    { preco: 209, img: 'Lara.jpg',     nome: 'Lara',    cores: CORES_BASE,  desc: ['Abertura principal nas costas','Bolso frontal','Fechamento nas costas, pega ladrão'] },
+  Adriana: { preco: 189, img: 'Adriana.jpg',  nome: 'Adriana', cores: CORES_BASE,  desc: ['Bolsa lateral estruturada','Pode ser usada como bolsa de mão','Fechamento em zíper'] },
 };
 
 /* ══════════════════════════════════════════
@@ -1733,10 +1741,11 @@ function abrirModal(produto) {
   modalProdutoAtual = produto;
   modalQtdAtual = 1;
 
-  document.getElementById('modal-img').src         = info.img;
-  document.getElementById('modal-nome').textContent = `Ref: ${info.nome}`;
+  document.getElementById('modal-img').src          = info.img;
+  document.getElementById('modal-nome').textContent  = `Ref: ${info.nome}`;
   document.getElementById('modal-preco').textContent = `R$ ${info.preco},00`;
-  document.getElementById('modal-qtd').textContent  = '1';
+  document.getElementById('modal-desc').innerHTML    = info.desc ? info.desc.map(d => `• ${d}`).join('<br>') : '';
+  document.getElementById('modal-qtd').textContent   = '1';
   document.getElementById('modal-cor-err').style.display = 'none';
 
   const grid = document.getElementById('modal-cor-grid');
