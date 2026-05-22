@@ -1575,25 +1575,32 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
    DADOS DE PRODUTOS E CORES
 ═══════════════════════════════════════════ */
 const CORES_DEF = {
-  White:           { label: 'Floater Off White',  img: 'White.jpg' },
-  Preto:           { label: 'Floater Preto',       img: 'Preto.jpg' },
-  Cafe:            { label: 'Floater Café',        img: 'Café.jpg' },
-  Argila:          { label: 'Floater Argila',      img: 'Argila.jpg' },
-  Azul_claro:      { label: 'Floater Azul Claro',  img: 'Azulclaro.jpg' },
-  Whiskey:         { label: 'Floater Whiskey',     img: 'Whiskey.jpg' },
-  Caramelo:        { label: 'Floater Caramelo',    img: 'Caramelo.jpg' },
-  Pink:            { label: 'Floater Pink',        img: 'Pink.jpg' },
-  Caramelo_brilho: { label: 'Caramelo Brilho',     img: 'Caramelo.jpg' },
+  White:            { label: 'Floater Off White',  img: 'White.jpg' },
+  Preto:            { label: 'Floater Preto',       img: 'Preto.jpg' },
+  Cafe:             { label: 'Floater Café',        img: 'Café.jpg' },
+  Argila:           { label: 'Floater Argila',      img: 'Argila.jpg' },
+  Azul_claro:       { label: 'Floater Azul Claro',  img: 'Azulclaro.jpg' },
+  Whiskey:          { label: 'Floater Whiskey',     img: 'Whiskey.jpg' },
+  Caramelo:         { label: 'Floater Caramelo',    img: 'Caramelo.jpg' },
+  Pink:             { label: 'Floater Pink',        img: 'Pink.jpg' },
+  Caramelo_brilho:  { label: 'Caramelo Brilho',     img: 'Caramelo.jpg' },
+  Preto_mamute:     { label: 'Preto Mamute',        img: 'Preto-mamute.jpg' },
+  Caramelo_mamute:  { label: 'Caramelo Mamute',     img: 'Caramelo-mamute.jpg' },
+  Rubi_mamute:      { label: 'Rubi Mamute',         img: 'Rubi-mamute.jpg' },
+  Whiskey_mamute:   { label: 'Whiskey Mamute',      img: 'Whiskey-mamute.jpg' },
+  Azul_mamute:      { label: 'Azul Mamute',         img: 'Azul-mamute.jpg' },
+  Cafe_mamute:      { label: 'Café Mamute',         img: 'Cafe-mamute.jpg' },
 };
 
-const CORES_PAOLA = ['White','Preto','Cafe','Argila','Azul_claro','Whiskey','Caramelo','Pink'];
-const CORES_CAROL = ['Preto','Caramelo_brilho'];
-const CORES_BASE  = ['Preto','Caramelo'];
+const CORES_PAOLA  = ['White','Preto','Cafe','Argila','Azul_claro','Whiskey','Caramelo','Pink'];
+const CORES_CAROL  = ['Preto','Caramelo_brilho'];
+const CORES_BASE   = ['Preto','Caramelo'];
+const CORES_MAMUTE = ['Preto_mamute','Caramelo_mamute','Rubi_mamute','Whiskey_mamute','Azul_mamute','Cafe_mamute'];
 
 const PRODUTOS_INFO = {
   Paola:   { preco: 229, img: 'produto.jpg',  nome: 'Paola',   cores: CORES_PAOLA, desc: ['Bolsão c/ Abertura p/ o Braço','Super Chique!','Bolso Interno','Fechamento em Ímã','Carregue tudo que precisa!'] },
-  Carol:   { preco: 289, img: 'carol.jpg',    nome: 'Carol',   cores: CORES_CAROL, desc: ['Duas formas: braço e transversal','Campeã de vendas','Fechamento em Zíper','Bolso Externo','Bolso Interno'] },
-  Modelo4: { preco: 199, img: 'Celina.jpg',   nome: 'Celina',  cores: CORES_BASE,  desc: ['Bolsa média com bolso frontal','Fechamento em Zíper','Alça regulável'] },
+  Carol:   { preco: 289, img: 'carol.jpg',    nome: 'Carol',   cores: CORES_MAMUTE, desc: ['Duas formas: braço e transversal','Campeã de vendas','Fechamento em Zíper','Bolso Externo','Bolso Interno'] },
+  Modelo4: { preco: 199, img: 'Celina.jpg',   nome: 'Celina',  cores: CORES_MAMUTE, desc: ['Bolsa média com bolso frontal','Fechamento em Zíper','Alça regulável'] },
   Miranda: { preco: 259, img: 'Miranda.jpg',  nome: 'Miranda', cores: CORES_BASE,  desc: ['Couro Legítimo','Qualidade Hearts'] },
   Lara:    { preco: 209, img: 'Lara.jpg',     nome: 'Lara',    cores: CORES_BASE,  desc: ['Abertura principal nas costas','Bolso frontal','Fechamento nas costas, pega ladrão'] },
   Adriana: { preco: 189, img: 'Adriana.jpg',  nome: 'Adriana', cores: CORES_BASE,  desc: ['Bolsa lateral estruturada','Pode ser usada como bolsa de mão','Fechamento em zíper'] },
