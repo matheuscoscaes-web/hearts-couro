@@ -124,7 +124,7 @@ app.post('/api/calcular-frete', async (req, res) => {
     const TAXA_EMBALAGEM = 7.00;
 
     const opcoes = data
-      .filter(s => !s.error && s.price && s.company?.name?.toUpperCase().includes('CORREI') && s.name?.toUpperCase() === 'PAC')
+      .filter(s => !s.error && s.price && s.name?.toUpperCase().includes('PAC') && !s.name?.toUpperCase().includes('PACKAGE'))
       .sort((a, b) => parseFloat(a.price) - parseFloat(b.price))
       .map(s => ({
         id: s.id,
@@ -474,8 +474,7 @@ app.post('/api/gerar-etiqueta/:id', async (req, res) => {
 
     const orderId = cartData.id;
 
-    // 3. Redireciona para o carrinho do Melhor Envio para finalizar manualmente
-    return res.json({ url: 'https://melhorenvio.com.br/carrinho' });
+    return res.json({ sucesso: true, orderId });
 
   } catch (err) {
     console.error('Erro ao gerar etiqueta:', err);

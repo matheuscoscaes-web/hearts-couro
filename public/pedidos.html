@@ -584,17 +584,17 @@
 
         // 6. Gerar etiqueta no Melhor Envio
         async function gerarEtiqueta(id) {
-            if (!confirm('Isso vai adicionar o envio ao carrinho do Melhor Envio. Você será redirecionado para finalizar lá. Confirmar?')) return;
+            if (!confirm('Confirmar envio ao carrinho do Melhor Envio?')) return;
             const btn = document.getElementById(`etiqueta-${id}`);
-            if (btn) { btn.disabled = true; btn.textContent = 'Gerando...'; }
+            if (btn) { btn.disabled = true; btn.textContent = 'Enviando...'; }
             try {
                 const resp = await fetch(`/api/gerar-etiqueta/${id}`, { method: 'POST' });
                 const result = await resp.json();
-                if (result.url) {
-                    window.open(result.url, '_blank');
+                if (result.sucesso) {
+                    alert('Envio adicionado ao carrinho do Melhor Envio com sucesso!');
                     carregarPedidos();
                 } else {
-                    alert('Erro: ' + (result.erro || 'Não foi possível gerar a etiqueta.'));
+                    alert('Erro: ' + (result.erro || 'Não foi possível adicionar ao carrinho.'));
                     if (btn) { btn.disabled = false; btn.textContent = '📦 Gerar Etiqueta'; }
                 }
             } catch (e) {
