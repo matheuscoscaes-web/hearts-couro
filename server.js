@@ -482,29 +482,8 @@ app.post('/api/gerar-etiqueta/:id', async (req, res) => {
 
     const orderId = cartData.id;
 
-    // 3. Checkout (debita saldo ME)
-    await fetch('https://melhorenvio.com.br/api/v2/me/shipment/checkout', {
-      method: 'POST', headers: meHeaders,
-      body: JSON.stringify({ orders: [orderId] })
-    });
-
-    // 4. Gera etiqueta
-    await fetch('https://melhorenvio.com.br/api/v2/me/shipment/generate', {
-      method: 'POST', headers: meHeaders,
-      body: JSON.stringify({ orders: [orderId] })
-    });
-
-    // 5. Obtém link de impressão
-    const printResp = await fetch('https://melhorenvio.com.br/api/v2/me/shipment/print', {
-      method: 'POST', headers: meHeaders,
-      body: JSON.stringify({ mode: 'public', orders: [orderId] })
-    });
-    const printData = await printResp.json();
-
-    // Marca pedido como enviado
-    await supabase.from('pedidos').update({ status: 'enviado' }).eq('id', pedidoId);
-
-    return res.json({ url: printData.url || printData });
+    // 3. Redireciona para o carrinho do Melhor Envio para finalizar manualmente
+    return res.json({ url: 'https://melhorenvio.com.br/carrinho' });
 
   } catch (err) {
     console.error('Erro ao gerar etiqueta:', err);

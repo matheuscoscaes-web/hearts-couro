@@ -584,7 +584,7 @@
 
         // 6. Gerar etiqueta no Melhor Envio
         async function gerarEtiqueta(id) {
-            if (!confirm('Isso vai gerar a etiqueta PAC no Melhor Envio e debitar o valor do seu saldo. Confirmar?')) return;
+            if (!confirm('Isso vai adicionar o envio ao carrinho do Melhor Envio. Você será redirecionado para finalizar lá. Confirmar?')) return;
             const btn = document.getElementById(`etiqueta-${id}`);
             if (btn) { btn.disabled = true; btn.textContent = 'Gerando...'; }
             try {
