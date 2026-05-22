@@ -20,8 +20,19 @@ const mpPreference = new Preference(mp);
 const PRECO_PRODUTO = 229.00; // fallback
 
 const PRODUTOS = {
-  'Paola': 229.00,
-  'Carol': 289.00,
+  'Paola':    229.00,
+  'Carol':    289.00,
+  'Modelo3':  189.00,
+  'Modelo4':  189.00,
+  'Modelo5':  249.00,
+  'Modelo6':  279.00,
+  'Modelo7':  259.00,
+  'Modelo8':  269.00,
+  'Modelo9':  249.00,
+  'Modelo10': 289.00,
+  'Lara':     209.00,
+  'Adriana':  189.00,
+  'Julia':    299.00,
 };
 
 // Embalagem da bolsa (para cálculo de frete)
@@ -134,10 +145,19 @@ app.post('/api/calcular-frete', async (req, res) => {
 app.post('/api/criar-pagamento', async (req, res) => {
   const body = req.body;
 
-  // Calcula total
+  // Suporte a carrinho (itens[]) ou pedido único legado (produto/cor)
+  const itens = Array.isArray(body.itens) && body.itens.length > 0
+    ? body.itens
+    : [{ produto: body.produto, cor: body.cor, quantidade: 1, preco: PRODUTOS[body.produto] || PRECO_PRODUTO }];
+
   const freteValor = parseFloat(body.frete_valor) || 0;
-  const precoProduto = PRODUTOS[body.produto] || PRECO_PRODUTO;
-  const total = Math.round((precoProduto + freteValor) * 100) / 100;
+  const subtotal = itens.reduce((s, i) => s + (PRODUTOS[i.produto] || i.preco || PRECO_PRODUTO) * (i.quantidade || 1), 0);
+  const total = Math.round((subtotal + freteValor) * 100) / 100;
+
+  // Campos legado para compatibilidade com Supabase
+  const precoProduto = PRODUTOS[itens[0].produto] || PRECO_PRODUTO;
+  body.produto = itens[0].produto;
+  body.cor     = itens[0].cor;
 
   // 1. Salva pedido no Supabase
   let pedidoId = null;
@@ -166,6 +186,7 @@ app.post('/api/criar-pagamento', async (req, res) => {
         frete_prazo: body.frete_prazo || null,
         valor_total: total,
         produto: body.produto || process.env.NOME_PRODUTO || null,
+        itens: itens.length > 1 ? JSON.stringify(itens) : null,
         status: 'aguardando_pagamento'
       }])
       .select()
@@ -195,7 +216,9 @@ app.post('/api/criar-pagamento', async (req, res) => {
       const pix = await mpPayment.create({
         body: {
           transaction_amount: total,
-          description: `Bolsa Hearts Couro - Ref: ${body.produto || 'Hearts'} (${body.cor})`,
+          description: itens.length === 1
+            ? `Bolsa Hearts Couro - Ref: ${itens[0].produto} (${itens[0].cor})`
+            : `Hearts Couro - ${itens.length} bolsas`,
           payment_method_id: 'pix',
           payer: pixPayer,
           external_reference: String(pedidoId)
@@ -218,13 +241,13 @@ app.post('/api/criar-pagamento', async (req, res) => {
       const pref = await mpPreference.create({
         body: {
           items: [
-            {
-              id: `hearts-${(body.produto||'bolsa').toLowerCase()}-${pedidoId}`,
-              title: `Bolsa Hearts Couro - Ref: ${body.produto || 'Hearts'} (${body.cor})`,
-              quantity: 1,
-              unit_price: precoProduto,
+            ...itens.map((it, idx) => ({
+              id: `hearts-${(it.produto||'bolsa').toLowerCase()}-${pedidoId}-${idx}`,
+              title: `Bolsa Hearts Couro - Ref: ${it.produto} (${it.cor})`,
+              quantity: it.quantidade || 1,
+              unit_price: PRODUTOS[it.produto] || it.preco || PRECO_PRODUTO,
               currency_id: 'BRL'
-            },
+            })),
             ...(freteValor > 0 ? [{
               id: `frete-${pedidoId}`,
               title: `Frete — ${body.frete_nome || 'Entrega'}`,
