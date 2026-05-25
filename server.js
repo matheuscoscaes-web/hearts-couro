@@ -22,14 +22,15 @@ const PRECO_PRODUTO = 229.00; // fallback
 const PRODUTOS = {
   'Paola':   229.00,
   'Carol':   289.00,
-  'Modelo4': 199.00,
+  'Modelo4': 199.00, // Celina
   'Lara':    209.00,
   'Adriana': 189.00,
   'Miranda': 259.00,
-  'Modelo3': 189.00,
+  'Modelo3': 189.00, // Denise
   'Julia':   299.00,
   'Renata':  279.00,
   'Megan':   289.00,
+  'Michele': 259.00,
 };
 
 // Embalagem da bolsa (para cálculo de frete)
