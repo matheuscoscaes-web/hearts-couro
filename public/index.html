@@ -1720,17 +1720,17 @@ const CORES_BASE   = ['Preto','Caramelo'];
 const CORES_MAMUTE = ['Preto_mamute','Caramelo_mamute','Rubi_mamute','Whiskey_mamute','Azul_mamute','Cafe_mamute'];
 
 const PRODUTOS_INFO = {
-  Paola:   { preco: 229, imgs: ['paola01.jpg'],                 nome: 'Paola',   cores: CORES_PAOLA,  desc: ['Bolsão c/ Abertura p/ o Braço','Super Chique!','Bolso Interno','Fechamento em Ímã','Carregue tudo que precisa!'] },
-  Carol:   { preco: 289, imgs: ['carol.jpg'],                   nome: 'Carol',   cores: CORES_MAMUTE, desc: ['Duas formas: braço e transversal','Campeã de vendas','Fechamento em Zíper','Bolso Externo','Bolso Interno'] },
-  Modelo4: { preco: 199, imgs: ['Celina.jpg'],                  nome: 'Celina',  cores: CORES_MAMUTE, desc: ['Bolsa média com bolso frontal','Fechamento em Zíper','Alça regulável'] },
-  Miranda: { preco: 259, imgs: ['Miranda.jpg'],                 nome: 'Miranda', cores: CORES_BASE,   desc: ['Couro Legítimo','Qualidade Hearts'] },
-  Lara:    { preco: 209, imgs: ['Lara.jpg','lara02.jpg'],      nome: 'Lara',    cores: CORES_BASE,   desc: ['Abertura principal nas costas','Bolso frontal','Fechamento nas costas, pega ladrão'] },
-  Adriana: { preco: 189, imgs: ['Adriana.jpg'],                 nome: 'Adriana', cores: CORES_BASE,   desc: ['Bolsa lateral estruturada','Pode ser usada como bolsa de mão','Fechamento em zíper'] },
-  Modelo3: { preco: 189, imgs: ['denise.jpg'],                  nome: 'Denise',  cores: CORES_BASE,   desc: ['Couro Legítimo','Qualidade Hearts'] },
-  Julia:   { preco: 299, imgs: ['Júlia.jpg.jpeg'],               nome: 'Júlia',   cores: CORES_BASE,   desc: ['Duas opções de alça: mão e transversal','Vários bolsos externos','Fechamento em zíper'] },
-  Renata:  { preco: 279, imgs: ['Renata.jpg'],                  nome: 'Renata',  cores: CORES_MAMUTE, desc: ['Couro Legítimo','Qualidade Hearts'] },
-  Megan:   { preco: 289, imgs: ['Megan.jpg'],                   nome: 'Megan',   cores: CORES_BASE,   desc: ['Couro Legítimo','Qualidade Hearts'] },
-  Michele: { preco: 259, imgs: ['michele.png'],                 nome: 'Michele', cores: CORES_MAMUTE, desc: ['Couro Legítimo','Qualidade Hearts'] },
+  Paola:   { ativo: true,  preco: 229, imgs: ['paola01.jpg'],            nome: 'Paola',   cores: CORES_PAOLA,  desc: ['Bolsão c/ Abertura p/ o Braço','Super Chique!','Bolso Interno','Fechamento em Ímã','Carregue tudo que precisa!'] },
+  Carol:   { ativo: true,  preco: 289, imgs: ['carol.jpg'],              nome: 'Carol',   cores: CORES_MAMUTE, desc: ['Duas formas: braço e transversal','Campeã de vendas','Fechamento em Zíper','Bolso Externo','Bolso Interno'] },
+  Modelo4: { ativo: true,  preco: 199, imgs: ['Celina.jpg'],             nome: 'Celina',  cores: CORES_MAMUTE, desc: ['Bolsa média com bolso frontal','Fechamento em Zíper','Alça regulável'] },
+  Miranda: { ativo: true,  preco: 259, imgs: ['Miranda.jpg'],            nome: 'Miranda', cores: CORES_BASE,   desc: ['Couro Legítimo','Qualidade Hearts'] },
+  Lara:    { ativo: false, preco: 209, imgs: ['Lara.jpg','lara02.jpg'], nome: 'Lara',    cores: CORES_BASE,   desc: ['Abertura principal nas costas','Bolso frontal','Fechamento nas costas, pega ladrão'] },
+  Adriana: { ativo: false, preco: 189, imgs: ['Adriana.jpg'],            nome: 'Adriana', cores: CORES_BASE,   desc: ['Bolsa lateral estruturada','Pode ser usada como bolsa de mão','Fechamento em zíper'] },
+  Modelo3: { ativo: false, preco: 189, imgs: ['denise.jpg'],             nome: 'Denise',  cores: CORES_BASE,   desc: ['Couro Legítimo','Qualidade Hearts'] },
+  Julia:   { ativo: false, preco: 299, imgs: ['julia.jpg'],              nome: 'Júlia',   cores: CORES_BASE,   desc: ['Duas opções de alça: mão e transversal','Vários bolsos externos','Fechamento em zíper'] },
+  Renata:  { ativo: true,  preco: 279, imgs: ['Renata.jpg'],             nome: 'Renata',  cores: CORES_MAMUTE, desc: ['Couro Legítimo','Qualidade Hearts'] },
+  Megan:   { ativo: false, preco: 289, imgs: ['Megan.jpg'],              nome: 'Megan',   cores: CORES_BASE,   desc: ['Couro Legítimo','Qualidade Hearts'] },
+  Michele: { ativo: true,  preco: 259, imgs: ['michele.png'],            nome: 'Michele', cores: CORES_MAMUTE, desc: ['Couro Legítimo','Qualidade Hearts'] },
 };
 
 /* ══════════════════════════════════════════
@@ -2280,6 +2280,14 @@ document.getElementById('prevenda-form').addEventListener('submit', async functi
     alert('Ops! ' + (err.message || 'Tivemos um problema. Tente novamente em instantes.'));
     btnSubmit.disabled = false;
     btnSubmit.textContent = '✦   Confirmar minha reserva';
+  }
+});
+
+// Oculta cards de produtos inativos
+Object.entries(PRODUTOS_INFO).forEach(([key, info]) => {
+  if (!info.ativo) {
+    const card = document.getElementById('card-' + key);
+    if (card) card.style.display = 'none';
   }
 });
 </script>
