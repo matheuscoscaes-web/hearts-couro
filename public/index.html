@@ -1752,6 +1752,9 @@ function renderCarrinhoDrawer() {
   carrinho.forEach((item, idx) => {
     const card = document.createElement('div');
     card.className = 'cart-item-card';
+    card.style.cursor = 'pointer';
+    card.title = 'Clique para editar';
+    card.onclick = () => { fecharCarrinho(); abrirModal(item.produto); };
     card.innerHTML = `
       <img class="cart-item-img" src="${item.img}" alt="${item.nome}">
       <div class="cart-item-info">
@@ -1759,12 +1762,12 @@ function renderCarrinhoDrawer() {
         <div class="cart-item-cor">${item.corLabel}</div>
         <div class="cart-item-row">
           <div class="cart-item-qtd-row">
-            <button class="cart-qtd-btn" onclick="alterarQtdCarrinho(${idx},-1)">−</button>
+            <button class="cart-qtd-btn" onclick="event.stopPropagation(); alterarQtdCarrinho(${idx},-1)">−</button>
             <span class="cart-item-qtd-num">${item.quantidade}</span>
-            <button class="cart-qtd-btn" onclick="alterarQtdCarrinho(${idx},1)">+</button>
+            <button class="cart-qtd-btn" onclick="event.stopPropagation(); alterarQtdCarrinho(${idx},1)">+</button>
           </div>
           <span class="cart-item-preco">${fmt(item.preco * item.quantidade)}</span>
-          <button class="cart-item-remove" onclick="removerDoCarrinho(${idx})" title="Remover">🗑</button>
+          <button class="cart-item-remove" onclick="event.stopPropagation(); removerDoCarrinho(${idx})" title="Remover">🗑</button>
         </div>
       </div>`;
     list.appendChild(card);
