@@ -1359,6 +1359,25 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
       <div class="prod-select-btn">Ver detalhes</div>
     </div>
 
+    <div class="product-card produto-card-sel" id="card-Michele" onclick="abrirModal('Michele')">
+      <div class="img-zone">
+        <img alt="Bolsa Michele" src="michele.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;">
+      </div>
+      <div class="prod-info">
+        <div class="prod-tag">✦ Hearts Couro Legítimo — Pré-Venda Exclusiva</div>
+        <div class="prod-name">Ref: Michele</div>
+        <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
+        <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
+          • Descrição em breve<br>• Couro Legítimo<br>• Qualidade Hearts
+        </div>
+        <div class="prod-price-block">
+          <div class="price-lbl">Valor especial de pré-venda</div>
+          <div class="prod-price">R$ 259,00</div>
+        </div>
+      </div>
+      <div class="prod-select-btn">Ver detalhes</div>
+    </div>
+
   </div>
   <!-- ══ FIM GRID DE PRODUTOS ══ -->
 
@@ -1709,8 +1728,9 @@ const PRODUTOS_INFO = {
   Adriana: { preco: 189, imgs: ['Adriana.jpg'],                 nome: 'Adriana', cores: CORES_BASE,   desc: ['Bolsa lateral estruturada','Pode ser usada como bolsa de mão','Fechamento em zíper'] },
   Modelo3: { preco: 189, imgs: ['denise.jpg'],                  nome: 'Denise',  cores: CORES_BASE,   desc: ['Couro Legítimo','Qualidade Hearts'] },
   Julia:   { preco: 299, imgs: ['Júlia.jpg.jpeg'],               nome: 'Júlia',   cores: CORES_BASE,   desc: ['Duas opções de alça: mão e transversal','Vários bolsos externos','Fechamento em zíper'] },
-  Renata:  { preco: 279, imgs: ['Renata.jpg'],                  nome: 'Renata',  cores: CORES_BASE,   desc: ['Couro Legítimo','Qualidade Hearts'] },
+  Renata:  { preco: 279, imgs: ['Renata.jpg'],                  nome: 'Renata',  cores: CORES_MAMUTE, desc: ['Couro Legítimo','Qualidade Hearts'] },
   Megan:   { preco: 289, imgs: ['Megan.jpg'],                   nome: 'Megan',   cores: CORES_BASE,   desc: ['Couro Legítimo','Qualidade Hearts'] },
+  Michele: { preco: 259, imgs: ['michele.png'],                 nome: 'Michele', cores: CORES_MAMUTE, desc: ['Couro Legítimo','Qualidade Hearts'] },
 };
 
 /* ══════════════════════════════════════════
