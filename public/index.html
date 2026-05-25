@@ -1361,7 +1361,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
 
     <div class="product-card produto-card-sel" id="card-Michele" onclick="abrirModal('Michele')">
       <div class="img-zone">
-        <img alt="Bolsa Michele" src="michele.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;">
+        <img alt="Bolsa Michele" src="michele.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;">
       </div>
       <div class="prod-info">
         <div class="prod-tag">✦ Hearts Couro Legítimo — Pré-Venda Exclusiva</div>
@@ -1706,12 +1706,12 @@ const CORES_DEF = {
   Caramelo:         { label: 'Floater Caramelo',    img: 'Caramelo.jpg' },
   Pink:             { label: 'Floater Pink',        img: 'Pink.jpg' },
   Caramelo_brilho:  { label: 'Caramelo Brilho',     img: 'Caramelo.jpg' },
-  Preto_mamute:     { label: 'Preto Mamute',        img: 'Preto-mamute.jpg' },
-  Caramelo_mamute:  { label: 'Caramelo Mamute',     img: 'Caramelo-mamute.jpg' },
-  Rubi_mamute:      { label: 'Rubi Mamute',         img: 'Rubi-mamute.jpg' },
-  Whiskey_mamute:   { label: 'Whiskey Mamute',      img: 'Whiskey-mamute.jpg' },
-  Azul_mamute:      { label: 'Azul Mamute',         img: 'Azul-mamute.jpg' },
-  Cafe_mamute:      { label: 'Café Mamute',         img: 'Cafe-mamute.jpg' },
+  Preto_mamute:     { label: 'Preto Mamute',        img: 'Preto-mamute.jpg',    cor: '#0D0D0D' },
+  Caramelo_mamute:  { label: 'Caramelo Mamute',     img: 'Caramelo-mamute.jpg', cor: '#B86E4F' },
+  Rubi_mamute:      { label: 'Rubi Mamute',         img: 'Rubi-mamute.jpg',     cor: '#6E0B12' },
+  Whiskey_mamute:   { label: 'Whiskey Mamute',      img: 'Whiskey-mamute.jpg',  cor: '#8B4A2F' },
+  Azul_mamute:      { label: 'Azul Mamute',         img: 'Azul-mamute.jpg',     cor: '#1A2742' },
+  Cafe_mamute:      { label: 'Café Mamute',         img: 'Cafe-mamute.jpg',     cor: '#3B1D14' },
 };
 
 const CORES_PAOLA  = ['White','Preto','Cafe','Argila','Azul_claro','Whiskey','Caramelo','Pink'];
@@ -1723,14 +1723,14 @@ const PRODUTOS_INFO = {
   Paola:   { ativo: true,  preco: 229, imgs: ['paola01.jpg'],            nome: 'Paola',   cores: CORES_PAOLA,  desc: ['Bolsão c/ Abertura p/ o Braço','Super Chique!','Bolso Interno','Fechamento em Ímã','Carregue tudo que precisa!'] },
   Carol:   { ativo: true,  preco: 289, imgs: ['carol.jpg'],              nome: 'Carol',   cores: CORES_MAMUTE, desc: ['Duas formas: braço e transversal','Campeã de vendas','Fechamento em Zíper','Bolso Externo','Bolso Interno'] },
   Modelo4: { ativo: true,  preco: 199, imgs: ['Celina.jpg'],             nome: 'Celina',  cores: CORES_MAMUTE, desc: ['Bolsa média com bolso frontal','Fechamento em Zíper','Alça regulável'] },
-  Miranda: { ativo: true,  preco: 259, imgs: ['Miranda.jpg'],            nome: 'Miranda', cores: CORES_BASE,   desc: ['Couro Legítimo','Qualidade Hearts'] },
+  Miranda: { ativo: true,  preco: 259, imgs: ['Miranda.jpg'],            nome: 'Miranda', cores: CORES_BASE,   desc: ['Possui bolso frontal','Modelo grande e super espaçoso','Design exclusivo e sofisticado','Alça confortável integrada ao modelo','Medidas: Altura 51cm x Largura 33cm x Espessura 2cm'] },
   Lara:    { ativo: false, preco: 209, imgs: ['Lara.jpg','lara02.jpg'], nome: 'Lara',    cores: CORES_BASE,   desc: ['Abertura principal nas costas','Bolso frontal','Fechamento nas costas, pega ladrão'] },
   Adriana: { ativo: false, preco: 189, imgs: ['Adriana.jpg'],            nome: 'Adriana', cores: CORES_BASE,   desc: ['Bolsa lateral estruturada','Pode ser usada como bolsa de mão','Fechamento em zíper'] },
   Modelo3: { ativo: false, preco: 189, imgs: ['denise.jpg'],             nome: 'Denise',  cores: CORES_BASE,   desc: ['Couro Legítimo','Qualidade Hearts'] },
   Julia:   { ativo: false, preco: 299, imgs: ['julia.jpg'],              nome: 'Júlia',   cores: CORES_BASE,   desc: ['Duas opções de alça: mão e transversal','Vários bolsos externos','Fechamento em zíper'] },
-  Renata:  { ativo: true,  preco: 279, imgs: ['Renata.jpg'],             nome: 'Renata',  cores: CORES_MAMUTE, desc: ['Couro Legítimo','Qualidade Hearts'] },
+  Renata:  { ativo: true,  preco: 279, imgs: ['Renata.jpg'],             nome: 'Renata',  cores: CORES_MAMUTE, desc: ['Simplesmente maravilhosa!','Modelo elegante, sofisticado e super confortável de usar no dia a dia','Possui bolso lateral','Alça de ombro confortável','Modelo grande e bem espaçoso','Acompanha tag charmosa na lateral','Medidas: Altura 32cm x Alça 28cm x Largura 34cm'] },
   Megan:   { ativo: false, preco: 289, imgs: ['Megan.jpg'],              nome: 'Megan',   cores: CORES_BASE,   desc: ['Couro Legítimo','Qualidade Hearts'] },
-  Michele: { ativo: true,  preco: 259, imgs: ['michele.png'],            nome: 'Michele', cores: CORES_MAMUTE, desc: ['Couro Legítimo','Qualidade Hearts'] },
+  Michele: { ativo: true,  preco: 259, imgs: ['michele.jpg'],            nome: 'Michele', cores: CORES_MAMUTE, desc: ['Muito charmosa!','Tamanho médio mas bem espaçosa','Possui 3 aberturas','2 opções de alça: mão e transversal','UMA DE NOSSAS CAMPEÃS DE VENDAS!','Medidas: Altura 24cm x Alça 16cm x Largura 24cm'] },
 };
 
 /* ══════════════════════════════════════════
@@ -1911,7 +1911,7 @@ function abrirModal(produto) {
     const esgotado = (estoqueGlobal[`${produto}_${corKey}`] === 0);
     return `<label class="color-option${esgotado ? ' esgotado' : ''}">
       <input type="radio" name="modal-cor" value="${corKey}" ${esgotado ? 'disabled' : ''}>
-      <div class="color-swatch" style="background-image:url('${c.img}');background-size:cover;"></div>
+      <div class="color-swatch" style="background-color:${c.cor||''};background-image:url('${c.img}');background-size:cover;"></div>
       <span class="color-name">${c.label}</span>
       ${esgotado ? '<span class="color-stock" style="color:#c0614a">Esgotado</span>' : ''}
     </label>`;
