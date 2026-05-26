@@ -1135,7 +1135,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
     <!-- Paola -->
     <div class="product-card produto-card-sel" id="card-Paola" onclick="abrirModal('Paola')">
       <div class="img-zone">
-        <img alt="Bolsa Paola" src="paola01.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 75%;">
+        <img alt="Bolsa Paola" src="paola-img/paola01.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 75%;">
       </div>
       <div class="prod-info">
         <div class="prod-tag">✦ Hearts Couro Legítimo — Pré-Venda Exclusiva</div>
@@ -1731,7 +1731,7 @@ const CORES_BASE   = ['Preto','Caramelo'];
 const CORES_MAMUTE = ['Preto_mamute','Caramelo_mamute','Rubi_mamute','Whiskey_mamute','Azul_mamute','Cafe_mamute'];
 
 const PRODUTOS_INFO = {
-  Paola:   { ativo: true,  preco: 229, imgs: ['paola01.jpg'],            nome: 'Paola',   cores: CORES_PAOLA,  desc: ['Bolsão c/ Abertura p/ o Braço','Super Chique!','Bolso Interno','Fechamento em Ímã','Carregue tudo que precisa!'] },
+  Paola:   { ativo: true,  preco: 229, imgs: ['paola-img/paola01.jpg'], nome: 'Paola',   cores: CORES_PAOLA,  corImgs: { White: 'paola-img/offwhite01.jpg', Cafe: 'paola-img/cafe01.jpg', Argila: 'paola-img/argila01.jpg', Azul_claro: 'paola-img/azul01.jpg', Whiskey: 'paola-img/whiskey01.jpg', Caramelo: 'paola-img/caramelo01.jpg', Pink: 'paola-img/paolapink.jpg' }, desc: ['Bolsão c/ Abertura p/ o Braço','Super Chique!','Bolso Interno','Fechamento em Ímã','Carregue tudo que precisa!'] },
   Carol:   { ativo: true,  preco: 289, imgs: ['carol.jpg'],              nome: 'Carol',   cores: CORES_MAMUTE, desc: ['Duas formas: braço e transversal','Campeã de vendas','Fechamento em Zíper','Bolso Externo','Bolso Interno'] },
   Modelo4: { ativo: true,  preco: 199, imgs: ['Celina.jpg'],             nome: 'Celina',  cores: CORES_MAMUTE, desc: ['Bolsa média com bolso frontal','Fechamento em Zíper','Alça regulável'] },
   Miranda: { ativo: true,  preco: 259, imgs: ['Miranda.jpg'],            nome: 'Miranda', cores: CORES_BASE,   desc: ['Possui bolso frontal','Modelo grande e super espaçoso','Design exclusivo e sofisticado','Alça confortável integrada ao modelo','Medidas: Altura 51cm x Largura 33cm x Espessura 2cm'] },
@@ -1927,6 +1927,16 @@ function abrirModal(produto) {
       ${esgotado ? '<span class="color-stock" style="color:#c0614a">Esgotado</span>' : ''}
     </label>`;
   }).join('');
+
+  // Troca imagem ao selecionar cor (produtos com corImgs)
+  if (info.corImgs) {
+    grid.querySelectorAll('input[type="radio"]').forEach(radio => {
+      radio.addEventListener('change', function () {
+        const imgPath = info.corImgs[this.value] || info.imgs[0];
+        document.getElementById('modal-img').src = imgPath;
+      });
+    });
+  }
 
   document.getElementById('produto-modal').style.display = 'flex';
   document.body.style.overflow = 'hidden';
