@@ -1271,7 +1271,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
     <!-- Miranda -->
     <div class="product-card produto-card-sel" id="card-Miranda" onclick="abrirModal('Miranda')">
       <div class="img-zone">
-        <img alt="Bolsa Miranda" src="miranda-img/mirandapretofosco.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;">
+        <img alt="Bolsa Miranda" src="miranda-img/pretoliso01.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;">
       </div>
       <div class="prod-info">
         <div class="prod-tag">✦ Hearts Couro Legítimo — Pré-Venda Exclusiva</div>
@@ -1724,16 +1724,14 @@ const CORES_DEF = {
   Azul_mamute:      { label: 'Azul Mamute',         img: 'Azul-mamute.jpg',     cor: '#1A2742' },
   Cafe_mamute:      { label: 'Café Mamute',         img: 'Cafe-mamute.jpg',     cor: '#3B1D14' },
 
-  Miranda_PretoFosco:        { label: 'Preto Fosco',        img: 'miranda-img/mirandapretofosco.jpg',       cor: '#1a1a1a' },
-  Miranda_PretoBrilhoso:     { label: 'Preto Brilhoso',     img: 'miranda-img/mirandapretobrilhoso.jpg',    cor: '#0d0d0d' },
-  Miranda_Caramelo:          { label: 'Caramelo',           img: 'miranda-img/mirandacaramelo.jpg',         cor: '#B8763A' },
-  Miranda_CarameloEstonado:  { label: 'Caramelo Estonado',  img: 'miranda-img/mirandacarameloestonado.jpg', cor: '#9B6040' },
-  Miranda_WhiskeyEstonado:   { label: 'Whiskey Estonado',   img: 'miranda-img/mirandawhiskeyestonado.jpg',  cor: '#8B4A2F' },
-  Miranda_Marrom:            { label: 'Marrom',             img: 'miranda-img/mirandamarrom.jpg',           cor: '#5C3A1E' },
-  Miranda_Elefante:          { label: 'Elefante',           img: 'miranda-img/mirandaelefante.jpg',         cor: '#7A7068' },
-  Miranda_Goiaba:            { label: 'Goiaba',             img: 'miranda-img/mirandagoiaba.jpg',           cor: '#C85B6A' },
-  Miranda_OffWhite:          { label: 'Off White',          img: 'miranda-img/mirandaoffwhite.jpg',         cor: '#E8E0D0' },
-  Miranda_VermelhoGranulado: { label: 'Vermelho Granulado', img: 'miranda-img/vermelhogranulado.jpg',       cor: '#8B1E1E' },
+  Miranda_PretoLiso:         { label: 'Preto Liso',         img: 'miranda-img/pretoliso01.jpg',           cor: '#1a1a1a' },
+  Miranda_PretoGranulado:    { label: 'Preto Granulado',    img: 'miranda-img/prenogranulado01.jpg',      cor: '#0d0d0d' },
+  Miranda_PretoCroco:        { label: 'Preto Croco',        img: 'miranda-img/carolpretocroco01.jpg',     cor: '#1a1a1a' },
+  Miranda_CarameloGranulado: { label: 'Caramelo Granulado', img: 'miranda-img/caramelogranulado01.jpg',   cor: '#B8763A' },
+  Miranda_MarromMamute:      { label: 'Marrom Mamute',      img: 'miranda-img/marrommamute.jpg',          cor: '#5C3A1E' },
+  Miranda_Mostarda:          { label: 'Mostarda',           img: 'miranda-img/Mostarda.jpg',              cor: '#C9A022' },
+  Miranda_VerdePetroleo:     { label: 'Verde Petróleo',     img: 'miranda-img/carolverdepetróleo.jpg',   cor: '#1E3A2F' },
+  Miranda_OffWhite:          { label: 'Off White',          img: 'miranda-img/mirandaoffwhite.jpg',       cor: '#E8E0D0' },
 
   Paola_White:     { label: 'Floater Off White',  img: 'paola-img/offwhite01.jpg',  cor: '#E8E0D0' },
   Paola_Preto:     { label: 'Floater Preto',      img: 'paola-img/paola01.jpg',     cor: '#1a1a1a' },
@@ -1779,13 +1777,13 @@ const CORES_CAROL   = ['Carol_Preto','Carol_Caramelo','Carol_Rubi','Carol_Whiske
 const CORES_CELINA  = ['Celina_Preto','Celina_Caramelo','Celina_Rubi','Celina_Whiskey','Celina_Azul','Celina_Cafe'];
 const CORES_RENATA  = ['Renata_Preto','Renata_Caramelo','Renata_Rubi','Renata_Whiskey','Renata_Azul','Renata_Cafe'];
 const CORES_MICHELE = ['Michele_Preto','Michele_Caramelo','Michele_Rubi','Michele_Whiskey','Michele_Azul','Michele_Cafe'];
-const CORES_MIRANDA = ['Miranda_PretoFosco','Miranda_PretoBrilhoso','Miranda_Caramelo','Miranda_CarameloEstonado','Miranda_WhiskeyEstonado','Miranda_Marrom','Miranda_Elefante','Miranda_Goiaba','Miranda_OffWhite','Miranda_VermelhoGranulado'];
+const CORES_MIRANDA = ['Miranda_PretoLiso','Miranda_PretoGranulado','Miranda_PretoCroco','Miranda_CarameloGranulado','Miranda_MarromMamute','Miranda_Mostarda','Miranda_VerdePetroleo','Miranda_OffWhite'];
 
 const PRODUTOS_INFO = {
   Paola:   { ativo: true,  preco: 229, imgs: ['paola-img/paola01.jpg'], nome: 'Paola',   cores: CORES_PAOLA,   corImgs: { Paola_White: 'paola-img/offwhite01.jpg', Paola_Preto: 'paola-img/paola01.jpg', Paola_Cafe: 'paola-img/cafe01.jpg', Paola_Argila: 'paola-img/argila01.jpg', Paola_Azul: 'paola-img/azul01.jpg', Paola_Whiskey: 'paola-img/whiskey01.jpg', Paola_Caramelo: 'paola-img/caramelo01.jpg', Paola_Pink: 'paola-img/paolapink.jpg' }, desc: ['Bolsão c/ Abertura p/ o Braço','Super Chique!','Bolso Interno','Fechamento em Ímã','Carregue tudo que precisa!'] },
   Carol:   { ativo: true,  preco: 289, imgs: ['carol-img/carol.jpg'],    nome: 'Carol',   cores: CORES_CAROL,   corImgs: { Carol_Preto: 'carol-img/carol.jpg', Carol_Caramelo: 'carol-img/carolcaramelo.jpg', Carol_Rubi: 'carol-img/carolrubi.jpg', Carol_Whiskey: 'carol-img/carolwhiskey.jpg', Carol_Azul: 'carol-img/carolazulcerto.jpg', Carol_Cafe: 'carol-img/carolcafecerto.jpg' }, desc: ['Duas formas: braço e transversal','Campeã de vendas','Fechamento em Zíper','Bolso Externo','Bolso Interno'] },
   Modelo4: { ativo: true,  preco: 199, imgs: ['celina-img/pretocelina.jpg'], nome: 'Celina',  cores: CORES_CELINA,  corImgs: { Celina_Preto: 'celina-img/pretocelina.jpg', Celina_Caramelo: 'celina-img/caramelocelina.jpg', Celina_Rubi: 'celina-img/rubicelina.jpg', Celina_Whiskey: 'celina-img/whiskeycelina.jpg', Celina_Azul: 'celina-img/azulcelina.jpg', Celina_Cafe: 'celina-img/cafecelina.jpg' }, desc: ['Bolsa média com bolso frontal','Fechamento em Zíper','Alça regulável'] },
-  Miranda: { ativo: true,  preco: 259, imgs: ['miranda-img/mirandapretofosco.jpg'], nome: 'Miranda', cores: CORES_MIRANDA, corImgs: { Miranda_PretoFosco: 'miranda-img/mirandapretofosco.jpg', Miranda_PretoBrilhoso: 'miranda-img/mirandapretobrilhoso.jpg', Miranda_Caramelo: 'miranda-img/mirandacaramelo.jpg', Miranda_CarameloEstonado: 'miranda-img/mirandacarameloestonado.jpg', Miranda_WhiskeyEstonado: 'miranda-img/mirandawhiskeyestonado.jpg', Miranda_Marrom: 'miranda-img/mirandamarrom.jpg', Miranda_Elefante: 'miranda-img/mirandaelefante.jpg', Miranda_Goiaba: 'miranda-img/mirandagoiaba.jpg', Miranda_OffWhite: 'miranda-img/mirandaoffwhite.jpg', Miranda_VermelhoGranulado: 'miranda-img/vermelhogranulado.jpg' }, desc: ['Possui bolso frontal','Modelo grande e super espaçoso','Design exclusivo e sofisticado','Alça confortável integrada ao modelo','Medidas: Altura 51cm x Largura 33cm x Espessura 2cm'] },
+  Miranda: { ativo: true,  preco: 259, imgs: ['miranda-img/pretoliso01.jpg'], nome: 'Miranda', cores: CORES_MIRANDA, corImgs: { Miranda_PretoLiso: 'miranda-img/pretoliso01.jpg', Miranda_PretoGranulado: 'miranda-img/prenogranulado01.jpg', Miranda_PretoCroco: 'miranda-img/carolpretocroco01.jpg', Miranda_CarameloGranulado: 'miranda-img/caramelogranulado01.jpg', Miranda_MarromMamute: 'miranda-img/marrommamute.jpg', Miranda_Mostarda: 'miranda-img/Mostarda.jpg', Miranda_VerdePetroleo: 'miranda-img/carolverdepetróleo.jpg', Miranda_OffWhite: 'miranda-img/mirandaoffwhite.jpg' }, desc: ['Possui bolso frontal','Modelo grande e super espaçoso','Design exclusivo e sofisticado','Alça confortável integrada ao modelo','Medidas: Altura 51cm x Largura 33cm x Espessura 2cm'] },
   Lara:    { ativo: false, preco: 209, imgs: ['Lara.jpg','lara02.jpg'], nome: 'Lara',    cores: CORES_BASE,   desc: ['Abertura principal nas costas','Bolso frontal','Fechamento nas costas, pega ladrão'] },
   Adriana: { ativo: false, preco: 189, imgs: ['Adriana.jpg'],            nome: 'Adriana', cores: CORES_BASE,   desc: ['Bolsa lateral estruturada','Pode ser usada como bolsa de mão','Fechamento em zíper'] },
   Modelo3: { ativo: false, preco: 189, imgs: ['denise.jpg'],             nome: 'Denise',  cores: CORES_BASE,   desc: ['Couro Legítimo','Qualidade Hearts'] },
