@@ -1734,26 +1734,65 @@ const CORES_DEF = {
   Miranda_Goiaba:            { label: 'Goiaba',             img: 'miranda-img/mirandagoiaba.jpg',           cor: '#C85B6A' },
   Miranda_OffWhite:          { label: 'Off White',          img: 'miranda-img/mirandaoffwhite.jpg',         cor: '#E8E0D0' },
   Miranda_VermelhoGranulado: { label: 'Vermelho Granulado', img: 'miranda-img/vermelhogranulado.jpg',       cor: '#8B1E1E' },
+
+  Paola_White:     { label: 'Floater Off White',  img: 'paola-img/offwhite01.jpg',  cor: '#E8E0D0' },
+  Paola_Preto:     { label: 'Floater Preto',      img: 'paola-img/paola01.jpg',     cor: '#1a1a1a' },
+  Paola_Cafe:      { label: 'Floater Café',       img: 'paola-img/cafe01.jpg',      cor: '#3B1D14' },
+  Paola_Argila:    { label: 'Floater Argila',     img: 'paola-img/argila01.jpg',    cor: '#C4A882' },
+  Paola_Azul:      { label: 'Floater Azul Claro', img: 'paola-img/azul01.jpg',      cor: '#1A2742' },
+  Paola_Whiskey:   { label: 'Floater Whiskey',    img: 'paola-img/whiskey01.jpg',   cor: '#8B4A2F' },
+  Paola_Caramelo:  { label: 'Floater Caramelo',   img: 'paola-img/caramelo01.jpg',  cor: '#B8763A' },
+  Paola_Pink:      { label: 'Floater Pink',       img: 'paola-img/paolapink.jpg',   cor: '#C85B80' },
+
+  Carol_Preto:     { label: 'Preto Mamute',    img: 'carol-img/carol.jpg',          cor: '#0D0D0D' },
+  Carol_Caramelo:  { label: 'Caramelo Mamute', img: 'carol-img/carolcaramelo.jpg',  cor: '#B86E4F' },
+  Carol_Rubi:      { label: 'Rubi Mamute',     img: 'carol-img/carolrubi.jpg',      cor: '#6E0B12' },
+  Carol_Whiskey:   { label: 'Whiskey Mamute',  img: 'carol-img/carolwhiskey.jpg',   cor: '#8B4A2F' },
+  Carol_Azul:      { label: 'Azul Mamute',     img: 'carol-img/carolazulcerto.jpg', cor: '#1A2742' },
+  Carol_Cafe:      { label: 'Café Mamute',     img: 'carol-img/carolcafecerto.jpg', cor: '#3B1D14' },
+
+  Celina_Preto:    { label: 'Preto Mamute',    img: 'celina-img/pretocelina.jpg',    cor: '#0D0D0D' },
+  Celina_Caramelo: { label: 'Caramelo Mamute', img: 'celina-img/caramelocelina.jpg', cor: '#B86E4F' },
+  Celina_Rubi:     { label: 'Rubi Mamute',     img: 'celina-img/rubicelina.jpg',     cor: '#6E0B12' },
+  Celina_Whiskey:  { label: 'Whiskey Mamute',  img: 'celina-img/whiskeycelina.jpg',  cor: '#8B4A2F' },
+  Celina_Azul:     { label: 'Azul Mamute',     img: 'celina-img/azulcelina.jpg',     cor: '#1A2742' },
+  Celina_Cafe:     { label: 'Café Mamute',     img: 'celina-img/cafecelina.jpg',     cor: '#3B1D14' },
+
+  Renata_Preto:    { label: 'Preto Mamute',    img: 'renata-img/pretarenata.jpg',    cor: '#0D0D0D' },
+  Renata_Caramelo: { label: 'Caramelo Mamute', img: 'renata-img/caramelorenata.jpg', cor: '#B86E4F' },
+  Renata_Rubi:     { label: 'Rubi Mamute',     img: 'renata-img/rubirenata.jpg',     cor: '#6E0B12' },
+  Renata_Whiskey:  { label: 'Whiskey Mamute',  img: 'renata-img/whiskeyrenata.jpg',  cor: '#8B4A2F' },
+  Renata_Azul:     { label: 'Azul Mamute',     img: 'renata-img/azulrenata.jpg',     cor: '#1A2742' },
+  Renata_Cafe:     { label: 'Café Mamute',     img: 'renata-img/caferenata.jpg',     cor: '#3B1D14' },
+
+  Michele_Preto:    { label: 'Preto Mamute',    img: 'michele-img/michele.jpg',        cor: '#0D0D0D' },
+  Michele_Caramelo: { label: 'Caramelo Mamute', img: 'michele-img/michelecaramelo.jpg',cor: '#B86E4F' },
+  Michele_Rubi:     { label: 'Rubi Mamute',     img: 'michele-img/michelerubi.jpg',    cor: '#6E0B12' },
+  Michele_Whiskey:  { label: 'Whiskey Mamute',  img: 'michele-img/michelewhiskey.jpg', cor: '#8B4A2F' },
+  Michele_Azul:     { label: 'Azul Mamute',     img: 'michele-img/micheleazul.jpg',    cor: '#1A2742' },
+  Michele_Cafe:     { label: 'Café Mamute',     img: 'michele-img/michelecafe.jpg',    cor: '#3B1D14' },
 };
 
-const CORES_PAOLA  = ['White','Preto','Cafe','Argila','Azul_claro','Whiskey','Caramelo','Pink'];
-const CORES_CAROL  = ['Preto','Caramelo_brilho'];
-const CORES_BASE   = ['Preto','Caramelo'];
-const CORES_MAMUTE = ['Preto_mamute','Caramelo_mamute','Rubi_mamute','Whiskey_mamute','Azul_mamute','Cafe_mamute'];
+const CORES_BASE    = ['Preto','Caramelo'];
+const CORES_PAOLA   = ['Paola_White','Paola_Preto','Paola_Cafe','Paola_Argila','Paola_Azul','Paola_Whiskey','Paola_Caramelo','Paola_Pink'];
+const CORES_CAROL   = ['Carol_Preto','Carol_Caramelo','Carol_Rubi','Carol_Whiskey','Carol_Azul','Carol_Cafe'];
+const CORES_CELINA  = ['Celina_Preto','Celina_Caramelo','Celina_Rubi','Celina_Whiskey','Celina_Azul','Celina_Cafe'];
+const CORES_RENATA  = ['Renata_Preto','Renata_Caramelo','Renata_Rubi','Renata_Whiskey','Renata_Azul','Renata_Cafe'];
+const CORES_MICHELE = ['Michele_Preto','Michele_Caramelo','Michele_Rubi','Michele_Whiskey','Michele_Azul','Michele_Cafe'];
 const CORES_MIRANDA = ['Miranda_PretoFosco','Miranda_PretoBrilhoso','Miranda_Caramelo','Miranda_CarameloEstonado','Miranda_WhiskeyEstonado','Miranda_Marrom','Miranda_Elefante','Miranda_Goiaba','Miranda_OffWhite','Miranda_VermelhoGranulado'];
 
 const PRODUTOS_INFO = {
-  Paola:   { ativo: true,  preco: 229, imgs: ['paola-img/paola01.jpg'], nome: 'Paola',   cores: CORES_PAOLA,  corImgs: { White: 'paola-img/offwhite01.jpg', Cafe: 'paola-img/cafe01.jpg', Argila: 'paola-img/argila01.jpg', Azul_claro: 'paola-img/azul01.jpg', Whiskey: 'paola-img/whiskey01.jpg', Caramelo: 'paola-img/caramelo01.jpg', Pink: 'paola-img/paolapink.jpg' }, desc: ['Bolsão c/ Abertura p/ o Braço','Super Chique!','Bolso Interno','Fechamento em Ímã','Carregue tudo que precisa!'] },
-  Carol:   { ativo: true,  preco: 289, imgs: ['carol-img/carol.jpg'],    nome: 'Carol',   cores: CORES_MAMUTE, corImgs: { Caramelo_mamute: 'carol-img/carolcaramelo.jpg', Whiskey_mamute: 'carol-img/carolwhiskey.jpg', Rubi_mamute: 'carol-img/carolrubi.jpg', Azul_mamute: 'carol-img/carolazulcerto.jpg', Cafe_mamute: 'carol-img/carolcafecerto.jpg' }, desc: ['Duas formas: braço e transversal','Campeã de vendas','Fechamento em Zíper','Bolso Externo','Bolso Interno'] },
-  Modelo4: { ativo: true,  preco: 199, imgs: ['celina-img/pretocelina.jpg'], nome: 'Celina',  cores: CORES_MAMUTE, corImgs: { Preto_mamute: 'celina-img/pretocelina.jpg', Caramelo_mamute: 'celina-img/caramelocelina.jpg', Whiskey_mamute: 'celina-img/whiskeycelina.jpg', Rubi_mamute: 'celina-img/rubicelina.jpg', Azul_mamute: 'celina-img/azulcelina.jpg', Cafe_mamute: 'celina-img/cafecelina.jpg' }, desc: ['Bolsa média com bolso frontal','Fechamento em Zíper','Alça regulável'] },
+  Paola:   { ativo: true,  preco: 229, imgs: ['paola-img/paola01.jpg'], nome: 'Paola',   cores: CORES_PAOLA,   corImgs: { Paola_White: 'paola-img/offwhite01.jpg', Paola_Preto: 'paola-img/paola01.jpg', Paola_Cafe: 'paola-img/cafe01.jpg', Paola_Argila: 'paola-img/argila01.jpg', Paola_Azul: 'paola-img/azul01.jpg', Paola_Whiskey: 'paola-img/whiskey01.jpg', Paola_Caramelo: 'paola-img/caramelo01.jpg', Paola_Pink: 'paola-img/paolapink.jpg' }, desc: ['Bolsão c/ Abertura p/ o Braço','Super Chique!','Bolso Interno','Fechamento em Ímã','Carregue tudo que precisa!'] },
+  Carol:   { ativo: true,  preco: 289, imgs: ['carol-img/carol.jpg'],    nome: 'Carol',   cores: CORES_CAROL,   corImgs: { Carol_Preto: 'carol-img/carol.jpg', Carol_Caramelo: 'carol-img/carolcaramelo.jpg', Carol_Rubi: 'carol-img/carolrubi.jpg', Carol_Whiskey: 'carol-img/carolwhiskey.jpg', Carol_Azul: 'carol-img/carolazulcerto.jpg', Carol_Cafe: 'carol-img/carolcafecerto.jpg' }, desc: ['Duas formas: braço e transversal','Campeã de vendas','Fechamento em Zíper','Bolso Externo','Bolso Interno'] },
+  Modelo4: { ativo: true,  preco: 199, imgs: ['celina-img/pretocelina.jpg'], nome: 'Celina',  cores: CORES_CELINA,  corImgs: { Celina_Preto: 'celina-img/pretocelina.jpg', Celina_Caramelo: 'celina-img/caramelocelina.jpg', Celina_Rubi: 'celina-img/rubicelina.jpg', Celina_Whiskey: 'celina-img/whiskeycelina.jpg', Celina_Azul: 'celina-img/azulcelina.jpg', Celina_Cafe: 'celina-img/cafecelina.jpg' }, desc: ['Bolsa média com bolso frontal','Fechamento em Zíper','Alça regulável'] },
   Miranda: { ativo: true,  preco: 259, imgs: ['miranda-img/mirandapretofosco.jpg'], nome: 'Miranda', cores: CORES_MIRANDA, corImgs: { Miranda_PretoFosco: 'miranda-img/mirandapretofosco.jpg', Miranda_PretoBrilhoso: 'miranda-img/mirandapretobrilhoso.jpg', Miranda_Caramelo: 'miranda-img/mirandacaramelo.jpg', Miranda_CarameloEstonado: 'miranda-img/mirandacarameloestonado.jpg', Miranda_WhiskeyEstonado: 'miranda-img/mirandawhiskeyestonado.jpg', Miranda_Marrom: 'miranda-img/mirandamarrom.jpg', Miranda_Elefante: 'miranda-img/mirandaelefante.jpg', Miranda_Goiaba: 'miranda-img/mirandagoiaba.jpg', Miranda_OffWhite: 'miranda-img/mirandaoffwhite.jpg', Miranda_VermelhoGranulado: 'miranda-img/vermelhogranulado.jpg' }, desc: ['Possui bolso frontal','Modelo grande e super espaçoso','Design exclusivo e sofisticado','Alça confortável integrada ao modelo','Medidas: Altura 51cm x Largura 33cm x Espessura 2cm'] },
   Lara:    { ativo: false, preco: 209, imgs: ['Lara.jpg','lara02.jpg'], nome: 'Lara',    cores: CORES_BASE,   desc: ['Abertura principal nas costas','Bolso frontal','Fechamento nas costas, pega ladrão'] },
   Adriana: { ativo: false, preco: 189, imgs: ['Adriana.jpg'],            nome: 'Adriana', cores: CORES_BASE,   desc: ['Bolsa lateral estruturada','Pode ser usada como bolsa de mão','Fechamento em zíper'] },
   Modelo3: { ativo: false, preco: 189, imgs: ['denise.jpg'],             nome: 'Denise',  cores: CORES_BASE,   desc: ['Couro Legítimo','Qualidade Hearts'] },
   Julia:   { ativo: false, preco: 299, imgs: ['julia.jpg'],              nome: 'Júlia',   cores: CORES_BASE,   desc: ['Duas opções de alça: mão e transversal','Vários bolsos externos','Fechamento em zíper'] },
-  Renata:  { ativo: true,  preco: 279, imgs: ['renata-img/pretarenata.jpg'], nome: 'Renata',  cores: CORES_MAMUTE, corImgs: { Preto_mamute: 'renata-img/pretarenata.jpg', Caramelo_mamute: 'renata-img/caramelorenata.jpg', Whiskey_mamute: 'renata-img/whiskeyrenata.jpg', Rubi_mamute: 'renata-img/rubirenata.jpg', Azul_mamute: 'renata-img/azulrenata.jpg', Cafe_mamute: 'renata-img/caferenata.jpg' }, desc: ['Simplesmente maravilhosa!','Modelo elegante, sofisticado e super confortável de usar no dia a dia','Possui bolso lateral','Alça de ombro confortável','Modelo grande e bem espaçoso','Acompanha tag charmosa na lateral','Medidas: Altura 32cm x Alça 28cm x Largura 34cm'] },
+  Renata:  { ativo: true,  preco: 279, imgs: ['renata-img/pretarenata.jpg'], nome: 'Renata',  cores: CORES_RENATA,  corImgs: { Renata_Preto: 'renata-img/pretarenata.jpg', Renata_Caramelo: 'renata-img/caramelorenata.jpg', Renata_Rubi: 'renata-img/rubirenata.jpg', Renata_Whiskey: 'renata-img/whiskeyrenata.jpg', Renata_Azul: 'renata-img/azulrenata.jpg', Renata_Cafe: 'renata-img/caferenata.jpg' }, desc: ['Simplesmente maravilhosa!','Modelo elegante, sofisticado e super confortável de usar no dia a dia','Possui bolso lateral','Alça de ombro confortável','Modelo grande e bem espaçoso','Acompanha tag charmosa na lateral','Medidas: Altura 32cm x Alça 28cm x Largura 34cm'] },
   Megan:   { ativo: false, preco: 289, imgs: ['Megan.jpg'],              nome: 'Megan',   cores: CORES_BASE,   desc: ['Couro Legítimo','Qualidade Hearts'] },
-  Michele: { ativo: true,  preco: 259, imgs: ['michele-img/michele.jpg'], nome: 'Michele', cores: CORES_MAMUTE, corImgs: { Preto_mamute: 'michele-img/michele.jpg', Caramelo_mamute: 'michele-img/michelecaramelo.jpg', Whiskey_mamute: 'michele-img/michelewhiskey.jpg', Rubi_mamute: 'michele-img/michelerubi.jpg', Azul_mamute: 'michele-img/micheleazul.jpg', Cafe_mamute: 'michele-img/michelecafe.jpg' }, desc: ['Muito charmosa!','Tamanho médio mas bem espaçosa','Possui 3 aberturas','2 opções de alça: mão e transversal','UMA DE NOSSAS CAMPEÃS DE VENDAS!','Medidas: Altura 24cm x Alça 16cm x Largura 24cm'] },
+  Michele: { ativo: true,  preco: 259, imgs: ['michele-img/michele.jpg'], nome: 'Michele', cores: CORES_MICHELE, corImgs: { Michele_Preto: 'michele-img/michele.jpg', Michele_Caramelo: 'michele-img/michelecaramelo.jpg', Michele_Rubi: 'michele-img/michelerubi.jpg', Michele_Whiskey: 'michele-img/michelewhiskey.jpg', Michele_Azul: 'michele-img/micheleazul.jpg', Michele_Cafe: 'michele-img/michelecafe.jpg' }, desc: ['Muito charmosa!','Tamanho médio mas bem espaçosa','Possui 3 aberturas','2 opções de alça: mão e transversal','UMA DE NOSSAS CAMPEÃS DE VENDAS!','Medidas: Altura 24cm x Alça 16cm x Largura 24cm'] },
 };
 
 /* ══════════════════════════════════════════
