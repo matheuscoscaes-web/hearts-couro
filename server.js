@@ -221,12 +221,11 @@ app.post('/api/criar-pagamento', async (req, res) => {
         body: {
           transaction_amount: total,
           description: itens.length === 1
-            ? `Bolsa Hearts Couro - Ref: ${itens[0].produto} (${itens[0].cor})`
+            ? `Bolsa Hearts Couro - Ref: ${itens[0].produto || 'Bolsa'} (${itens[0].cor || 'cor'})`
             : `Hearts Couro - ${itens.length} bolsas`,
           payment_method_id: 'pix',
           payer: pixPayer,
-          external_reference: String(pedidoId),
-          notification_url: `${process.env.BASE_URL}/api/webhook/mercadopago`
+          external_reference: String(pedidoId)
         },
         requestOptions: { idempotencyKey: uuidv4() }
       });

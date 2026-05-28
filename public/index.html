@@ -1434,8 +1434,9 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
             <span class="error-msg">Insira seu WhatsApp.</span>
           </div>
           <div class="field">
-            <label for="cpf">CPF</label>
+            <label for="cpf">CPF <span id="cpf-obrigatorio" style="display:none;color:var(--gold)">*</span></label>
             <input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14">
+            <span class="error-msg" id="cpf-err">Insira seu CPF (obrigatório para PIX).</span>
           </div>
         </div>
 
@@ -2215,6 +2216,8 @@ document.getElementById('btn-cep').addEventListener('click', async function () {
 document.querySelectorAll('input[name="pagamento"]').forEach(radio => {
   radio.addEventListener('change', function () {
     document.getElementById('parcelas-wrap').classList.toggle('visible', this.value === 'Link de pagamento');
+    const isPix = this.value === 'Pix';
+    document.getElementById('cpf-obrigatorio').style.display = isPix ? 'inline' : 'none';
   });
 });
 
@@ -2238,7 +2241,8 @@ document.getElementById('prevenda-form').addEventListener('submit', async functi
   let valid = true;
 
   const isRetirada = document.querySelector('input[name="frete"][value="retirada"]')?.checked;
-  const camposBase = ['nome','sobrenome','email','whatsapp'];
+  const isPix = document.querySelector('input[name="pagamento"][value="Pix"]')?.checked;
+  const camposBase = isPix ? ['nome','sobrenome','email','whatsapp','cpf'] : ['nome','sobrenome','email','whatsapp'];
   const camposEntrega = ['logradouro','numero','bairro','cidade','estado'];
   const campos = isRetirada ? camposBase : [...camposBase, ...camposEntrega];
 
