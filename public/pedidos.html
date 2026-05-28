@@ -427,7 +427,7 @@
                 const card = document.createElement('div');
                 card.className = 'order-card';
 
-                const msgZap = encodeURIComponent(`Olá ${p.nome}! Aqui é da Hearts Couro Legítimo. Recebemos seu pedido de uma Bolsa na cor ${p.cor}. Como podemos prosseguir?`);
+                const msgZap = encodeURIComponent(`Olá ${p.nome}! Aqui é da Hearts Couro Legítimo. Recebemos seu pedido de uma Bolsa na cor ${p.cor}. Para estar dando prosseguimento na compra da sua linda bolsa ${p.produto}, estarei enviando o link do site da compra!\n\nhttps://hearts-couro.onrender.com/`);
                 const fone = getWhatsAppPhone(p.whatsapp);
                 const linkZap = fone ? `https://wa.me/55${fone}?text=${msgZap}` : '#';
 
