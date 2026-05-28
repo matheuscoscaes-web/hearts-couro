@@ -117,6 +117,7 @@
         .status-enviado { background: rgba(37, 211, 102, 0.1); color: var(--green-whatsapp); border: 1px solid rgba(37, 211, 102, 0.3); }
         .status-approved { background: rgba(80, 160, 255, 0.1); color: #50a0ff; border: 1px solid rgba(80, 160, 255, 0.3); }
         .status-aguardando_pagamento { background: rgba(255, 190, 60, 0.1); color: #ffbe3c; border: 1px solid rgba(255, 190, 60, 0.3); }
+        .status-etiqueta_criada { background: rgba(140, 100, 200, 0.1); color: #a070e0; border: 1px solid rgba(140, 100, 200, 0.3); }
 
         .customer-name {
             font-family: 'Cormorant Garamond', serif;
@@ -349,13 +350,12 @@
             }
         }
 
-        const PRODUTOS_LISTA = ['Paola', 'Carol'];
-
         function atualizarFiltroProduto() {
+            const produtosNoBanco = [...new Set(database.map(p => p.produto).filter(Boolean))].sort();
             const wrap = document.getElementById('filtro-produto');
-            wrap.style.display = 'flex';
+            wrap.style.display = produtosNoBanco.length > 1 ? 'flex' : 'none';
             wrap.innerHTML = `<button class="tab-btn ${produtoAtivo === 'todos' ? 'active' : ''}" style="font-size:0.75rem;padding:0.5rem 1rem;" data-produto="todos" onclick="filtrarProduto('todos')">Todos</button>`;
-            PRODUTOS_LISTA.forEach(pr => {
+            produtosNoBanco.forEach(pr => {
                 wrap.innerHTML += `<button class="tab-btn ${produtoAtivo === pr ? 'active' : ''}" style="font-size:0.75rem;padding:0.5rem 1rem;" data-produto="${pr}" onclick="filtrarProduto('${pr}')">Ref: ${pr}</button>`;
             });
         }
@@ -374,7 +374,7 @@
             return database
                 .filter(p => {
                     if (status === 'todos') return true;
-                    if (status === 'pagos') return p.status === 'approved';
+                    if (status === 'pagos') return p.status === 'approved' || p.status === 'etiqueta_criada';
                     if (status === 'aguardando') return p.status === 'aguardando_pagamento';
                     return p.status === status;
                 })
@@ -387,6 +387,7 @@
             if (status === 'enviado') return 'Atendido';
             if (status === 'approved') return 'Pago';
             if (status === 'aguardando_pagamento') return 'Aguardando';
+            if (status === 'etiqueta_criada') return 'Etiqueta Criada';
             return status || '—';
         }
 
@@ -467,10 +468,13 @@
                         ${p.status === 'aguardando_pagamento'
                             ? `<button type="button" class="btn-action btn-check" id="verify-${p.id}" onclick="verificarPagamento(${p.id})" style="background:rgba(80,160,255,0.15);border-color:#50a0ff;color:#50a0ff;">Verificar Pagamento</button>`
                             : p.status === 'approved'
-                                ? `<button type="button" class="btn-action btn-etiqueta" id="etiqueta-${p.id}" onclick="gerarEtiqueta(${p.id})">📦 Gerar Etiqueta</button>`
-                                : p.status === 'enviado'
-                                    ? `<button type="button" class="btn-action btn-check" onclick="atualizarStatus(${p.id}, 'pendente')" style="opacity:0.4">Reverter</button>`
-                                    : `<button type="button" class="btn-action btn-check" onclick="atualizarStatus(${p.id}, 'enviado')">Marcar Enviado</button>`
+                                ? `<button type="button" class="btn-action btn-etiqueta" id="etiqueta-${p.id}" onclick="gerarEtiqueta(${p.id})">📦 Gerar Etiqueta</button>
+                                   <button type="button" class="btn-action" onclick="atualizarStatus(${p.id}, 'etiqueta_criada')" style="background:rgba(140,100,200,0.15);border:1px solid #a070e0;color:#a070e0;flex:0 0 auto;padding:0.75rem 1rem;" title="Etiqueta já criada no Melhor Envios">✓</button>`
+                                : p.status === 'etiqueta_criada'
+                                    ? `<button type="button" class="btn-action btn-check" onclick="atualizarStatus(${p.id}, 'enviado')" style="background:rgba(37,211,102,0.15);border-color:#25d366;color:#25d366;">📬 Marcar Enviado</button>`
+                                    : p.status === 'enviado'
+                                        ? `<button type="button" class="btn-action btn-check" onclick="atualizarStatus(${p.id}, 'pendente')" style="opacity:0.4">Reverter</button>`
+                                        : `<button type="button" class="btn-action btn-check" onclick="atualizarStatus(${p.id}, 'enviado')">Marcar Enviado</button>`
                         }
                     </div>
                 `;
@@ -486,7 +490,7 @@
                 btn.classList.toggle('active', btn.dataset.status === 'resumo');
             });
 
-            const pagas = database.filter(p => p.status === 'approved' || p.status === 'enviado');
+            const pagas = database.filter(p => p.status === 'approved' || p.status === 'etiqueta_criada' || p.status === 'enviado');
             const base = produtoAtivo === 'todos' ? pagas : pagas.filter(p => p.produto === produtoAtivo);
             const total = base.length;
 
