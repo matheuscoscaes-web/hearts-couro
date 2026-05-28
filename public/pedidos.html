@@ -312,12 +312,12 @@
     </div>
 
     <div class="tabs">
-        <button class="tab-btn active" data-status="pendente" onclick="filtrar('pendente')">Pendentes</button>
-        <button class="tab-btn" data-status="aguardando" onclick="filtrar('aguardando')">Aguardando</button>
+        <button class="tab-btn active" data-status="aguardando" onclick="filtrar('aguardando')">Aguardando</button>
         <button class="tab-btn" data-status="pagos" onclick="filtrar('pagos')">Pagos</button>
         <button class="tab-btn" data-status="enviado" onclick="filtrar('enviado')">Atendidos</button>
         <button class="tab-btn" data-status="todos" onclick="filtrar('todos')">Geral (Todos)</button>
         <button class="tab-btn" data-status="resumo" onclick="mostrarResumo()">Resumo de Vendas</button>
+        <button id="btn-verificar-todos" class="tab-btn" onclick="verificarTodos()" style="background:rgba(80,160,255,0.15);border-color:#50a0ff;color:#50a0ff;">🔄 Verificar Todos</button>
     </div>
 
     <!-- Filtro por produto (aparece só se houver mais de 1 produto) -->
@@ -341,7 +341,7 @@
                 const response = await fetch('/api/pedidos');
                 database = await response.json();
                 atualizarFiltroProduto();
-                const abaAtiva = document.querySelector('.tab-btn[data-status].active')?.dataset.status || 'pendente';
+                const abaAtiva = document.querySelector('.tab-btn[data-status].active')?.dataset.status || 'aguardando';
                 if (abaAtiva === 'resumo') mostrarResumo();
                 else filtrar(abaAtiva);
             } catch (error) {
@@ -580,6 +580,34 @@
                 alert('Erro ao conectar com o servidor.');
                 if (btn) { btn.disabled = false; btn.textContent = 'Verificar Pagamento'; }
             }
+        }
+
+        // 5b. Verificar TODOS os pedidos aguardando pagamento
+        async function verificarTodos() {
+            const btn = document.getElementById('btn-verificar-todos');
+            if (btn) { btn.disabled = true; btn.textContent = '🔄 Verificando...'; }
+
+            const pendentes = database.filter(p => p.status === 'aguardando_pagamento');
+            if (pendentes.length === 0) {
+                alert('Nenhum pedido aguardando pagamento.');
+                if (btn) { btn.disabled = false; btn.textContent = '🔄 Verificar Todos'; }
+                return;
+            }
+
+            let atualizados = 0;
+            for (const p of pendentes) {
+                try {
+                    const resp = await fetch(`/api/verificar-pagamento/${p.id}`);
+                    const result = await resp.json();
+                    if (result.status === 'approved') atualizados++;
+                } catch (_) {}
+            }
+
+            await carregarPedidos();
+            if (btn) { btn.disabled = false; btn.textContent = '🔄 Verificar Todos'; }
+            alert(atualizados > 0
+                ? `✅ ${atualizados} pedido(s) atualizado(s) para "Pago"!`
+                : `Nenhum novo pagamento confirmado (verificados ${pendentes.length} pedidos).`);
         }
 
         // 6. Gerar etiqueta no Melhor Envio
