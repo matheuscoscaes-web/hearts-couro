@@ -2333,7 +2333,10 @@ document.getElementById('prevenda-form').addEventListener('submit', async functi
 
     const result = await resp.json();
 
-    if (!resp.ok) throw new Error((result.erro || 'Erro no servidor') + (result.detalhe ? ' — ' + result.detalhe : ''));
+    if (!resp.ok) {
+      console.error('ERRO PAGAMENTO:', JSON.stringify(result));
+      throw new Error((result.erro || 'Erro no servidor') + (result.detalhe ? ' — ' + result.detalhe : ''));
+    }
 
     if (result.tipo === 'pix') {
       document.getElementById('form-view').style.display = 'none';

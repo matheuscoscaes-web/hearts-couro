@@ -200,8 +200,8 @@ app.post('/api/criar-pagamento', async (req, res) => {
     pedidoId = data.id;
     enviarBackupPorEmail(data);
   } catch (err) {
-    console.error('Erro ao salvar pedido:', err);
-    return res.status(500).json({ erro: 'Erro ao registrar pedido.' });
+    console.error('Erro ao salvar pedido:', JSON.stringify(err, null, 2));
+    return res.status(500).json({ erro: 'Erro ao registrar pedido.', detalhe: String(err?.message || err) });
   }
 
   // 2. Cria pagamento no Mercado Pago
