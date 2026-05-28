@@ -225,7 +225,8 @@ app.post('/api/criar-pagamento', async (req, res) => {
             : `Hearts Couro - ${itens.length} bolsas`,
           payment_method_id: 'pix',
           payer: pixPayer,
-          external_reference: String(pedidoId)
+          external_reference: String(pedidoId),
+          notification_url: `${process.env.BASE_URL}/api/webhook/mercadopago`
         },
         requestOptions: { idempotencyKey: uuidv4() }
       });

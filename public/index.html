@@ -2342,6 +2342,23 @@ document.getElementById('prevenda-form').addEventListener('submit', async functi
         totalPix.textContent = 'R$ ' + result.total.toFixed(2).replace('.', ',');
       }
 
+      // Polling: verifica a cada 5s se o PIX foi pago (até 10 min)
+      const pixPedidoId = result.pedidoId;
+      const pixPoll = setInterval(async () => {
+        try {
+          const pr = await fetch(`/api/verificar-pagamento/${pixPedidoId}`);
+          const pd = await pr.json();
+          if (pd.status === 'approved') {
+            clearInterval(pixPoll);
+            document.getElementById('pix-view').style.display = 'none';
+            document.getElementById('success-view').style.display = 'block';
+            document.getElementById('success-msg').innerHTML =
+              'Seu pagamento foi <strong>aprovado</strong>! 🎉<br>Nossa equipe entrará em contato via WhatsApp em breve.';
+          }
+        } catch (_) {}
+      }, 5000);
+      setTimeout(() => clearInterval(pixPoll), 600000);
+
     } else if (result.tipo === 'link') {
       window.location.href = result.checkoutUrl;
     }
