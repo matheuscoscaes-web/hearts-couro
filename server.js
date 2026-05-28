@@ -287,8 +287,9 @@ app.post('/api/criar-pagamento', async (req, res) => {
       });
     }
   } catch (err) {
-    console.error('Erro ao criar pagamento MP:', err?.cause || err);
-    return res.status(500).json({ erro: 'Erro ao gerar pagamento. Tente novamente.' });
+    const detalhe = err?.cause || err;
+    console.error('Erro ao criar pagamento MP:', JSON.stringify(detalhe, null, 2));
+    return res.status(500).json({ erro: 'Erro ao gerar pagamento. Tente novamente.', detalhe: String(detalhe?.message || detalhe) });
   }
 });
 
