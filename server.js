@@ -501,5 +501,37 @@ app.post('/api/gerar-etiqueta/:id', async (req, res) => {
   }
 });
 
+// ── ROTA: Diagnóstico ──
+app.get('/api/diagnostico', async (req, res) => {
+  const resultado = {
+    mp_token:    !!process.env.MP_ACCESS_TOKEN,
+    supabase_url: !!process.env.SUPABASE_URL,
+    supabase_key: !!process.env.SUPABASE_KEY,
+    base_url:    process.env.BASE_URL || 'NÃO DEFINIDO',
+  };
+
+  try {
+    const { data, error } = await supabase.from('pedidos').select('id').limit(1);
+    resultado.supabase_ok = !error;
+    resultado.supabase_erro = error?.message || null;
+  } catch (e) {
+    resultado.supabase_ok = false;
+    resultado.supabase_erro = e.message;
+  }
+
+  try {
+    const r = await fetch('https://api.mercadopago.com/v1/payment_methods', {
+      headers: { Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}` }
+    });
+    resultado.mp_api_status = r.status;
+    resultado.mp_ok = r.status === 200;
+  } catch (e) {
+    resultado.mp_ok = false;
+    resultado.mp_api_erro = e.message;
+  }
+
+  res.json(resultado);
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🔥 Hearts Online na porta ${PORT}`));
