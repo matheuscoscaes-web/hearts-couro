@@ -79,10 +79,61 @@ function enviarBackupPorEmail(pedido) {
   }).catch(err => console.error('Erro e-mail:', err));
 }
 
+function enviarEmailConfirmacaoPagamento(pedido) {
+  if (!transporter || !pedido.email) return;
+  const fmtValor = v => 'R$ ' + parseFloat(v || 0).toFixed(2).replace('.', ',');
+  transporter.sendMail({
+    from: `"Hearts Couro" <${EMAIL_USER}>`,
+    to: pedido.email,
+    subject: `✅ Pagamento confirmado — Hearts Couro`,
+    html: `<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:1.5rem;">
+      <h2 style="color:#c9963c;">Pagamento confirmado! 🎉</h2>
+      <p>Olá, <strong>${pedido.nome}</strong>!</p>
+      <p>Seu pagamento foi confirmado. Estamos preparando sua bolsa com muito carinho.</p>
+      <table style="width:100%;border-collapse:collapse;margin:1rem 0;font-size:0.9rem;">
+        <tr><td style="padding:5px 0;color:#888;">Produto</td><td style="padding:5px 0;"><strong>${pedido.produto || 'Bolsa'} — ${pedido.cor || ''}</strong></td></tr>
+        <tr><td style="padding:5px 0;color:#888;">Total</td><td style="padding:5px 0;"><strong>${fmtValor(pedido.valor_total)}</strong></td></tr>
+        <tr><td style="padding:5px 0;color:#888;">Envio</td><td style="padding:5px 0;">${pedido.frete_nome || 'A confirmar'}</td></tr>
+      </table>
+      <p>Em breve você receberá o código de rastreio da sua entrega. 💛</p>
+      <p style="color:#aaa;font-size:0.8rem;">Hearts Couro Legítimo</p>
+    </div>`
+  }).catch(err => console.error('Erro e-mail confirmação:', err));
+}
+
+function enviarEmailRastreio(pedido, codigoRastreio) {
+  if (!transporter || !pedido.email) return;
+  transporter.sendMail({
+    from: `"Hearts Couro" <${EMAIL_USER}>`,
+    to: pedido.email,
+    subject: `📦 Sua bolsa Hearts Couro foi enviada!`,
+    html: `<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:1.5rem;">
+      <h2 style="color:#c9963c;">Sua bolsa está a caminho! 🚚</h2>
+      <p>Olá, <strong>${pedido.nome}</strong>!</p>
+      <p>Sua <strong>${pedido.produto || 'bolsa'} — ${pedido.cor || ''}</strong> foi enviada!</p>
+      ${codigoRastreio ? `<div style="background:#f8f8f8;border-left:4px solid #c9963c;padding:1rem;margin:1rem 0;border-radius:4px;">
+        <p style="margin:0;color:#555;font-size:0.85rem;">Código de Rastreio:</p>
+        <p style="margin:0.4rem 0 0;font-size:1.4rem;font-weight:700;letter-spacing:0.08em;">${codigoRastreio}</p>
+      </div>
+      <p>Rastreie em: <a href="https://rastreamento.correios.com.br" style="color:#c9963c;">rastreamento.correios.com.br</a></p>` : '<p>Em breve você poderá rastrear sua entrega.</p>'}
+      <p>Obrigada pela sua compra! 💛</p>
+      <p style="color:#aaa;font-size:0.8rem;">Hearts Couro Legítimo</p>
+    </div>`
+  }).catch(err => console.error('Erro e-mail rastreio:', err));
+}
+
 // ── ROTA: Calcular Frete (Melhor Envio) ──
 app.post('/api/calcular-frete', async (req, res) => {
   const cepDestino = (req.body.cep || '').replace(/\D/g, '');
   if (cepDestino.length !== 8) return res.status(400).json({ erro: 'CEP inválido.' });
+
+  const qtd = Math.max(1, parseInt(req.body.quantidade) || 1);
+  const pacoteCalc = {
+    height: Math.min(PACOTE.height * qtd, 70),
+    width:  PACOTE.width,
+    length: PACOTE.length,
+    weight: PACOTE.weight * qtd
+  };
 
   try {
     const resp = await fetch('https://melhorenvio.com.br/api/v2/me/shipment/calculate', {
@@ -96,7 +147,7 @@ app.post('/api/calcular-frete', async (req, res) => {
       body: JSON.stringify({
         from: { postal_code: process.env.CEP_ORIGEM },
         to:   { postal_code: cepDestino },
-        package: PACOTE,
+        package: pacoteCalc,
         options: {
           insurance_value: PRECO_PRODUTO,
           receipt: false,
@@ -307,6 +358,10 @@ app.post('/api/webhook/mercadopago', async (req, res) => {
     if (pedidoId) {
       await supabase.from('pedidos').update({ status }).eq('id', pedidoId);
       console.log(`✅ Pedido ${pedidoId} → status: ${status}`);
+      if (status === 'approved') {
+        const { data: pd } = await supabase.from('pedidos').select('*').eq('id', pedidoId).single();
+        if (pd) enviarEmailConfirmacaoPagamento(pd);
+      }
     }
   } catch (err) {
     console.error('Erro no webhook MP:', err);
@@ -327,6 +382,8 @@ app.get('/api/verificar-pagamento/:id', async (req, res) => {
     const aprovado = pagamentos.find(p => p.status === 'approved');
     if (aprovado) {
       await supabase.from('pedidos').update({ status: 'approved' }).eq('id', pedidoId);
+      const { data: pd } = await supabase.from('pedidos').select('*').eq('id', pedidoId).single();
+      if (pd) enviarEmailConfirmacaoPagamento(pd);
       return res.json({ status: 'approved', mensagem: 'Pagamento confirmado! Pedido atualizado.' });
     }
 
@@ -352,7 +409,7 @@ app.get('/api/estoque', async (req, res) => {
     const { data, error } = await supabase
       .from('pedidos')
       .select('produto, cor, status')
-      .in('status', ['approved', 'enviado']);
+      .in('status', ['approved', 'enviado', 'entregue', 'retirado']);
 
     if (error) throw error;
 
@@ -392,13 +449,17 @@ app.get('/api/pedidos', async (req, res) => {
 
 // ── ROTA: Mudar Status ──
 app.post('/api/status', async (req, res) => {
-  const { id, status } = req.body;
+  const { id, status, codigo_rastreio } = req.body;
   try {
     const { error } = await supabase
       .from('pedidos')
       .update({ status })
       .eq('id', id);
     if (error) throw error;
+    if (status === 'entregue') {
+      const { data: pd } = await supabase.from('pedidos').select('*').eq('id', id).single();
+      if (pd) enviarEmailRastreio(pd, codigo_rastreio || '');
+    }
     res.send('ok');
   } catch {
     res.status(500).send('erro');

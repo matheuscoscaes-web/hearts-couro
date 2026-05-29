@@ -1890,11 +1890,17 @@ function renderCarrinhoForm() {
   if (freteRadio) atualizarTotal(freteRadio);
 }
 
+function recalcularFreteSeNecessario() {
+  const cep = (document.getElementById('cep')?.value || '').replace(/\D/g, '');
+  if (cep.length === 8) calcularFrete(cep);
+}
+
 function removerDoCarrinho(idx) {
   carrinho.splice(idx, 1);
   atualizarCartBadge();
   renderCarrinhoDrawer();
   renderCarrinhoForm();
+  recalcularFreteSeNecessario();
 }
 
 function alterarQtdCarrinho(idx, delta) {
@@ -1902,6 +1908,7 @@ function alterarQtdCarrinho(idx, delta) {
   atualizarCartBadge();
   renderCarrinhoDrawer();
   renderCarrinhoForm();
+  recalcularFreteSeNecessario();
 }
 
 function abrirCarrinho() {
@@ -2035,6 +2042,7 @@ function adicionarAoCarrinho() {
   atualizarCartBadge();
   renderCarrinhoForm();
   abrirCarrinho();
+  recalcularFreteSeNecessario();
 }
 
 /* ══════════════════════════════════════════
@@ -2164,10 +2172,11 @@ async function calcularFrete(cep) {
   document.getElementById('frete-loading').style.display = 'flex';
 
   try {
+    const qtdCarrinho = carrinho.reduce((s, i) => s + i.quantidade, 0) || 1;
     const resp = await fetch('/api/calcular-frete', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ cep })
+      body: JSON.stringify({ cep, quantidade: qtdCarrinho })
     });
     const opcoes = await resp.json();
 

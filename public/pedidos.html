@@ -231,7 +231,9 @@
         .order-card.expanded .expand-arrow { transform: rotate(180deg); }
 
         .status-pendente              { background: rgba(201,150,60,0.1);   color: var(--gold);           border: 1px solid rgba(201,150,60,0.3); }
-        .status-enviado               { background: rgba(37,211,102,0.1);   color: var(--green-whatsapp); border: 1px solid rgba(37,211,102,0.3); }
+        .status-enviado               { background: rgba(0,188,212,0.1);    color: #00bcd4;               border: 1px solid rgba(0,188,212,0.3); }
+        .status-entregue              { background: rgba(37,211,102,0.1);   color: var(--green-whatsapp); border: 1px solid rgba(37,211,102,0.3); }
+        .status-retirado              { background: rgba(255,140,0,0.1);    color: #ff8c00;               border: 1px solid rgba(255,140,0,0.3); }
         .status-approved              { background: rgba(80,160,255,0.1);   color: #50a0ff;               border: 1px solid rgba(80,160,255,0.3); }
         .status-aguardando_pagamento  { background: rgba(255,190,60,0.1);   color: #ffbe3c;               border: 1px solid rgba(255,190,60,0.3); }
         .status-etiqueta_criada       { background: rgba(140,100,200,0.1);  color: #a070e0;               border: 1px solid rgba(140,100,200,0.3); }
@@ -572,9 +574,19 @@
             <span class="tab-count" id="side-count-pagos">0</span>
         </button>
         <button class="sidebar-item" id="side-enviado" onclick="filtrarSidebar('enviado')">
-            <span class="sidebar-item-icon">📬</span>
-            <span class="sidebar-item-label">Atendidos</span>
+            <span class="sidebar-item-icon">💬</span>
+            <span class="sidebar-item-label">Contactados</span>
             <span class="tab-count" id="side-count-enviado">0</span>
+        </button>
+        <button class="sidebar-item" id="side-entregue" onclick="filtrarSidebar('entregue')">
+            <span class="sidebar-item-icon">📬</span>
+            <span class="sidebar-item-label">Enviados</span>
+            <span class="tab-count" id="side-count-entregue">0</span>
+        </button>
+        <button class="sidebar-item" id="side-retirado" onclick="filtrarSidebar('retirado')">
+            <span class="sidebar-item-icon">🏪</span>
+            <span class="sidebar-item-label">Retirados</span>
+            <span class="tab-count" id="side-count-retirado">0</span>
         </button>
         <button class="sidebar-item" id="side-todos" onclick="filtrarSidebar('todos')">
             <span class="sidebar-item-icon">📋</span>
@@ -613,7 +625,9 @@
         <div class="tabs">
             <button class="tab-btn active" data-status="aguardando" onclick="filtrar('aguardando')">Aguardando <span class="tab-count" id="count-aguardando">0</span></button>
             <button class="tab-btn" data-status="pagos" onclick="filtrar('pagos')">Pagos <span class="tab-count" id="count-pagos">0</span></button>
-            <button class="tab-btn" data-status="enviado" onclick="filtrar('enviado')">Atendidos <span class="tab-count" id="count-enviado">0</span></button>
+            <button class="tab-btn" data-status="enviado" onclick="filtrar('enviado')">Contactados <span class="tab-count" id="count-enviado">0</span></button>
+            <button class="tab-btn" data-status="entregue" onclick="filtrar('entregue')">Enviados <span class="tab-count" id="count-entregue">0</span></button>
+            <button class="tab-btn" data-status="retirado" onclick="filtrar('retirado')">Retirados <span class="tab-count" id="count-retirado">0</span></button>
             <button class="tab-btn" data-status="todos" onclick="filtrar('todos')">Geral <span class="tab-count" id="count-todos">0</span></button>
             <button class="tab-btn" data-status="resumo" onclick="mostrarResumo()">Resumo de Vendas</button>
             <button id="btn-verificar-todos" class="tab-btn" onclick="verificarTodos()" style="background:rgba(80,160,255,0.15);border-color:#50a0ff;color:#50a0ff;">🔄 Verificar Todos</button>
@@ -690,12 +704,16 @@
         function isPendente(p)   { return p.status === 'aguardando_pagamento' || p.status === 'pendente'; }
         function isPago(p)      { return p.status === 'approved' || p.status === 'etiqueta_criada'; }
         function isAtendido(p)  { return p.status === 'enviado'; }
+        function isEntregue(p)  { return p.status === 'entregue'; }
+        function isRetirado(p)  { return p.status === 'retirado'; }
 
         function atualizarContadores() {
             const counts = {
                 aguardando: database.filter(isPendente).length,
                 pagos:      database.filter(isPago).length,
                 enviado:    database.filter(isAtendido).length,
+                entregue:   database.filter(isEntregue).length,
+                retirado:   database.filter(isRetirado).length,
                 todos:      database.length,
             };
             Object.entries(counts).forEach(([k, v]) => {
@@ -708,8 +726,8 @@
 
         // ── MENU HAMBÚRGUER ────────────────────────────────────────────────
         const sidebarLabels = {
-            aguardando: 'Aguardando', pagos: 'Pagos', enviado: 'Atendidos',
-            todos: 'Geral', resumo: 'Resumo de Vendas',
+            aguardando: 'Aguardando', pagos: 'Pagos', enviado: 'Contactados',
+            entregue: 'Enviados', retirado: 'Retirados', todos: 'Geral', resumo: 'Resumo de Vendas',
         };
 
         function abrirMenu() {
@@ -761,10 +779,12 @@
         function getDadosFiltrados(status) {
             return database
                 .filter(p => {
-                    if (status === 'todos')     return true;
-                    if (status === 'pagos')     return isPago(p);
+                    if (status === 'todos')      return true;
+                    if (status === 'pagos')      return isPago(p);
                     if (status === 'aguardando') return isPendente(p);
-                    if (status === 'enviado')   return isAtendido(p);
+                    if (status === 'enviado')    return isAtendido(p);
+                    if (status === 'entregue')   return isEntregue(p);
+                    if (status === 'retirado')   return isRetirado(p);
                     return false;
                 })
                 .filter(p => produtoAtivo === 'todos' ? true : p.produto === produtoAtivo)
@@ -774,7 +794,9 @@
 
         function getStatusLabel(status) {
             if (status === 'pendente')             return 'Pendente';
-            if (status === 'enviado')              return 'Atendido';
+            if (status === 'enviado')              return 'Contactado';
+            if (status === 'entregue')             return 'Enviado';
+            if (status === 'retirado')             return 'Retirado';
             if (status === 'approved')             return 'Pago';
             if (status === 'aguardando_pagamento') return 'Aguardando';
             if (status === 'etiqueta_criada')      return 'Etiqueta Criada';
@@ -849,16 +871,30 @@
                     ? `<span class="status-badge status-approved" id="badge-${p.id}" onclick="handleBadgeClick(${p.id})" title="Clique 2× para cancelar" style="cursor:pointer;">Pago</span>`
                     : `<span class="status-badge status-${p.status}">${getStatusLabel(p.status)}</span>`;
 
-                const acaoHtml = p.status === 'aguardando_pagamento'
-                    ? `<button type="button" class="btn-action btn-check" id="verify-${p.id}" onclick="verificarPagamento(${p.id})" style="background:rgba(80,160,255,0.15);border:1px solid #50a0ff;color:#50a0ff;">Verificar Pagamento</button>`
-                    : p.status === 'approved'
-                        ? `<button type="button" class="btn-action btn-etiqueta" id="etiqueta-${p.id}" onclick="gerarEtiqueta(${p.id})">📦 Gerar Etiqueta</button>
-                           <button type="button" class="btn-action" onclick="atualizarStatus(${p.id}, 'etiqueta_criada')" style="background:rgba(140,100,200,0.15);border:1px solid #a070e0;color:#a070e0;flex:0 0 auto;padding:0.65rem 0.9rem;" title="Marcar etiqueta criada">✓</button>`
-                        : p.status === 'etiqueta_criada'
-                            ? `<button type="button" class="btn-action btn-check" onclick="atualizarStatus(${p.id}, 'enviado')" style="background:rgba(37,211,102,0.15);border:1px solid #25d366;color:#25d366;">📬 Marcar Enviado</button>`
-                            : p.status === 'enviado'
-                                ? `<button type="button" class="btn-action btn-check" onclick="atualizarStatus(${p.id}, 'pendente')" style="opacity:0.4">Reverter</button>`
-                                : `<button type="button" class="btn-action btn-check" onclick="atualizarStatus(${p.id}, 'enviado')">Marcar Enviado</button>`;
+                let acaoHtml = '';
+                if (p.status === 'aguardando_pagamento') {
+                    acaoHtml = `<button type="button" class="btn-action btn-check" id="verify-${p.id}" onclick="verificarPagamento(${p.id})" style="background:rgba(80,160,255,0.15);border:1px solid #50a0ff;color:#50a0ff;">Verificar Pagamento</button>`;
+                } else if (p.status === 'approved') {
+                    acaoHtml = `<button type="button" class="btn-action btn-etiqueta" id="etiqueta-${p.id}" onclick="gerarEtiqueta(${p.id})">📦 Gerar Etiqueta</button>
+                               <button type="button" class="btn-action" onclick="atualizarStatus(${p.id}, 'etiqueta_criada')" style="background:rgba(140,100,200,0.15);border:1px solid #a070e0;color:#a070e0;flex:0 0 auto;padding:0.65rem 0.9rem;" title="Marcar etiqueta criada">✓</button>
+                               <button type="button" class="btn-action" onclick="atualizarStatus(${p.id}, 'enviado')" style="background:rgba(0,188,212,0.15);border:1px solid #00bcd4;color:#00bcd4;flex:0 0 auto;padding:0.65rem 0.9rem;" title="Marcar como contactado">💬</button>
+                               <button type="button" class="btn-action" onclick="atualizarStatus(${p.id}, 'retirado')" style="width:100%;background:rgba(255,140,0,0.15);border:1px solid rgba(255,140,0,0.4);color:#ff8c00;">🏪 Retirada na Loja</button>`;
+                } else if (p.status === 'etiqueta_criada') {
+                    acaoHtml = `<input type="text" id="rastreio-${p.id}" placeholder="Código de rastreio…" style="flex:1;min-width:90px;padding:0.5rem 0.7rem;border-radius:7px;border:1px solid var(--border);background:var(--black);color:var(--text);font-size:0.72rem;font-family:inherit;outline:none;">
+                               <button type="button" class="btn-action" onclick="marcarEnviado(${p.id})" style="background:rgba(37,211,102,0.15);border:1px solid #25d366;color:#25d366;flex:0 0 auto;">📬 Enviar</button>
+                               <button type="button" class="btn-action" onclick="atualizarStatus(${p.id}, 'enviado')" style="background:rgba(0,188,212,0.15);border:1px solid #00bcd4;color:#00bcd4;flex:0 0 auto;padding:0.65rem 0.9rem;" title="Marcar como contactado">💬</button>
+                               <button type="button" class="btn-action" onclick="atualizarStatus(${p.id}, 'retirado')" style="width:100%;background:rgba(255,140,0,0.15);border:1px solid rgba(255,140,0,0.4);color:#ff8c00;">🏪 Retirada na Loja</button>`;
+                } else if (p.status === 'enviado') {
+                    acaoHtml = `<input type="text" id="rastreio-${p.id}" placeholder="Código de rastreio…" style="flex:1;min-width:90px;padding:0.5rem 0.7rem;border-radius:7px;border:1px solid var(--border);background:var(--black);color:var(--text);font-size:0.72rem;font-family:inherit;outline:none;">
+                               <button type="button" class="btn-action" onclick="marcarEnviado(${p.id})" style="background:rgba(37,211,102,0.15);border:1px solid #25d366;color:#25d366;flex:0 0 auto;">📬 Enviar</button>
+                               <button type="button" class="btn-action" onclick="atualizarStatus(${p.id}, 'retirado')" style="width:100%;background:rgba(255,140,0,0.15);border:1px solid rgba(255,140,0,0.4);color:#ff8c00;">🏪 Retirada na Loja</button>`;
+                } else if (p.status === 'entregue') {
+                    acaoHtml = `<button type="button" class="btn-action btn-check" onclick="atualizarStatus(${p.id}, 'pendente')" style="opacity:0.4">Reverter</button>`;
+                } else if (p.status === 'retirado') {
+                    acaoHtml = `<button type="button" class="btn-action btn-check" onclick="atualizarStatus(${p.id}, 'aguardando_pagamento')" style="opacity:0.4">Reverter</button>`;
+                } else {
+                    acaoHtml = `<button type="button" class="btn-action btn-check" onclick="marcarEnviado(${p.id})">Marcar Enviado</button>`;
+                }
 
                 card.innerHTML = `
                     <div class="card-header" onclick="toggleCard(this)">
@@ -891,7 +927,7 @@
                             ${p.obs ? `<strong>Obs:</strong> ${p.obs}<br>` : ''}
                             <strong>Data:</strong> ${p.created_at ? new Date(p.created_at).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }) : '—'}
                         </div>
-                        <div class="actions">
+                        <div class="actions" style="flex-wrap:wrap;">
                             <a href="${linkZap}" target="_blank" class="btn-action btn-whatsapp" ${fone ? '' : 'aria-disabled="true" style="opacity:.6;pointer-events:none;"'}>
                                 Chamar no Zap
                             </a>
@@ -924,9 +960,9 @@
                 el.classList.toggle('active', el.id === 'side-resumo');
             });
 
-            // Apenas pedidos com pagamento confirmado pelo MP
+            // Pedidos confirmados: pagos, etiqueta criada, enviados e retirados na loja
             const pagas = database.filter(p =>
-                p.status === 'approved' || p.status === 'etiqueta_criada'
+                p.status === 'approved' || p.status === 'etiqueta_criada' || p.status === 'enviado' || p.status === 'entregue' || p.status === 'retirado'
             );
             const base = produtoAtivo === 'todos' ? pagas : pagas.filter(p => p.produto === produtoAtivo);
             const total = base.length;
@@ -961,10 +997,17 @@
 
             const container = document.getElementById('resumo-view');
             container.innerHTML = `
-                <div class="resumo-stat">
-                    <div class="stat-label">Bolsas Pagas e Confirmadas</div>
-                    <div class="stat-number">${total}</div>
-                    <div class="stat-sub">${fmtBRL(totalValor)} em vendas confirmadas</div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.4rem;">
+                    <div class="resumo-stat" style="margin-bottom:0;">
+                        <div class="stat-label">Bolsas Vendidas</div>
+                        <div class="stat-number">${total}</div>
+                        <div class="stat-sub">pedidos confirmados</div>
+                    </div>
+                    <div class="resumo-stat" style="margin-bottom:0;">
+                        <div class="stat-label">Total em Vendas</div>
+                        <div class="stat-number" style="font-size:2.2rem;">${fmtBRL(totalValor)}</div>
+                        <div class="stat-sub">todos os produtos</div>
+                    </div>
                 </div>
                 ${produtosOrdenados.length > 1 ? `
                 <div class="resumo-table-card" style="margin-bottom:1.4rem;">
@@ -1069,6 +1112,22 @@
             } catch (e) {
                 toast('Erro ao conectar com o servidor.', 'error');
                 if (btn) { btn.disabled = false; btn.textContent = '📦 Gerar Etiqueta'; }
+            }
+        }
+
+        // ── MARCAR ENVIADO (com código de rastreio) ───────────────────────
+        async function marcarEnviado(id) {
+            const input = document.getElementById(`rastreio-${id}`);
+            const codigo_rastreio = input ? input.value.trim() : '';
+            try {
+                await fetch('/api/status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, status: 'entregue', codigo_rastreio })
+                });
+                carregarPedidos();
+            } catch (error) {
+                toast('Erro ao atualizar status.', 'error');
             }
         }
 
