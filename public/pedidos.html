@@ -19,139 +19,255 @@
             --green-whatsapp: #25d366;
         }
 
+        * { box-sizing: border-box; }
+
         body {
             background: var(--black);
             font-family: 'Jost', sans-serif;
             color: var(--text);
-            padding: 2.5rem 1rem;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* ── STICKY HEADER ── */
+        .sticky-top {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10,10,10,0.97);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border);
+            padding: 1.2rem 1rem 0.8rem;
         }
 
         .header-admin {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 1rem;
         }
 
         .header-admin h1 {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 2.5rem;
+            font-size: 2rem;
             color: var(--gold);
             letter-spacing: 0.05em;
+            margin: 0 0 0.2rem;
         }
 
-        /* TABS */
+        .header-admin p {
+            color: var(--gold-dim);
+            font-size: 0.65rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin: 0;
+        }
+
+        /* ── TABS ── */
         .tabs {
             display: flex;
             justify-content: center;
-            gap: 0.8rem;
-            margin-bottom: 2.5rem;
+            gap: 0.6rem;
             flex-wrap: wrap;
+            margin-bottom: 0.8rem;
         }
 
         .tab-btn {
             background: var(--card-bg);
             border: 1px solid var(--border);
             color: var(--muted);
-            padding: 0.7rem 1.4rem;
+            padding: 0.55rem 1.1rem;
             border-radius: 50px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.85rem;
+            transition: all 0.25s ease;
+            font-size: 0.8rem;
             font-weight: 500;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.04em;
+            font-family: 'Jost', sans-serif;
+            white-space: nowrap;
         }
 
-        .tab-btn:hover {
-            border-color: var(--gold-dim);
-            color: var(--text);
-        }
+        .tab-btn:hover { border-color: var(--gold-dim); color: var(--text); }
 
         .tab-btn.active {
             border-color: var(--gold);
             color: var(--gold);
             background: rgba(201, 150, 60, 0.08);
-            box-shadow: 0 0 15px rgba(201, 150, 60, 0.1);
+            box-shadow: 0 0 12px rgba(201, 150, 60, 0.1);
         }
 
-        /* GRID DE PEDIDOS */
+        .tab-count {
+            display: inline-block;
+            background: rgba(201,150,60,0.18);
+            color: var(--gold);
+            border-radius: 20px;
+            font-size: 0.7rem;
+            padding: 0 0.45rem;
+            margin-left: 0.35rem;
+            font-weight: 600;
+            min-width: 1.4rem;
+            text-align: center;
+        }
+
+        /* ── BUSCA ── */
+        .search-wrap {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .search-input {
+            width: 100%;
+            max-width: 420px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 0.55rem 1.2rem 0.55rem 2.8rem;
+            font-size: 0.82rem;
+            color: var(--text);
+            font-family: 'Jost', sans-serif;
+            outline: none;
+            transition: border-color 0.2s;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%237a7060' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 1rem center;
+        }
+
+        .search-input:focus { border-color: var(--gold-dim); }
+        .search-input::placeholder { color: var(--muted); }
+
+        /* ── FILTRO PRODUTO ── */
+        #filtro-produto {
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.6rem;
+        }
+
+        /* ── CONTEÚDO PRINCIPAL ── */
+        .main-content {
+            padding: 1.5rem 1rem 3rem;
+        }
+
+        /* ── GRID DE PEDIDOS ── */
         .orders-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 1.5rem;
-            max-width: 1200px;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1rem;
+            max-width: 1280px;
             margin: 0 auto;
         }
 
+        /* ── CARD COMPACTO ── */
         .order-card {
             background: var(--card-bg);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 1.8rem;
-            position: relative;
-            transition: all 0.3s ease;
-            animation: fadeIn 0.5s ease both;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: border-color 0.25s, box-shadow 0.25s;
+            animation: fadeIn 0.35s ease both;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
-        .order-card:hover {
-            border-color: #444;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        .order-card:hover { border-color: #3a3a3a; box-shadow: 0 6px 20px rgba(0,0,0,0.35); }
+
+        /* Cabeçalho compacto sempre visível */
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1rem 1.2rem 0.8rem;
+            cursor: pointer;
+            user-select: none;
         }
 
-        .status-badge {
-            position: absolute;
-            top: 1.2rem;
-            right: 1.2rem;
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            padding: 0.3rem 0.7rem;
-            border-radius: 4px;
-            letter-spacing: 0.12em;
-            font-weight: 600;
-        }
+        .card-header:hover .customer-name { color: var(--gold-light); }
 
-        .status-pendente { background: rgba(201, 150, 60, 0.1); color: var(--gold); border: 1px solid rgba(201, 150, 60, 0.3); }
-        .status-enviado { background: rgba(37, 211, 102, 0.1); color: var(--green-whatsapp); border: 1px solid rgba(37, 211, 102, 0.3); }
-        .status-approved { background: rgba(80, 160, 255, 0.1); color: #50a0ff; border: 1px solid rgba(80, 160, 255, 0.3); }
-        .status-aguardando_pagamento { background: rgba(255, 190, 60, 0.1); color: #ffbe3c; border: 1px solid rgba(255, 190, 60, 0.3); }
-        .status-etiqueta_criada { background: rgba(140, 100, 200, 0.1); color: #a070e0; border: 1px solid rgba(140, 100, 200, 0.3); }
+        .card-left { flex: 1; min-width: 0; }
 
         .customer-name {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 1.6rem;
-            margin-bottom: 0.8rem;
-            display: block;
+            font-size: 1.35rem;
             color: var(--white);
             font-weight: 600;
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: color 0.2s;
         }
 
-        .order-info {
-            font-size: 0.75rem;
+        .card-meta {
+            font-size: 0.72rem;
             color: var(--muted);
-            line-height: 1.8;
-            margin-bottom: 1.5rem;
-            max-height: 420px;
-            overflow-y: auto;
-            padding-right: 0.5rem;
+            margin-top: 0.2rem;
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .card-meta span { display: flex; align-items: center; gap: 0.25rem; }
+
+        .status-badge {
+            font-size: 0.62rem;
+            text-transform: uppercase;
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .expand-arrow {
+            color: var(--muted);
+            font-size: 0.75rem;
+            transition: transform 0.25s;
+            flex-shrink: 0;
+        }
+
+        .order-card.expanded .expand-arrow { transform: rotate(180deg); }
+
+        .status-pendente              { background: rgba(201,150,60,0.1);   color: var(--gold);           border: 1px solid rgba(201,150,60,0.3); }
+        .status-enviado               { background: rgba(37,211,102,0.1);   color: var(--green-whatsapp); border: 1px solid rgba(37,211,102,0.3); }
+        .status-approved              { background: rgba(80,160,255,0.1);   color: #50a0ff;               border: 1px solid rgba(80,160,255,0.3); }
+        .status-aguardando_pagamento  { background: rgba(255,190,60,0.1);   color: #ffbe3c;               border: 1px solid rgba(255,190,60,0.3); }
+        .status-etiqueta_criada       { background: rgba(140,100,200,0.1);  color: #a070e0;               border: 1px solid rgba(140,100,200,0.3); }
+
+        /* Detalhes expansíveis */
+        .card-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        .order-card.expanded .card-details { max-height: 600px; }
+
+        .order-info {
+            font-size: 0.74rem;
+            color: var(--muted);
+            line-height: 1.85;
+            padding: 0 1.2rem 1rem;
+            border-top: 1px solid var(--border);
         }
 
         .order-info strong { color: var(--gold-light); font-weight: 500; }
 
+        /* Ações */
         .actions {
             display: flex;
-            gap: 0.8rem;
+            gap: 0.6rem;
             border-top: 1px solid var(--border);
-            padding-top: 1.2rem;
+            padding: 0.9rem 1.2rem;
         }
 
         .btn-action {
             flex: 1;
-            padding: 0.75rem;
-            border-radius: 8px;
-            font-size: 0.8rem;
+            padding: 0.65rem 0.5rem;
+            border-radius: 7px;
+            font-size: 0.75rem;
             font-weight: 600;
             cursor: pointer;
             text-align: center;
@@ -160,34 +276,16 @@
             font-family: 'Jost', sans-serif;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-        }
-
-        .btn-whatsapp {
-            background: var(--green-whatsapp);
-            color: #000;
             border: none;
         }
 
+        .btn-whatsapp { background: var(--green-whatsapp); color: #000; }
         .btn-whatsapp:hover { filter: brightness(1.1); }
 
-        .btn-check {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text);
-        }
+        .btn-check { background: transparent; border: 1px solid var(--border); color: var(--text); }
+        .btn-check:hover { background: var(--gold); color: var(--black); border-color: var(--gold); }
 
-        .btn-check:hover {
-            background: var(--gold);
-            color: var(--black);
-            border-color: var(--gold);
-        }
-
-        .btn-etiqueta {
-            background: rgba(201,150,60,0.15);
-            border: 1px solid var(--gold-dim);
-            color: var(--gold);
-        }
-
+        .btn-etiqueta { background: rgba(201,150,60,0.15); border: 1px solid var(--gold-dim); color: var(--gold); }
         .btn-etiqueta:hover { background: var(--gold); color: var(--black); border-color: var(--gold); }
         .btn-etiqueta:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -199,11 +297,8 @@
             font-style: italic;
         }
 
-        /* RESUMO DE VENDAS */
-        .resumo-container {
-            max-width: 560px;
-            margin: 0 auto;
-        }
+        /* ── RESUMO DE VENDAS ── */
+        .resumo-container { max-width: 560px; margin: 0 auto; }
 
         .resumo-stat {
             background: var(--card-bg);
@@ -215,14 +310,7 @@
             box-shadow: 0 0 0 1px rgba(201,150,60,0.07), 0 20px 40px rgba(0,0,0,0.4);
         }
 
-        .stat-label {
-            font-size: 0.62rem;
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-            color: var(--gold-dim);
-            font-weight: 600;
-            margin-bottom: 0.6rem;
-        }
+        .stat-label { font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold-dim); font-weight: 600; margin-bottom: 0.6rem; }
 
         .stat-number {
             font-family: 'Cormorant Garamond', serif;
@@ -235,11 +323,7 @@
             line-height: 1;
         }
 
-        .stat-sub {
-            font-size: 0.75rem;
-            color: var(--muted);
-            margin-top: 0.5rem;
-        }
+        .stat-sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.5rem; }
 
         .resumo-table-card {
             background: var(--card-bg);
@@ -249,98 +333,351 @@
             box-shadow: 0 0 0 1px rgba(201,150,60,0.07), 0 20px 40px rgba(0,0,0,0.4);
         }
 
-        .resumo-table-card h3 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.25rem;
-            color: var(--white);
-            margin-bottom: 1.5rem;
+        .resumo-table-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; color: var(--white); margin-bottom: 1.5rem; letter-spacing: 0.03em; }
+
+        .cor-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.1rem; }
+        .cor-row:last-child { margin-bottom: 0; }
+        .cor-nome { font-size: 0.78rem; color: var(--text); width: 140px; flex-shrink: 0; }
+        .cor-bar-wrap { flex: 1; background: #1c1c1c; border-radius: 4px; height: 7px; overflow: hidden; }
+        .cor-bar { height: 100%; border-radius: 4px; background: linear-gradient(to right, var(--gold-dim), var(--gold)); transition: width 0.7s cubic-bezier(0.22,1,0.36,1); }
+        .cor-qtd { font-size: 0.85rem; color: var(--gold); font-weight: 600; width: 28px; text-align: right; flex-shrink: 0; }
+
+        /* ── TOASTS ── */
+        #toast-container {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: #1e1e1e;
+            border-radius: 10px;
+            padding: 0.85rem 1.2rem;
+            font-size: 0.82rem;
+            color: var(--text);
+            min-width: 240px;
+            max-width: 320px;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.7rem;
+            border-left: 3px solid var(--border);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            pointer-events: auto;
+            animation: slideIn 0.3s ease;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        .toast.hide { opacity: 0; transform: translateX(20px); }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        .toast.success { border-left-color: var(--green-whatsapp); }
+        .toast.error   { border-left-color: #c0614a; }
+        .toast.warning { border-left-color: #ffbe3c; }
+        .toast.info    { border-left-color: #50a0ff; }
+
+        .toast-icon { font-size: 1rem; flex-shrink: 0; margin-top: 0.05rem; }
+        .toast-msg  { flex: 1; line-height: 1.4; }
+
+        /* ── MOBILE NAV BAR ── */
+        .mobile-bar {
+            display: none;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .hamburger-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            flex-shrink: 0;
+            transition: border-color 0.2s;
+        }
+
+        .hamburger-btn:hover { border-color: var(--gold-dim); }
+
+        .hamburger-btn span {
+            display: block;
+            width: 18px;
+            height: 2px;
+            background: var(--text);
+            border-radius: 2px;
+            transition: all 0.25s;
+        }
+
+        .active-tab-label {
+            flex: 1;
+            font-size: 0.85rem;
+            color: var(--gold);
+            font-weight: 500;
             letter-spacing: 0.03em;
         }
 
-        .cor-row {
+        /* ── SIDEBAR DRAWER ── */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 200;
+            backdrop-filter: blur(2px);
+            animation: fadeOverlay 0.2s ease;
+        }
+
+        @keyframes fadeOverlay {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 78vw;
+            max-width: 300px;
+            background: #111;
+            border-right: 1px solid var(--border);
+            z-index: 201;
+            padding: 2rem 1.2rem 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            transform: translateX(-100%);
+            transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        .sidebar.open { transform: translateX(0); }
+
+        .sidebar-header {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.4rem;
+            color: var(--gold);
+            margin-bottom: 1.2rem;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-item {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.1rem;
+            gap: 0.9rem;
+            padding: 0.85rem 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            color: var(--muted);
+            font-weight: 500;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            background: none;
+            font-family: 'Jost', sans-serif;
+            width: 100%;
+            text-align: left;
         }
 
-        .cor-row:last-child { margin-bottom: 0; }
+        .sidebar-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
 
-        .cor-nome {
-            font-size: 0.78rem;
-            color: var(--text);
-            width: 140px;
-            flex-shrink: 0;
-        }
-
-        .cor-bar-wrap {
-            flex: 1;
-            background: #1c1c1c;
-            border-radius: 4px;
-            height: 7px;
-            overflow: hidden;
-        }
-
-        .cor-bar {
-            height: 100%;
-            border-radius: 4px;
-            background: linear-gradient(to right, var(--gold-dim), var(--gold));
-            transition: width 0.7s cubic-bezier(0.22,1,0.36,1);
-        }
-
-        .cor-qtd {
-            font-size: 0.85rem;
+        .sidebar-item.active {
+            background: rgba(201,150,60,0.1);
+            border-color: rgba(201,150,60,0.25);
             color: var(--gold);
-            font-weight: 600;
-            width: 28px;
-            text-align: right;
-            flex-shrink: 0;
         }
 
+        .sidebar-item-icon { font-size: 1rem; width: 1.4rem; text-align: center; flex-shrink: 0; }
+
+        .sidebar-item-label { flex: 1; }
+
+        .sidebar-item .tab-count {
+            background: rgba(201,150,60,0.2);
+            color: var(--gold);
+        }
+
+        .sidebar-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 0.5rem 0;
+        }
+
+        .sidebar-verify {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            padding: 0.85rem 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            font-weight: 500;
+            background: rgba(80,160,255,0.08);
+            border: 1px solid rgba(80,160,255,0.25);
+            color: #50a0ff;
+            font-family: 'Jost', sans-serif;
+            width: 100%;
+            text-align: left;
+            transition: all 0.2s;
+        }
+
+        .sidebar-verify:hover { background: rgba(80,160,255,0.15); }
+
+        /* ── RESPONSIVE ── */
         @media (max-width: 600px) {
             .orders-grid { grid-template-columns: 1fr; }
-            .tabs { gap: 0.5rem; }
-            .tab-btn { padding: 0.6rem 1rem; font-size: 0.75rem; }
+            .tabs { display: none; }
+            .mobile-bar { display: flex; }
             .cor-nome { width: 110px; }
+            #toast-container { right: 0.75rem; left: 0.75rem; bottom: 1rem; }
+            .toast { min-width: unset; max-width: 100%; }
+            .sticky-top { padding: 0.9rem 1rem 0.6rem; }
+            .header-admin { margin-bottom: 0.8rem; }
+            .header-admin h1 { font-size: 1.6rem; }
         }
     </style>
 </head>
 <body>
 
-    <div class="header-admin">
-        <h1>Gestão Hearts</h1>
-        <p style="color: var(--gold-dim); font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase; margin-top: 0.5rem;">Fila de Atendimento</p>
+    <!-- TOAST CONTAINER -->
+    <div id="toast-container"></div>
+
+    <!-- SIDEBAR DRAWER (mobile) -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="fecharMenu()"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">Hearts</div>
+
+        <button class="sidebar-item active" id="side-aguardando" onclick="filtrarSidebar('aguardando')">
+            <span class="sidebar-item-icon">⏳</span>
+            <span class="sidebar-item-label">Aguardando</span>
+            <span class="tab-count" id="side-count-aguardando">0</span>
+        </button>
+        <button class="sidebar-item" id="side-pagos" onclick="filtrarSidebar('pagos')">
+            <span class="sidebar-item-icon">✅</span>
+            <span class="sidebar-item-label">Pagos</span>
+            <span class="tab-count" id="side-count-pagos">0</span>
+        </button>
+        <button class="sidebar-item" id="side-enviado" onclick="filtrarSidebar('enviado')">
+            <span class="sidebar-item-icon">📬</span>
+            <span class="sidebar-item-label">Atendidos</span>
+            <span class="tab-count" id="side-count-enviado">0</span>
+        </button>
+        <button class="sidebar-item" id="side-todos" onclick="filtrarSidebar('todos')">
+            <span class="sidebar-item-icon">📋</span>
+            <span class="sidebar-item-label">Geral</span>
+            <span class="tab-count" id="side-count-todos">0</span>
+        </button>
+
+        <div class="sidebar-divider"></div>
+
+        <button class="sidebar-item" id="side-resumo" onclick="filtrarSidebar('resumo')">
+            <span class="sidebar-item-icon">📊</span>
+            <span class="sidebar-item-label">Resumo de Vendas</span>
+        </button>
+
+        <button class="sidebar-verify" onclick="fecharMenu(); verificarTodos()">
+            <span class="sidebar-item-icon">🔄</span>
+            <span>Verificar Todos</span>
+        </button>
     </div>
 
-    <div class="tabs">
-        <button class="tab-btn active" data-status="aguardando" onclick="filtrar('aguardando')">Aguardando</button>
-        <button class="tab-btn" data-status="pagos" onclick="filtrar('pagos')">Pagos</button>
-        <button class="tab-btn" data-status="enviado" onclick="filtrar('enviado')">Atendidos</button>
-        <button class="tab-btn" data-status="todos" onclick="filtrar('todos')">Geral (Todos)</button>
-        <button class="tab-btn" data-status="resumo" onclick="mostrarResumo()">Resumo de Vendas</button>
-        <button id="btn-verificar-todos" class="tab-btn" onclick="verificarTodos()" style="background:rgba(80,160,255,0.15);border-color:#50a0ff;color:#50a0ff;">🔄 Verificar Todos</button>
+    <!-- STICKY HEADER -->
+    <div class="sticky-top">
+        <div class="header-admin">
+            <h1>Gestão Hearts</h1>
+            <p>Fila de Atendimento</p>
+        </div>
+
+        <!-- Mobile bar: hamburguer + aba ativa -->
+        <div class="mobile-bar">
+            <button class="hamburger-btn" onclick="abrirMenu()" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+            <span class="active-tab-label" id="active-tab-label">Aguardando</span>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-status="aguardando" onclick="filtrar('aguardando')">Aguardando <span class="tab-count" id="count-aguardando">0</span></button>
+            <button class="tab-btn" data-status="pagos" onclick="filtrar('pagos')">Pagos <span class="tab-count" id="count-pagos">0</span></button>
+            <button class="tab-btn" data-status="enviado" onclick="filtrar('enviado')">Atendidos <span class="tab-count" id="count-enviado">0</span></button>
+            <button class="tab-btn" data-status="todos" onclick="filtrar('todos')">Geral <span class="tab-count" id="count-todos">0</span></button>
+            <button class="tab-btn" data-status="resumo" onclick="mostrarResumo()">Resumo de Vendas</button>
+            <button id="btn-verificar-todos" class="tab-btn" onclick="verificarTodos()" style="background:rgba(80,160,255,0.15);border-color:#50a0ff;color:#50a0ff;">🔄 Verificar Todos</button>
+        </div>
+
+        <!-- Busca rápida -->
+        <div class="search-wrap" id="search-wrap">
+            <input
+                type="search"
+                class="search-input"
+                id="search-input"
+                placeholder="Buscar por nome, CPF ou WhatsApp…"
+                oninput="onSearch()"
+            >
+        </div>
+
+        <!-- Filtro por produto -->
+        <div id="filtro-produto" style="display:none; flex-wrap:wrap; margin-bottom:0.5rem;"></div>
     </div>
 
-    <!-- Filtro por produto (aparece só se houver mais de 1 produto) -->
-    <div id="filtro-produto" style="display:none; text-align:center; margin-bottom:1.5rem; display:flex; justify-content:center; gap:0.6rem; flex-wrap:wrap;">
-        <button class="tab-btn active" style="font-size:0.75rem; padding:0.5rem 1rem;" data-produto="todos" onclick="filtrarProduto('todos')">Todos os produtos</button>
-    </div>
-
-    <div class="orders-grid" id="grid">
-    </div>
-
-    <div class="resumo-container" id="resumo-view" style="display:none;">
+    <!-- CONTEÚDO -->
+    <div class="main-content">
+        <div class="orders-grid" id="grid"></div>
+        <div class="resumo-container" id="resumo-view" style="display:none;"></div>
     </div>
 
     <script>
         let database = [];
         let produtoAtivo = 'todos';
+        let termoBusca = '';
 
-        // 1. Busca os pedidos no servidor
+        // ── TOAST ─────────────────────────────────────────────────────────
+        function toast(msg, tipo = 'info', duracao = 4000) {
+            const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+            const container = document.getElementById('toast-container');
+            const el = document.createElement('div');
+            el.className = `toast ${tipo}`;
+            el.innerHTML = `<span class="toast-icon">${icons[tipo] || 'ℹ️'}</span><span class="toast-msg">${msg}</span>`;
+            container.appendChild(el);
+            setTimeout(() => {
+                el.classList.add('hide');
+                setTimeout(() => el.remove(), 350);
+            }, duracao);
+        }
+
+        // ── BUSCA ─────────────────────────────────────────────────────────
+        function onSearch() {
+            termoBusca = document.getElementById('search-input').value.toLowerCase().trim();
+            const abaAtiva = document.querySelector('.tab-btn[data-status].active')?.dataset.status || 'aguardando';
+            if (abaAtiva !== 'resumo') filtrar(abaAtiva);
+        }
+
+        function matchBusca(p) {
+            if (!termoBusca) return true;
+            const campos = [p.nome, p.sobrenome, p.cpf, p.whatsapp, p.email, p.cor].map(v => (v || '').toLowerCase());
+            return campos.some(c => c.includes(termoBusca));
+        }
+
+        // ── DADOS ─────────────────────────────────────────────────────────
         async function carregarPedidos() {
             try {
                 const response = await fetch('/api/pedidos');
                 database = await response.json();
+                atualizarContadores();
                 atualizarFiltroProduto();
                 const abaAtiva = document.querySelector('.tab-btn[data-status].active')?.dataset.status || 'aguardando';
                 if (abaAtiva === 'resumo') mostrarResumo();
@@ -350,13 +687,60 @@
             }
         }
 
+        function atualizarContadores() {
+            const counts = {
+                aguardando: database.filter(p => p.status === 'aguardando_pagamento').length,
+                pagos:      database.filter(p => p.status === 'approved' || p.status === 'etiqueta_criada').length,
+                enviado:    database.filter(p => p.status === 'enviado').length,
+                todos:      database.length,
+            };
+            Object.entries(counts).forEach(([k, v]) => {
+                ['count-', 'side-count-'].forEach(prefix => {
+                    const el = document.getElementById(`${prefix}${k}`);
+                    if (el) el.textContent = v;
+                });
+            });
+        }
+
+        // ── MENU HAMBÚRGUER ────────────────────────────────────────────────
+        const sidebarLabels = {
+            aguardando: 'Aguardando', pagos: 'Pagos', enviado: 'Atendidos',
+            todos: 'Geral', resumo: 'Resumo de Vendas',
+        };
+
+        function abrirMenu() {
+            document.getElementById('sidebar').classList.add('open');
+            document.getElementById('sidebar-overlay').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function fecharMenu() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebar-overlay').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        function filtrarSidebar(status) {
+            fecharMenu();
+            // Atualiza item ativo no sidebar
+            document.querySelectorAll('.sidebar-item').forEach(el => {
+                el.classList.toggle('active', el.id === `side-${status}`);
+            });
+            // Atualiza label da barra mobile
+            const label = document.getElementById('active-tab-label');
+            if (label) label.textContent = sidebarLabels[status] || status;
+            if (status === 'resumo') mostrarResumo();
+            else filtrar(status);
+        }
+
         function atualizarFiltroProduto() {
             const produtosNoBanco = [...new Set(database.map(p => p.produto).filter(Boolean))].sort();
             const wrap = document.getElementById('filtro-produto');
             wrap.style.display = produtosNoBanco.length > 1 ? 'flex' : 'none';
             wrap.innerHTML = `<button class="tab-btn ${produtoAtivo === 'todos' ? 'active' : ''}" style="font-size:0.75rem;padding:0.5rem 1rem;" data-produto="todos" onclick="filtrarProduto('todos')">Todos</button>`;
             produtosNoBanco.forEach(pr => {
-                wrap.innerHTML += `<button class="tab-btn ${produtoAtivo === pr ? 'active' : ''}" style="font-size:0.75rem;padding:0.5rem 1rem;" data-produto="${pr}" onclick="filtrarProduto('${pr}')">Ref: ${pr}</button>`;
+                const label = PRODUTO_LABELS[pr] || pr;
+                wrap.innerHTML += `<button class="tab-btn ${produtoAtivo === pr ? 'active' : ''}" style="font-size:0.75rem;padding:0.5rem 1rem;" data-produto="${pr}" onclick="filtrarProduto('${pr}')">${label}</button>`;
             });
         }
 
@@ -365,7 +749,7 @@
             document.querySelectorAll('#filtro-produto .tab-btn').forEach(b => {
                 b.classList.toggle('active', b.dataset.produto === produto);
             });
-            const abaAtiva = document.querySelector('.tab-btn[data-status].active')?.dataset.status || 'pendente';
+            const abaAtiva = document.querySelector('.tab-btn[data-status].active')?.dataset.status || 'aguardando';
             if (abaAtiva === 'resumo') mostrarResumo();
             else filtrar(abaAtiva);
         }
@@ -379,15 +763,16 @@
                     return p.status === status;
                 })
                 .filter(p => produtoAtivo === 'todos' ? true : (!p.produto || p.produto === produtoAtivo))
+                .filter(matchBusca)
                 .sort((a, b) => b.id - a.id);
         }
 
         function getStatusLabel(status) {
-            if (status === 'pendente') return 'Pendente';
-            if (status === 'enviado') return 'Atendido';
-            if (status === 'approved') return 'Pago';
+            if (status === 'pendente')             return 'Pendente';
+            if (status === 'enviado')              return 'Atendido';
+            if (status === 'approved')             return 'Pago';
             if (status === 'aguardando_pagamento') return 'Aguardando';
-            if (status === 'etiqueta_criada') return 'Etiqueta Criada';
+            if (status === 'etiqueta_criada')      return 'Etiqueta Criada';
             return status || '—';
         }
 
@@ -406,21 +791,43 @@
             'Pink':      'Floater Pink',
         };
 
-        // 2. Filtra e desenha os cards na tela
+        const PRODUTO_LABELS = {
+            'Paola':   'Paola',
+            'Carol':   'Carol',
+            'Modelo4': 'Celina',
+            'Lara':    'Lara',
+            'Adriana': 'Adriana',
+            'Miranda': 'Miranda',
+            'Modelo3': 'Denise',
+            'Julia':   'Julia',
+            'Renata':  'Renata',
+            'Megan':   'Megan',
+            'Michele': 'Michele',
+        };
+
+        // ── RENDER CARDS ──────────────────────────────────────────────────
         function filtrar(status) {
             document.getElementById('resumo-view').style.display = 'none';
             const grid = document.getElementById('grid');
             grid.style.display = 'grid';
             grid.innerHTML = '';
+            document.getElementById('search-wrap').style.display = 'flex';
 
             document.querySelectorAll('.tab-btn[data-status]').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.status === status);
             });
 
+            // Sincroniza label e sidebar com a aba ativa
+            const label = document.getElementById('active-tab-label');
+            if (label) label.textContent = sidebarLabels[status] || status;
+            document.querySelectorAll('.sidebar-item').forEach(el => {
+                el.classList.toggle('active', el.id === `side-${status}`);
+            });
+
             const filtrados = getDadosFiltrados(status);
 
             if (filtrados.length === 0) {
-                grid.innerHTML = `<div class="empty-msg">Nenhum pedido encontrado nesta categoria.</div>`;
+                grid.innerHTML = `<div class="empty-msg">Nenhum pedido encontrado${termoBusca ? ' para "' + termoBusca + '"' : ' nesta categoria'}.</div>`;
                 return;
             }
 
@@ -431,113 +838,146 @@
                 const msgZap = encodeURIComponent(`Olá ${p.nome}! Aqui é da Hearts Couro Legítimo. Recebemos seu pedido de uma Bolsa na cor ${p.cor}. Para estar dando prosseguimento na compra da sua linda bolsa ${p.produto}, estarei enviando o link do site da compra!\n\nhttps://hearts-couro.onrender.com/`);
                 const fone = getWhatsAppPhone(p.whatsapp);
                 const linkZap = fone ? `https://wa.me/55${fone}?text=${msgZap}` : '#';
-
                 const fmtValor = v => v ? 'R$ ' + parseFloat(v).toFixed(2).replace('.', ',') : '—';
 
-                card.innerHTML = `
-                    ${p.status === 'approved'
-                        ? `<span class="status-badge status-approved" id="badge-${p.id}" onclick="handleBadgeClick(${p.id})" title="Clique 2× para cancelar pagamento" style="cursor:pointer;">Pago</span>`
-                        : `<span class="status-badge status-${p.status}">${getStatusLabel(p.status)}</span>`
-                    }
-                    <span class="customer-name">${p.nome} ${p.sobrenome || ''}</span>
+                const badgeHtml = p.status === 'approved'
+                    ? `<span class="status-badge status-approved" id="badge-${p.id}" onclick="handleBadgeClick(${p.id})" title="Clique 2× para cancelar" style="cursor:pointer;">Pago</span>`
+                    : `<span class="status-badge status-${p.status}">${getStatusLabel(p.status)}</span>`;
 
-                    <div class="order-info">
-                        ${p.produto ? `<strong>Produto:</strong> ${p.produto}<br><br>` : ''}
-                        <strong>E-mail:</strong> ${p.email}<br>
-                        <strong>WhatsApp:</strong> ${p.whatsapp}<br>
-                        <strong>CPF:</strong> ${p.cpf || '—'}<br>
-                        <br>
-                        <strong>CEP:</strong> ${p.cep}<br>
-                        <strong>Logradouro:</strong> ${p.logradouro}, ${p.numero}${p.complemento ? ' — ' + p.complemento : ''}<br>
-                        <strong>Bairro:</strong> ${p.bairro}<br>
-                        <strong>Cidade:</strong> ${p.cidade} / ${p.estado}<br>
-                        <br>
-                        <strong>Cor:</strong> ${p.cor}<br>
-                        <strong>Pagamento:</strong> ${p.pagamento}${p.parcelas && p.parcelas > 1 ? ` — ${p.parcelas}x` : ''}<br>
-                        <strong>Frete:</strong> ${p.frete_nome || '—'} ${p.frete_valor ? '(' + fmtValor(p.frete_valor) + ')' : ''}<br>
-                        <strong>Total pago:</strong> ${fmtValor(p.valor_total)}<br>
-                        ${p.obs ? `<strong>Obs:</strong> ${p.obs}<br>` : ''}
-                        <br>
-                        <strong>Data:</strong> ${p.created_at ? new Date(p.created_at).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }) : '—'}
+                const acaoHtml = p.status === 'aguardando_pagamento'
+                    ? `<button type="button" class="btn-action btn-check" id="verify-${p.id}" onclick="verificarPagamento(${p.id})" style="background:rgba(80,160,255,0.15);border:1px solid #50a0ff;color:#50a0ff;">Verificar Pagamento</button>`
+                    : p.status === 'approved'
+                        ? `<button type="button" class="btn-action btn-etiqueta" id="etiqueta-${p.id}" onclick="gerarEtiqueta(${p.id})">📦 Gerar Etiqueta</button>
+                           <button type="button" class="btn-action" onclick="atualizarStatus(${p.id}, 'etiqueta_criada')" style="background:rgba(140,100,200,0.15);border:1px solid #a070e0;color:#a070e0;flex:0 0 auto;padding:0.65rem 0.9rem;" title="Marcar etiqueta criada">✓</button>`
+                        : p.status === 'etiqueta_criada'
+                            ? `<button type="button" class="btn-action btn-check" onclick="atualizarStatus(${p.id}, 'enviado')" style="background:rgba(37,211,102,0.15);border:1px solid #25d366;color:#25d366;">📬 Marcar Enviado</button>`
+                            : p.status === 'enviado'
+                                ? `<button type="button" class="btn-action btn-check" onclick="atualizarStatus(${p.id}, 'pendente')" style="opacity:0.4">Reverter</button>`
+                                : `<button type="button" class="btn-action btn-check" onclick="atualizarStatus(${p.id}, 'enviado')">Marcar Enviado</button>`;
+
+                card.innerHTML = `
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="card-left">
+                            <span class="customer-name">${p.nome} ${p.sobrenome || ''}</span>
+                            <div class="card-meta">
+                                <span>🎨 ${p.cor || '—'}</span>
+                                <span>💳 ${p.pagamento || '—'}</span>
+                                <span>${fmtValor(p.valor_total)}</span>
+                            </div>
+                        </div>
+                        ${badgeHtml}
+                        <span class="expand-arrow">▼</span>
                     </div>
 
-                    <div class="actions">
-                        <a href="${linkZap}" target="_blank" class="btn-action btn-whatsapp" ${fone ? '' : 'aria-disabled="true" style="opacity:.6;pointer-events:none;"'}>
-                            Chamar no Zap
-                        </a>
-                        ${p.status === 'aguardando_pagamento'
-                            ? `<button type="button" class="btn-action btn-check" id="verify-${p.id}" onclick="verificarPagamento(${p.id})" style="background:rgba(80,160,255,0.15);border-color:#50a0ff;color:#50a0ff;">Verificar Pagamento</button>`
-                            : p.status === 'approved'
-                                ? `<button type="button" class="btn-action btn-etiqueta" id="etiqueta-${p.id}" onclick="gerarEtiqueta(${p.id})">📦 Gerar Etiqueta</button>
-                                   <button type="button" class="btn-action" onclick="atualizarStatus(${p.id}, 'etiqueta_criada')" style="background:rgba(140,100,200,0.15);border:1px solid #a070e0;color:#a070e0;flex:0 0 auto;padding:0.75rem 1rem;" title="Etiqueta já criada no Melhor Envios">✓</button>`
-                                : p.status === 'etiqueta_criada'
-                                    ? `<button type="button" class="btn-action btn-check" onclick="atualizarStatus(${p.id}, 'enviado')" style="background:rgba(37,211,102,0.15);border-color:#25d366;color:#25d366;">📬 Marcar Enviado</button>`
-                                    : p.status === 'enviado'
-                                        ? `<button type="button" class="btn-action btn-check" onclick="atualizarStatus(${p.id}, 'pendente')" style="opacity:0.4">Reverter</button>`
-                                        : `<button type="button" class="btn-action btn-check" onclick="atualizarStatus(${p.id}, 'enviado')">Marcar Enviado</button>`
-                        }
+                    <div class="card-details">
+                        <div class="order-info">
+                            ${p.produto ? `<strong>Produto:</strong> ${p.produto}<br>` : ''}
+                            <strong>E-mail:</strong> ${p.email}<br>
+                            <strong>WhatsApp:</strong> ${p.whatsapp}<br>
+                            <strong>CPF:</strong> ${p.cpf || '—'}<br>
+                            <br>
+                            <strong>CEP:</strong> ${p.cep}<br>
+                            <strong>Logradouro:</strong> ${p.logradouro}, ${p.numero}${p.complemento ? ' — ' + p.complemento : ''}<br>
+                            <strong>Bairro:</strong> ${p.bairro}<br>
+                            <strong>Cidade:</strong> ${p.cidade} / ${p.estado}<br>
+                            <br>
+                            <strong>Frete:</strong> ${p.frete_nome || '—'} ${p.frete_valor ? '(' + fmtValor(p.frete_valor) + ')' : ''}<br>
+                            ${p.parcelas && p.parcelas > 1 ? `<strong>Parcelas:</strong> ${p.parcelas}x<br>` : ''}
+                            ${p.obs ? `<strong>Obs:</strong> ${p.obs}<br>` : ''}
+                            <strong>Data:</strong> ${p.created_at ? new Date(p.created_at).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }) : '—'}
+                        </div>
+                        <div class="actions">
+                            <a href="${linkZap}" target="_blank" class="btn-action btn-whatsapp" ${fone ? '' : 'aria-disabled="true" style="opacity:.6;pointer-events:none;"'}>
+                                Chamar no Zap
+                            </a>
+                            ${acaoHtml}
+                        </div>
                     </div>
                 `;
                 grid.appendChild(card);
             });
         }
 
-        // 3. Resumo de Vendas
+        function toggleCard(header) {
+            // Não fechar se o clique foi em um badge ou botão dentro do header
+            if (event.target.closest('.status-badge, .btn-action')) return;
+            header.closest('.order-card').classList.toggle('expanded');
+        }
+
+        // ── RESUMO ────────────────────────────────────────────────────────
         function mostrarResumo() {
             document.getElementById('grid').style.display = 'none';
+            document.getElementById('search-wrap').style.display = 'none';
 
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.status === 'resumo');
             });
 
-            const pagas = database.filter(p => p.status === 'approved' || p.status === 'etiqueta_criada' || p.status === 'enviado');
-            const base = produtoAtivo === 'todos' ? pagas : pagas.filter(p => p.produto === produtoAtivo);
-            const total = base.length;
-
-            const contagem = {};
-            base.forEach(p => {
-                const cor = p.cor || 'Não informada';
-                contagem[cor] = (contagem[cor] || 0) + 1;
+            const labelEl = document.getElementById('active-tab-label');
+            if (labelEl) labelEl.textContent = 'Resumo de Vendas';
+            document.querySelectorAll('.sidebar-item').forEach(el => {
+                el.classList.toggle('active', el.id === 'side-resumo');
             });
 
-            const cores = Object.entries(contagem).sort((a, b) => b[1] - a[1]);
-            const maxQtd = cores.length > 0 ? cores[0][1] : 1;
+            // Apenas pedidos com pagamento confirmado
+            const pagas = database.filter(p =>
+                p.status === 'approved' || p.status === 'etiqueta_criada' || p.status === 'enviado'
+            );
+            const base = produtoAtivo === 'todos' ? pagas : pagas.filter(p => p.produto === produtoAtivo);
+            const total = base.length;
+            const totalValor = base.reduce((s, p) => s + (parseFloat(p.valor_total) || 0), 0);
+            const fmtBRL = v => 'R$ ' + v.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
-            const coresHtml = cores.map(([cor, qtd]) => {
+            // Vendas por produto
+            const porProduto = {};
+            base.forEach(p => {
+                const pr = PRODUTO_LABELS[p.produto] || p.produto || 'Sem produto';
+                porProduto[pr] = (porProduto[pr] || 0) + 1;
+            });
+            const produtosOrdenados = Object.entries(porProduto).sort((a, b) => b[1] - a[1]);
+            const maxProd = produtosOrdenados.length > 0 ? produtosOrdenados[0][1] : 1;
+
+            const produtosHtml = produtosOrdenados.map(([nome, qtd]) => {
+                const pct = Math.round((qtd / maxProd) * 100);
+                return `<div class="cor-row"><span class="cor-nome">${nome}</span><div class="cor-bar-wrap"><div class="cor-bar" style="width:0%" data-pct="${pct}"></div></div><span class="cor-qtd">${qtd}</span></div>`;
+            }).join('');
+
+            // Vendas por cor
+            const porCor = {};
+            base.forEach(p => { const cor = p.cor || 'Não informada'; porCor[cor] = (porCor[cor] || 0) + 1; });
+            const coresOrdenadas = Object.entries(porCor).sort((a, b) => b[1] - a[1]);
+            const maxCor = coresOrdenadas.length > 0 ? coresOrdenadas[0][1] : 1;
+
+            const coresHtml = coresOrdenadas.map(([cor, qtd]) => {
                 const label = COR_LABELS[cor] || cor;
-                const pct = Math.round((qtd / maxQtd) * 100);
-                return `
-                    <div class="cor-row">
-                        <span class="cor-nome">${label}</span>
-                        <div class="cor-bar-wrap">
-                            <div class="cor-bar" style="width:0%" data-pct="${pct}"></div>
-                        </div>
-                        <span class="cor-qtd">${qtd}</span>
-                    </div>`;
+                const pct = Math.round((qtd / maxCor) * 100);
+                return `<div class="cor-row"><span class="cor-nome">${label}</span><div class="cor-bar-wrap"><div class="cor-bar" style="width:0%" data-pct="${pct}"></div></div><span class="cor-qtd">${qtd}</span></div>`;
             }).join('');
 
             const container = document.getElementById('resumo-view');
             container.innerHTML = `
                 <div class="resumo-stat">
-                    <div class="stat-label">Total de Bolsas Vendidas</div>
+                    <div class="stat-label">Bolsas Pagas e Confirmadas</div>
                     <div class="stat-number">${total}</div>
-                    <div class="stat-sub">${total === 1 ? 'bolsa vendida e paga' : 'bolsas vendidas e pagas'}</div>
+                    <div class="stat-sub">${fmtBRL(totalValor)} em vendas confirmadas</div>
                 </div>
+                ${produtosOrdenados.length > 1 ? `
+                <div class="resumo-table-card" style="margin-bottom:1.4rem;">
+                    <h3>Vendas por Modelo</h3>
+                    ${produtosHtml}
+                </div>` : ''}
                 <div class="resumo-table-card">
                     <h3>Vendas por Cor</h3>
-                    ${cores.length > 0 ? coresHtml : '<p style="color:var(--muted);font-size:0.8rem;">Nenhum pedido registrado ainda.</p>'}
+                    ${coresOrdenadas.length > 0 ? coresHtml : '<p style="color:var(--muted);font-size:0.8rem;">Nenhum pedido registrado ainda.</p>'}
                 </div>`;
             container.style.display = 'block';
 
-            // Anima as barras após render
             requestAnimationFrame(() => {
-                container.querySelectorAll('.cor-bar').forEach(bar => {
-                    bar.style.width = bar.dataset.pct + '%';
-                });
+                container.querySelectorAll('.cor-bar').forEach(bar => { bar.style.width = bar.dataset.pct + '%'; });
             });
         }
 
-        // 4. Cancelar "Pago" com duplo clique no badge
+        // ── BADGE DUPLO CLIQUE ────────────────────────────────────────────
         const _cancelarState = {};
 
         function handleBadgeClick(id) {
@@ -553,51 +993,43 @@
                 }
                 _cancelarState[id] = setTimeout(() => {
                     delete _cancelarState[id];
-                    if (badge) {
-                        badge.textContent = 'Pago';
-                        badge.style.cssText = 'cursor:pointer;';
-                    }
+                    if (badge) { badge.textContent = 'Pago'; badge.style.cssText = 'cursor:pointer;'; }
                 }, 3000);
             }
         }
 
-        // 5. Verificar pagamento no Mercado Pago
+        // ── VERIFICAR PAGAMENTO ───────────────────────────────────────────
         async function verificarPagamento(id) {
             const btn = document.getElementById(`verify-${id}`);
             if (btn) { btn.disabled = true; btn.textContent = 'Verificando...'; }
-
             try {
                 const resp = await fetch(`/api/verificar-pagamento/${id}`);
                 const result = await resp.json();
-
                 if (result.status === 'approved') {
-                    alert('✅ Pagamento confirmado! O pedido foi movido para "Pagos".');
+                    toast('Pagamento confirmado! Pedido movido para "Pagos".', 'success');
                     carregarPedidos();
                 } else if (result.status === 'pending' || result.status === 'in_process') {
-                    alert('⏳ ' + result.mensagem);
+                    toast(result.mensagem, 'warning');
                     if (btn) { btn.disabled = false; btn.textContent = 'Verificar Pagamento'; }
                 } else {
-                    alert('❌ ' + result.mensagem);
+                    toast(result.mensagem, 'error');
                     if (btn) { btn.disabled = false; btn.textContent = 'Verificar Pagamento'; }
                 }
             } catch (e) {
-                alert('Erro ao conectar com o servidor.');
+                toast('Erro ao conectar com o servidor.', 'error');
                 if (btn) { btn.disabled = false; btn.textContent = 'Verificar Pagamento'; }
             }
         }
 
-        // 5b. Verificar TODOS os pedidos aguardando pagamento
         async function verificarTodos() {
             const btn = document.getElementById('btn-verificar-todos');
             if (btn) { btn.disabled = true; btn.textContent = '🔄 Verificando...'; }
-
             const pendentes = database.filter(p => p.status === 'aguardando_pagamento');
             if (pendentes.length === 0) {
-                alert('Nenhum pedido aguardando pagamento.');
+                toast('Nenhum pedido aguardando pagamento.', 'warning');
                 if (btn) { btn.disabled = false; btn.textContent = '🔄 Verificar Todos'; }
                 return;
             }
-
             let atualizados = 0;
             for (const p of pendentes) {
                 try {
@@ -606,15 +1038,15 @@
                     if (result.status === 'approved') atualizados++;
                 } catch (_) {}
             }
-
             await carregarPedidos();
             if (btn) { btn.disabled = false; btn.textContent = '🔄 Verificar Todos'; }
-            alert(atualizados > 0
-                ? `✅ ${atualizados} pedido(s) atualizado(s) para "Pago"!`
-                : `Nenhum novo pagamento confirmado (verificados ${pendentes.length} pedidos).`);
+            if (atualizados > 0)
+                toast(`${atualizados} pedido(s) atualizado(s) para "Pago"!`, 'success');
+            else
+                toast(`Nenhum novo pagamento (verificados ${pendentes.length} pedidos).`, 'info');
         }
 
-        // 6. Gerar etiqueta no Melhor Envio
+        // ── GERAR ETIQUETA ────────────────────────────────────────────────
         async function gerarEtiqueta(id) {
             if (!confirm('Confirmar envio ao carrinho do Melhor Envio?')) return;
             const btn = document.getElementById(`etiqueta-${id}`);
@@ -623,19 +1055,19 @@
                 const resp = await fetch(`/api/gerar-etiqueta/${id}`, { method: 'POST' });
                 const result = await resp.json();
                 if (result.sucesso) {
-                    alert('Envio adicionado ao carrinho do Melhor Envio com sucesso!');
+                    toast('Envio adicionado ao carrinho do Melhor Envio!', 'success');
                     carregarPedidos();
                 } else {
-                    alert('Erro: ' + (result.erro || 'Não foi possível adicionar ao carrinho.'));
+                    toast('Erro: ' + (result.erro || 'Não foi possível adicionar ao carrinho.'), 'error');
                     if (btn) { btn.disabled = false; btn.textContent = '📦 Gerar Etiqueta'; }
                 }
             } catch (e) {
-                alert('Erro ao conectar com o servidor.');
+                toast('Erro ao conectar com o servidor.', 'error');
                 if (btn) { btn.disabled = false; btn.textContent = '📦 Gerar Etiqueta'; }
             }
         }
 
-        // 5. Função para mudar o status no servidor
+        // ── ATUALIZAR STATUS ──────────────────────────────────────────────
         async function atualizarStatus(id, novoStatus) {
             try {
                 await fetch('/api/status', {
@@ -643,17 +1075,14 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ id, status: novoStatus })
                 });
-                // Recarrega os dados após mudar
                 carregarPedidos();
             } catch (error) {
-                alert("Erro ao atualizar status.");
+                toast('Erro ao atualizar status.', 'error');
             }
         }
 
-        // Inicia o sistema
+        // Inicia
         carregarPedidos();
-
-        // Auto-refresh a cada 30 segundos para novos pedidos
         setInterval(carregarPedidos, 30000);
     </script>
 </body>
