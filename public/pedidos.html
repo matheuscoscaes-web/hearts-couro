@@ -924,9 +924,9 @@
                 el.classList.toggle('active', el.id === 'side-resumo');
             });
 
-            // Apenas pedidos com pagamento confirmado
+            // Apenas pedidos com pagamento confirmado pelo MP
             const pagas = database.filter(p =>
-                p.status === 'approved' || p.status === 'etiqueta_criada' || p.status === 'enviado'
+                p.status === 'approved' || p.status === 'etiqueta_criada'
             );
             const base = produtoAtivo === 'todos' ? pagas : pagas.filter(p => p.produto === produtoAtivo);
             const total = base.length;
