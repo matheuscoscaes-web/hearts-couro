@@ -687,11 +687,15 @@
             }
         }
 
+        function isPendente(p)   { return p.status === 'aguardando_pagamento' || p.status === 'pendente'; }
+        function isPago(p)      { return p.status === 'approved' || p.status === 'etiqueta_criada'; }
+        function isAtendido(p)  { return p.status === 'enviado'; }
+
         function atualizarContadores() {
             const counts = {
-                aguardando: database.filter(p => p.status === 'aguardando_pagamento').length,
-                pagos:      database.filter(p => p.status === 'approved' || p.status === 'etiqueta_criada').length,
-                enviado:    database.filter(p => p.status === 'enviado').length,
+                aguardando: database.filter(isPendente).length,
+                pagos:      database.filter(isPago).length,
+                enviado:    database.filter(isAtendido).length,
                 todos:      database.length,
             };
             Object.entries(counts).forEach(([k, v]) => {
@@ -757,12 +761,13 @@
         function getDadosFiltrados(status) {
             return database
                 .filter(p => {
-                    if (status === 'todos') return true;
-                    if (status === 'pagos') return p.status === 'approved' || p.status === 'etiqueta_criada';
-                    if (status === 'aguardando') return p.status === 'aguardando_pagamento';
-                    return p.status === status;
+                    if (status === 'todos')     return true;
+                    if (status === 'pagos')     return isPago(p);
+                    if (status === 'aguardando') return isPendente(p);
+                    if (status === 'enviado')   return isAtendido(p);
+                    return false;
                 })
-                .filter(p => produtoAtivo === 'todos' ? true : (!p.produto || p.produto === produtoAtivo))
+                .filter(p => produtoAtivo === 'todos' ? true : p.produto === produtoAtivo)
                 .filter(matchBusca)
                 .sort((a, b) => b.id - a.id);
         }
