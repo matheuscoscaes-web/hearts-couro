@@ -607,5 +607,5 @@ app.get('/api/diagnostico', async (req, res) => {
   res.json(resultado);
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🔥 Hearts Online na porta ${PORT}`));
