@@ -9,17 +9,17 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --black:      #0a0a0a;
-  --black-soft: #111111;
-  --card-bg:    #141414;
-  --border:     #2a2a2a;
-  --border-gold:#7a5c1e44;
-  --gold:       #c9963c;
-  --gold-light: #e8c47a;
+  --black:      #faf7f2;
+  --black-soft: #f0ebe1;
+  --card-bg:    #ffffff;
+  --border:     #ddd5c3;
+  --border-gold:#c9963c44;
+  --gold:       #b8832a;
+  --gold-light: #c9963c;
   --gold-dim:   #8a6520;
-  --text:       #e8e0d0;
-  --muted:      #7a7060;
-  --white:      #faf6ee;
+  --text:       #1a1510;
+  --muted:      #7a6a55;
+  --white:      #1a1510;
 }
 
 body {
@@ -40,7 +40,7 @@ body::before {
   content: '';
   position: fixed; top: 0; left: 50%; transform: translateX(-50%);
   width: 900px; height: 500px;
-  background: radial-gradient(ellipse at 50% 0%, rgba(201,150,60,0.07) 0%, transparent 70%);
+  background: radial-gradient(ellipse at 50% 0%, rgba(201,150,60,0.12) 0%, transparent 70%);
   pointer-events: none; z-index: 0;
 }
 
@@ -222,7 +222,7 @@ body::before {
 .measures { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 
 .m-chip {
-  background: #1a1a1a;
+  background: #f0ebe1;
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 0.3rem 0.7rem;
@@ -283,7 +283,7 @@ input, select, textarea {
   width: 100%; padding: 0.75rem 1rem;
   border: 1px solid var(--border); border-radius: 8px;
   font-family: 'Jost', sans-serif; font-size: 0.9rem;
-  color: var(--text); background: #0e0e0e;
+  color: var(--text); background: #ffffff;
   transition: border-color 0.2s, box-shadow 0.2s;
   outline: none;appearance: none;
 -webkit-appearance: none;;
@@ -301,7 +301,7 @@ select {
   padding-right: 2.5rem;
 }
 
-option { background: #1a1a1a; }
+option { background: #ffffff; }
 
 textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
 
@@ -467,7 +467,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
 .pix-code-box input {
   font-size: 0.68rem;
   color: var(--muted);
-  background: #0e0e0e;
+  background: #ffffff;
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 0.65rem 0.8rem;
@@ -513,10 +513,10 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  background: #0e0e0e;
+  background: #ffffff;
 }
 
-.frete-card:hover { border-color: var(--gold-dim); background: #111; }
+.frete-card:hover { border-color: var(--gold-dim); background: #f0ebe1; }
 
 .frete-option input:checked ~ .frete-card {
   border-color: var(--gold);
@@ -527,8 +527,8 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
 .frete-check {
   width: 18px; height: 18px; flex-shrink: 0;
   border-radius: 50%;
-  border: 1.5px solid #3a3a3a;
-  background: #1a1a1a;
+  border: 1.5px solid #c0b090;
+  background: #ffffff;
   display: flex; align-items: center; justify-content: center;
   font-size: 0.6rem; color: transparent;
   transition: all 0.2s;
@@ -609,14 +609,14 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  background: #0e0e0e;
+  background: #ffffff;
   position: relative;
   overflow: hidden;
 }
 
 .pay-card:hover {
   border-color: var(--gold-dim);
-  background: #111;
+  background: #f0ebe1;
 }
 
 .pay-option input:checked ~ .pay-card {
@@ -630,8 +630,8 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
   top: 0.6rem; right: 0.7rem;
   width: 18px; height: 18px;
   border-radius: 50%;
-  border: 1.5px solid #3a3a3a;
-  background: #1a1a1a;
+  border: 1.5px solid #c0b090;
+  background: #ffffff;
   display: flex; align-items: center; justify-content: center;
   font-size: 0.6rem; color: transparent;
   transition: all 0.2s;
@@ -903,7 +903,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
 }
 .qtd-btn {
   width: 36px; height: 36px;
-  background: #1a1a1a; border: 1px solid var(--border);
+  background: #ffffff; border: 1px solid var(--border);
   color: var(--text); font-size: 1.2rem; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: background 0.2s, border-color 0.2s;
@@ -1013,7 +1013,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
 }
 .cart-qtd-btn {
   width: 26px; height: 26px;
-  background: #1a1a1a; border: 1px solid var(--border);
+  background: #ffffff; border: 1px solid var(--border);
   color: var(--text); font-size: 1rem; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   border-radius: 6px; transition: background 0.15s;
