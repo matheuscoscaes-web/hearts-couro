@@ -1235,7 +1235,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
     <!-- Adriana -->
     <div class="product-card produto-card-sel" id="card-Adriana" onclick="abrirModal('Adriana')">
       <div class="img-zone">
-        <img alt="Bolsa Adriana" src="Adriana.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;">
+        <img alt="Bolsa Adriana" src="adriana-img/bolsaadrianapreta.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;">
       </div>
       <div class="prod-info">
         <div class="prod-tag">✦ Hearts Couro Legítimo — Pré-Venda Exclusiva</div>
@@ -1765,11 +1765,11 @@ const CORES_DEF = {
   Michele_Azul:     { label: 'Azul Mamute',     img: 'michele-img/micheleazul.jpg',    cor: '#1A2742' },
   Michele_Cafe:     { label: 'Café Mamute',     img: 'michele-img/michelecafe.jpg',    cor: '#3B1D14' },
 
-  Adriana_Preto:       { label: 'Preto',        img: '', cor: '#1a1a1a' },
-  Adriana_Caramelo:    { label: 'Caramelo',      img: '', cor: '#B8763A' },
-  Adriana_AzulMarinho: { label: 'Azul Marinho',  img: '', cor: '#1A2742' },
-  Adriana_MarromClaro: { label: 'Marrom Claro',  img: '', cor: '#8B5A2B' },
-  Adriana_OffWhite:    { label: 'Off White',     img: '', cor: '#E8E0D0' },
+  Adriana_Preto:       { label: 'Preto',        img: 'adriana-img/bolsaadrianapreta.jpg',  cor: '#1a1a1a' },
+  Adriana_Caramelo:    { label: 'Caramelo',      img: 'adriana-img/caramelorenata.jpg',     cor: '#B8763A' },
+  Adriana_AzulMarinho: { label: 'Azul Marinho',  img: '',                                   cor: '#1A2742' },
+  Adriana_MarromClaro: { label: 'Marrom Claro',  img: 'adriana-img/adrianamarromclaro.jpg', cor: '#8B5A2B' },
+  Adriana_OffWhite:    { label: 'Off White',     img: '',                                   cor: '#E8E0D0' },
 };
 
 const CORES_BASE    = ['Preto','Caramelo'];
@@ -1787,7 +1787,7 @@ const PRODUTOS_INFO = {
   Modelo4: { ativo: true,  preco: 199, imgs: ['celina-img/pretocelina.jpg'], nome: 'Celina',  cores: CORES_CELINA,  corImgs: { Celina_Preto: 'celina-img/pretocelina.jpg', Celina_Caramelo: 'celina-img/caramelocelina.jpg', Celina_Rubi: 'celina-img/rubicelina.jpg', Celina_Whiskey: 'celina-img/whiskeycelina.jpg', Celina_Azul: 'celina-img/azulcelina.jpg', Celina_Cafe: 'celina-img/cafecelina.jpg' }, desc: ['Bolsa média com bolso frontal','Fechamento em Zíper','Alça regulável'] },
   Miranda: { ativo: true,  preco: 259, imgs: ['miranda-img/pretoliso01.jpg'], nome: 'Miranda', cores: CORES_MIRANDA, corImgs: { Miranda_PretoLiso: 'miranda-img/pretoliso01.jpg', Miranda_PretoGranulado: 'miranda-img/prenogranulado01.jpg', Miranda_PretoCroco: 'miranda-img/crocopreta.jpg', Miranda_CarameloGranulado: 'miranda-img/caramelogranulado01.jpg', Miranda_MarromMamute: 'miranda-img/marrommamute.jpg', Miranda_Mostarda: 'miranda-img/Mostarda.jpg', Miranda_VerdePetroleo: 'miranda-img/carolverdepetróleo.jpg', Miranda_OffWhite: 'miranda-img/mirandaoffwhite.jpg' }, desc: ['Possui bolso frontal','Modelo grande e super espaçoso','Design exclusivo e sofisticado','Alça confortável integrada ao modelo','Medidas: Altura 51cm x Largura 33cm x Espessura 2cm'] },
   Lara:    { ativo: false, preco: 209, imgs: ['Lara.jpg','lara02.jpg'], nome: 'Lara',    cores: CORES_BASE,   desc: ['Abertura principal nas costas','Bolso frontal','Fechamento nas costas, pega ladrão'] },
-  Adriana: { ativo: true, preco: 189, imgs: ['Adriana.jpg'],            nome: 'Adriana', cores: CORES_ADRIANA, desc: ['Bolsa lateral estruturada','Pode ser usada como bolsa de mão','Fechamento em zíper'] },
+  Adriana: { ativo: true, preco: 189, imgs: ['adriana-img/bolsaadrianapreta.jpg'], nome: 'Adriana', cores: CORES_ADRIANA, corImgs: { Adriana_Preto: 'adriana-img/bolsaadrianapreta.jpg', Adriana_Caramelo: 'adriana-img/caramelorenata.jpg', Adriana_MarromClaro: 'adriana-img/adrianamarromclaro.jpg' }, desc: ['Bolsa lateral estruturada','Pode ser usada como bolsa de mão','Fechamento em zíper'] },
   Modelo3: { ativo: false, preco: 189, imgs: ['denise.jpg'],             nome: 'Denise',  cores: CORES_BASE,   desc: ['Couro Legítimo','Qualidade Hearts'] },
   Julia:   { ativo: false, preco: 299, imgs: ['julia.jpg'],              nome: 'Júlia',   cores: CORES_BASE,   desc: ['Duas opções de alça: mão e transversal','Vários bolsos externos','Fechamento em zíper'] },
   Renata:  { ativo: true,  preco: 279, imgs: ['renata-img/pretarenata.jpg'], nome: 'Renata',  cores: CORES_RENATA,  corImgs: { Renata_Preto: 'renata-img/pretarenata.jpg', Renata_Caramelo: 'renata-img/caramelorenata.jpg', Renata_Rubi: 'renata-img/rubirenata.jpg', Renata_Whiskey: 'renata-img/whiskeyrenata.jpg', Renata_Azul: 'renata-img/azulrenata.jpg', Renata_Cafe: 'renata-img/caferenata.jpg' }, desc: ['Simplesmente maravilhosa!','Modelo elegante, sofisticado e super confortável de usar no dia a dia','Possui bolso lateral','Alça de ombro confortável','Modelo grande e bem espaçoso','Acompanha tag charmosa na lateral','Medidas: Altura 32cm x Alça 28cm x Largura 34cm'] },
