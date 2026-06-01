@@ -42,7 +42,7 @@ const ESTOQUE_INICIAL = {
   'Paola_Whiskey':          7,
   'Paola_Preto':            3,
   'Paola_Cafe':             0,
-  'Paola_Azul_claro':       0,
+  'Paola_Azul':             0,
   'Paola_Argila':          16,
   'Paola_Pink':             2,
   'Paola_Caramelo':         3,
