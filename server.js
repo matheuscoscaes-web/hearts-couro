@@ -38,14 +38,14 @@ const PACOTE = { height: 11, width: 30, length: 32, weight: 1.0 };
 
 // Estoque inicial por produto_cor
 const ESTOQUE_INICIAL = {
-  'Paola_White':           13,
-  'Paola_Whiskey':         22,
-  'Paola_Preto':           35,
-  'Paola_Cafe':            16,
-  'Paola_Azul_claro':       8,
-  'Paola_Argila':          22,
-  'Paola_Pink':             6,
-  'Paola_Caramelo':        25,
+  'Paola_White':            6,
+  'Paola_Whiskey':          7,
+  'Paola_Preto':            3,
+  'Paola_Cafe':             0,
+  'Paola_Azul_claro':       0,
+  'Paola_Argila':          16,
+  'Paola_Pink':             2,
+  'Paola_Caramelo':         3,
   'Carol_Preto':           20,
   'Carol_Caramelo_brilho': 20,
 };
@@ -456,10 +456,6 @@ app.post('/api/status', async (req, res) => {
       .update({ status })
       .eq('id', id);
     if (error) throw error;
-    if (status === 'entregue') {
-      const { data: pd } = await supabase.from('pedidos').select('*').eq('id', id).single();
-      if (pd) enviarEmailRastreio(pd, codigo_rastreio || '');
-    }
     res.send('ok');
   } catch {
     res.status(500).send('erro');
@@ -559,6 +555,18 @@ app.post('/api/gerar-etiqueta/:id', async (req, res) => {
   } catch (err) {
     console.error('Erro ao gerar etiqueta:', err);
     return res.status(500).json({ erro: 'Erro ao gerar etiqueta.' });
+  }
+});
+
+// ── ROTA: Enviar Código de Rastreio ao Cliente ──
+app.post('/api/enviar-rastreio', async (req, res) => {
+  const { id, codigo_rastreio } = req.body;
+  try {
+    const { data: pedido } = await supabase.from('pedidos').select('*').eq('id', id).single();
+    if (pedido) enviarEmailRastreio(pedido, codigo_rastreio || '');
+    res.send('ok');
+  } catch {
+    res.status(500).send('erro');
   }
 });
 
