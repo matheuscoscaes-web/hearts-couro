@@ -403,13 +403,17 @@ app.get('/api/verificar-pagamento/:id', async (req, res) => {
   }
 });
 
+// Data em que o estoque foi zerado/reiniciado — só pedidos a partir daqui são descontados
+const ESTOQUE_RESET_DATA = '2026-06-01';
+
 // ── ROTA: Estoque por Cor ──
 app.get('/api/estoque', async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('pedidos')
       .select('produto, cor, status')
-      .in('status', ['approved', 'enviado', 'entregue', 'retirado']);
+      .in('status', ['approved', 'enviado', 'entregue', 'retirado'])
+      .gte('created_at', ESTOQUE_RESET_DATA);
 
     if (error) throw error;
 
