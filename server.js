@@ -467,6 +467,18 @@ app.post('/api/status', async (req, res) => {
   }
 });
 
+// ── ROTA: Remover Pedido ──
+app.delete('/api/pedidos/:id', async (req, res) => {
+  const id = parseInt(req.params.id);
+  try {
+    const { error } = await supabase.from('pedidos').delete().eq('id', id);
+    if (error) throw error;
+    res.send('ok');
+  } catch {
+    res.status(500).send('erro');
+  }
+});
+
 // ── ROTA: Gerar Etiqueta Melhor Envio ──
 app.post('/api/gerar-etiqueta/:id', async (req, res) => {
   const pedidoId = parseInt(req.params.id);

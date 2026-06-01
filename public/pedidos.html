@@ -7,15 +7,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --black: #0a0a0a;
-            --card-bg: #141414;
-            --border: #2a2a2a;
-            --gold: #c9963c;
-            --gold-light: #d4b873;
+            --black: #faf7f2;
+            --card-bg: #ffffff;
+            --border: #ddd5c3;
+            --gold: #b8832a;
+            --gold-light: #c9963c;
             --gold-dim: #8a6520;
-            --text: #e8e0d0;
-            --muted: #7a7060;
-            --white: #faf6ee;
+            --text: #1a1510;
+            --muted: #7a6a55;
+            --white: #1a1510;
             --green-whatsapp: #25d366;
         }
 
@@ -873,7 +873,8 @@
 
                 let acaoHtml = '';
                 if (p.status === 'aguardando_pagamento') {
-                    acaoHtml = `<button type="button" class="btn-action btn-check" id="verify-${p.id}" onclick="verificarPagamento(${p.id})" style="background:rgba(80,160,255,0.15);border:1px solid #50a0ff;color:#50a0ff;">Verificar Pagamento</button>`;
+                    acaoHtml = `<button type="button" class="btn-action btn-check" id="verify-${p.id}" onclick="verificarPagamento(${p.id})" style="background:rgba(80,160,255,0.15);border:1px solid #50a0ff;color:#50a0ff;">Verificar Pagamento</button>
+                               <button type="button" class="btn-action" onclick="removerPedido(${p.id})" style="background:rgba(192,97,74,0.15);border:1px solid #c0614a;color:#c0614a;flex:0 0 auto;padding:0.65rem 0.9rem;" title="Remover pedido">🗑</button>`;
                 } else if (p.status === 'approved') {
                     acaoHtml = `<button type="button" class="btn-action btn-etiqueta" id="etiqueta-${p.id}" onclick="gerarEtiqueta(${p.id})">📦 Gerar Etiqueta</button>
                                <button type="button" class="btn-action" onclick="atualizarStatus(${p.id}, 'etiqueta_criada')" style="background:rgba(140,100,200,0.15);border:1px solid #a070e0;color:#a070e0;flex:0 0 auto;padding:0.65rem 0.9rem;" title="Marcar etiqueta criada">✓</button>
@@ -1045,6 +1046,21 @@
                     delete _cancelarState[id];
                     if (badge) { badge.textContent = 'Pago'; badge.style.cssText = 'cursor:pointer;'; }
                 }, 3000);
+            }
+        }
+
+        // ── REMOVER PEDIDO ────────────────────────────────────────────────
+        async function removerPedido(id) {
+            if (!confirm('Remover este pedido permanentemente?')) return;
+            try {
+                const r = await fetch(`/api/pedidos/${id}`, { method: 'DELETE' });
+                if (!r.ok) throw new Error();
+                database = database.filter(p => p.id !== id);
+                renderizarPedidos(database);
+                atualizarContadores();
+                toast('Pedido removido.', 'success');
+            } catch {
+                toast('Erro ao remover pedido.', 'error');
             }
         }
 
