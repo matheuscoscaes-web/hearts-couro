@@ -1970,7 +1970,7 @@ function abrirModal(produto) {
   const grid = document.getElementById('modal-cor-grid');
   grid.innerHTML = info.cores.map(corKey => {
     const c = CORES_DEF[corKey];
-    const esgotado = (estoqueGlobal[`${produto}_${corKey}`] === 0);
+    const esgotado = (estoqueGlobal[corKey] === 0);
     return `<label class="color-option${esgotado ? ' esgotado' : ''}">
       <input type="radio" name="modal-cor" value="${corKey}" ${esgotado ? 'disabled' : ''}>
       <div class="color-swatch" style="background-color:${c.cor||''};background-image:url('${c.img}');background-size:cover;"></div>
