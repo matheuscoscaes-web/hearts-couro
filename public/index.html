@@ -1360,6 +1360,26 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
       <div class="prod-select-btn">Ver detalhes</div>
     </div>
 
+    <!-- Manuela -->
+    <div class="product-card produto-card-sel" id="card-Manuela" onclick="abrirModal('Manuela')">
+      <div class="img-zone">
+        <img alt="Bolsa Manuela" src="manuela-img/manuelapreta.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;">
+      </div>
+      <div class="prod-info">
+        <div class="prod-tag">✦ Hearts Couro Legítimo — Pré-Venda Exclusiva</div>
+        <div class="prod-name">Ref: Manuela</div>
+        <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
+        <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
+          • Couro Legítimo<br>• Qualidade Hearts
+        </div>
+        <div class="prod-price-block">
+          <div class="price-lbl">Valor especial de pré-venda</div>
+          <div class="prod-price">R$ 259,00</div>
+        </div>
+      </div>
+      <div class="prod-select-btn">Ver detalhes</div>
+    </div>
+
     <div class="product-card produto-card-sel" id="card-Michele" onclick="abrirModal('Michele')">
       <div class="img-zone">
         <img alt="Bolsa Michele" src="michele-img/michele.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;">
@@ -1774,10 +1794,15 @@ const CORES_DEF = {
   Megan_Preto:    { label: 'Preto',    img: 'megan-img/meganpreta.jpg',   cor: '#1a1a1a' },
   Megan_Caramelo: { label: 'Caramelo', img: 'megan-img/megancaramelo.jpg', cor: '#B8763A' },
   Megan_Whiskey:  { label: 'Whiskey',  img: 'megan-img/whiskeymegan.jpg',  cor: '#8B4A2F' },
+
+  Manuela_Preto:   { label: 'Preto',   img: 'manuela-img/manuelapreta.jpg',   cor: '#1a1a1a' },
+  Manuela_Grafite: { label: 'Grafite', img: 'manuela-img/manuelagrafite.jpg', cor: '#4A4A4A' },
+  Manuela_Telha:   { label: 'Telha',   img: 'manuela-img/manuelatelha.jpg',   cor: '#B5533A' },
 };
 
 const CORES_BASE    = ['Preto','Caramelo'];
-const CORES_MEGAN   = ['Megan_Preto','Megan_Caramelo','Megan_Whiskey'];
+const CORES_MEGAN    = ['Megan_Preto','Megan_Caramelo','Megan_Whiskey'];
+const CORES_MANUELA  = ['Manuela_Preto','Manuela_Grafite','Manuela_Telha'];
 const CORES_PAOLA   = ['Paola_White','Paola_Preto','Paola_Cafe','Paola_Argila','Paola_Azul','Paola_Whiskey','Paola_Caramelo','Paola_Pink'];
 const CORES_CAROL   = ['Carol_Preto','Carol_Caramelo','Carol_Rubi','Carol_Whiskey','Carol_Azul','Carol_Cafe'];
 const CORES_CELINA  = ['Celina_Preto','Celina_Caramelo','Celina_Rubi','Celina_Whiskey','Celina_Azul','Celina_Cafe'];
@@ -1796,7 +1821,8 @@ const PRODUTOS_INFO = {
   Modelo3: { ativo: false, preco: 189, imgs: ['denise.jpg'],             nome: 'Denise',  cores: CORES_BASE,   desc: ['Couro Legítimo','Qualidade Hearts'] },
   Julia:   { ativo: false, preco: 299, imgs: ['julia.jpg'],              nome: 'Júlia',   cores: CORES_BASE,   desc: ['Duas opções de alça: mão e transversal','Vários bolsos externos','Fechamento em zíper'] },
   Renata:  { ativo: true,  preco: 279, imgs: ['renata-img/pretarenata.jpg'], nome: 'Renata',  cores: CORES_RENATA,  corImgs: { Renata_Preto: 'renata-img/pretarenata.jpg', Renata_Caramelo: 'renata-img/caramelorenata.jpg', Renata_Rubi: 'renata-img/rubirenata.jpg', Renata_Whiskey: 'renata-img/whiskeyrenata.jpg', Renata_Azul: 'renata-img/azulrenata.jpg', Renata_Cafe: 'renata-img/caferenata.jpg' }, desc: ['Simplesmente maravilhosa!','Modelo elegante, sofisticado e super confortável de usar no dia a dia','Possui bolso lateral','Alça de ombro confortável','Modelo grande e bem espaçoso','Acompanha tag charmosa na lateral','Medidas: Altura 32cm x Alça 28cm x Largura 34cm'] },
-  Megan:   { ativo: true,  preco: 289, imgs: ['megan-img/meganpreta.jpg'], nome: 'Megan',   cores: CORES_MEGAN,  corImgs: { Megan_Preto: 'megan-img/meganpreta.jpg', Megan_Caramelo: 'megan-img/megancaramelo.jpg', Megan_Whiskey: 'megan-img/whiskeymegan.jpg' }, desc: ['Couro Legítimo','Qualidade Hearts'] },
+  Megan:    { ativo: true,  preco: 289, imgs: ['megan-img/meganpreta.jpg'],    nome: 'Megan',    cores: CORES_MEGAN,    corImgs: { Megan_Preto: 'megan-img/meganpreta.jpg', Megan_Caramelo: 'megan-img/megancaramelo.jpg', Megan_Whiskey: 'megan-img/whiskeymegan.jpg' }, desc: ['Couro Legítimo','Qualidade Hearts'] },
+  Manuela:  { ativo: true,  preco: 259, imgs: ['manuela-img/manuelapreta.jpg'], nome: 'Manuela',  cores: CORES_MANUELA,  corImgs: { Manuela_Preto: 'manuela-img/manuelapreta.jpg', Manuela_Grafite: 'manuela-img/manuelagrafite.jpg', Manuela_Telha: 'manuela-img/manuelatelha.jpg' }, desc: ['Couro Legítimo','Qualidade Hearts'] },
   Michele: { ativo: true,  preco: 259, imgs: ['michele-img/michele.jpg'], nome: 'Michele', cores: CORES_MICHELE, corImgs: { Michele_Preto: 'michele-img/michele.jpg', Michele_Caramelo: 'michele-img/michelecaramelo.jpg', Michele_Rubi: 'michele-img/michelerubi.jpg', Michele_Whiskey: 'michele-img/michelewhiskey.jpg', Michele_Azul: 'michele-img/micheleazul.jpg', Michele_Cafe: 'michele-img/michelecafe.jpg' }, desc: ['Muito charmosa!','Tamanho médio mas bem espaçosa','Possui 3 aberturas','2 opções de alça: mão e transversal','UMA DE NOSSAS CAMPEÃS DE VENDAS!','Medidas: Altura 24cm x Alça 16cm x Largura 24cm'] },
 };
 
