@@ -2062,7 +2062,7 @@ function adicionarAoCarrinho() {
       corLabel,
       quantidade: modalQtdAtual,
       preco:    info.preco,
-      img:      info.imgs[0],
+      img:      (info.corImgs && info.corImgs[corKey]) || info.imgs[0],
     });
   }
 
