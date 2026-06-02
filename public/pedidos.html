@@ -639,7 +639,7 @@
                 type="search"
                 class="search-input"
                 id="search-input"
-                placeholder="Buscar por nome, CPF ou WhatsApp…"
+                placeholder="Buscar por nome, CPF, WhatsApp ou bairro…"
                 oninput="onSearch()"
             >
         </div>
@@ -682,7 +682,7 @@
 
         function matchBusca(p) {
             if (!termoBusca) return true;
-            const campos = [p.nome, p.sobrenome, p.cpf, p.whatsapp, p.email, p.cor].map(v => (v || '').toLowerCase());
+            const campos = [p.nome, p.sobrenome, p.cpf, p.whatsapp, p.email, p.cor, p.bairro].map(v => (v || '').toLowerCase());
             return campos.some(c => c.includes(termoBusca));
         }
 
