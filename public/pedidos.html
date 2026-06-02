@@ -896,7 +896,7 @@
                 } else if (p.status === 'retirado') {
                     acaoHtml = `<button type="button" class="btn-action btn-check" onclick="atualizarStatus(${p.id}, 'aguardando_pagamento')" style="opacity:0.4">Reverter</button>`;
                 } else {
-                    acaoHtml = `<button type="button" class="btn-action btn-check" onclick="marcarEnviado(${p.id})">Marcar Enviado</button>`;
+                    acaoHtml = `<button type="button" class="btn-action" onclick="atualizarStatus(${p.id}, 'enviado')" style="background:rgba(0,188,212,0.15);border:1px solid #00bcd4;color:#00bcd4;">💬 Mensagem Enviada</button>`;
                 }
 
                 card.innerHTML = `
