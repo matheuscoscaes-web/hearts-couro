@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hearts Couro Legítimo — Pré-Venda</title>
+<title>Hearts Couro Legítimo</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -817,15 +817,17 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
 .modal-close {
-  position: absolute; top: 1rem; right: 1rem;
-  background: rgba(255,255,255,0.07);
-  border: none; color: var(--muted);
-  width: 32px; height: 32px; border-radius: 50%;
+  position: absolute; top: 0.75rem; right: 0.75rem; z-index: 10;
+  background: var(--card-bg);
+  border: 1.5px solid var(--border);
+  color: var(--text);
+  width: 36px; height: 36px; border-radius: 50%;
   font-size: 1rem; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  transition: background 0.2s, color 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
 }
-.modal-close:hover { background: rgba(255,255,255,0.12); color: var(--text); }
+.modal-close:hover { background: var(--gold); border-color: var(--gold); color: #fff; transform: scale(1.08); }
 
 .modal-img-zone {
   width: 100%; height: 420px; overflow: hidden; position: relative;
@@ -1096,6 +1098,87 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
 .cart-vazio-aviso {
   color: var(--muted); font-size: 0.82rem; font-style: italic; padding: 0.5rem 0;
 }
+/* ── CONTA / LOGIN ── */
+.conta-strip {
+  margin: 0.7rem 0 0.4rem;
+  padding: 0.75rem 1rem;
+  background: rgba(201,150,60,0.05);
+  border: 1px solid rgba(201,150,60,0.22);
+  border-radius: 10px;
+}
+#conta-guest { display: flex; flex-direction: column; gap: 0.45rem; }
+.conta-strip-text { font-size: 0.68rem; color: var(--muted); }
+.btn-conta-entrar {
+  width: 100%; padding: 0.55rem; background: transparent;
+  border: 1px solid var(--gold); color: var(--gold);
+  font-family: 'Jost', sans-serif; font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase; border-radius: 7px;
+  cursor: pointer; transition: all 0.2s;
+}
+.btn-conta-entrar:hover { background: var(--gold); color: #fff; }
+#conta-user { display: none; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.conta-strip-ola { font-size: 0.78rem; color: var(--text); }
+.conta-strip-sub { font-size: 0.6rem; color: var(--muted); margin-top: 0.1rem; }
+.btn-conta-sair {
+  background: transparent; border: 1px solid var(--border); color: var(--muted);
+  font-family: 'Jost', sans-serif; font-size: 0.63rem; font-weight: 500;
+  padding: 0.28rem 0.55rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;
+  white-space: nowrap; flex-shrink: 0;
+}
+.btn-conta-sair:hover { color: var(--text); border-color: var(--muted); }
+
+/* Login modal */
+#login-modal-overlay {
+  position: fixed; inset: 0; background: rgba(26,21,16,0.78);
+  z-index: 2000; display: none; align-items: center; justify-content: center;
+  padding: 1rem; backdrop-filter: blur(4px);
+}
+#login-modal {
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px;
+  width: 100%; max-width: 400px; box-shadow: 0 24px 64px rgba(0,0,0,0.22);
+  animation: lmUp 0.28s ease; overflow: hidden;
+}
+@keyframes lmUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.lm-header {
+  padding: 1.1rem 1.3rem; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.lm-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; color: var(--gold); letter-spacing: 0.05em; }
+.lm-close { background: transparent; border: none; color: var(--muted); font-size: 1rem; cursor: pointer; transition: color .2s; padding: .2rem; }
+.lm-close:hover { color: var(--text); }
+.lm-tabs { display: flex; border-bottom: 1px solid var(--border); }
+.lm-tab {
+  flex: 1; padding: .7rem; background: transparent; border: none;
+  border-bottom: 2px solid transparent; font-family: 'Jost', sans-serif;
+  font-size: .75rem; font-weight: 500; color: var(--muted); cursor: pointer;
+  transition: all .2s; letter-spacing: .04em;
+}
+.lm-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+.lm-tab:hover:not(.active) { color: var(--text); }
+.lm-body { padding: 1.2rem 1.3rem 1.4rem; }
+.lm-row { display: grid; grid-template-columns: 1fr 1fr; gap: .65rem; }
+.lm-field { margin-bottom: .8rem; }
+.lm-field label {
+  display: block; font-size: .62rem; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: .28rem; font-family: 'Jost', sans-serif;
+}
+.lm-field input {
+  width: 100%; background: var(--black-soft); border: 1px solid var(--border);
+  border-radius: 7px; padding: .52rem .72rem; font-size: .84rem; color: var(--text);
+  font-family: 'Jost', sans-serif; outline: none; transition: border-color .2s;
+}
+.lm-field input:focus { border-color: var(--gold-dim); }
+.lm-error { font-size: .7rem; color: #e05555; min-height: .9rem; margin-bottom: .6rem; }
+.lm-btn {
+  width: 100%; padding: .78rem; background: var(--gold); color: #fff; border: none;
+  border-radius: 8px; font-family: 'Jost', sans-serif; font-size: .8rem; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase; cursor: pointer; transition: filter .2s, transform .15s;
+}
+.lm-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.lm-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
 </style>
 </head>
 <body>
@@ -1128,7 +1211,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
         <img alt="Bolsa Paola" src="paola-img/paola01.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 75%;">
       </div>
       <div class="prod-info">
-        <div class="prod-tag">✦ Hearts Couro Legítimo — Pré-Venda Exclusiva</div>
+        <div class="prod-tag">✦ Hearts Couro Legítimo</div>
         <div class="prod-name">Ref: Paola</div>
         <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
         <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
@@ -1139,7 +1222,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
           • Carregue tudo que precisa!
         </div>
         <div class="prod-price-block">
-          <div class="price-lbl">Valor especial de pré-venda</div>
+          <div class="price-lbl">Valor</div>
           <div class="prod-price">R$ 229,00</div>
         </div>
         <div class="measures">
@@ -1156,7 +1239,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
         <img alt="Bolsa Carol" src="carol-img/carol.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 75%;">
       </div>
       <div class="prod-info">
-        <div class="prod-tag">✦ Hearts Couro Legítimo — Pré-Venda Exclusiva</div>
+        <div class="prod-tag">✦ Hearts Couro Legítimo</div>
         <div class="prod-name">Ref: Carol</div>
         <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
         <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
@@ -1167,7 +1250,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
           • Bolso Interno
         </div>
         <div class="prod-price-block">
-          <div class="price-lbl">Valor especial de pré-venda</div>
+          <div class="price-lbl">Valor</div>
           <div class="prod-price">R$ 289,00</div>
         </div>
         <div class="measures">
@@ -1186,7 +1269,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
         <img alt="Bolsa Celina" src="celina-img/pretocelina.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;">
       </div>
       <div class="prod-info">
-        <div class="prod-tag">✦ Hearts Couro Legítimo — Pré-Venda Exclusiva</div>
+        <div class="prod-tag">✦ Hearts Couro Legítimo</div>
         <div class="prod-name">Ref: Celina</div>
         <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
         <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
@@ -1195,7 +1278,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
           • Alça regulável
         </div>
         <div class="prod-price-block">
-          <div class="price-lbl">Valor especial de pré-venda</div>
+          <div class="price-lbl">Valor</div>
           <div class="prod-price">R$ 199,00</div>
         </div>
         <div class="measures">
@@ -1212,7 +1295,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
         <img alt="Bolsa Lara" src="Lara.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;">
       </div>
       <div class="prod-info">
-        <div class="prod-tag">✦ Hearts Couro Legítimo — Pré-Venda Exclusiva</div>
+        <div class="prod-tag">✦ Hearts Couro Legítimo</div>
         <div class="prod-name">Ref: Lara</div>
         <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
         <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
@@ -1221,7 +1304,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
           • Fechamento nas costas, pega ladrão
         </div>
         <div class="prod-price-block">
-          <div class="price-lbl">Valor especial de pré-venda</div>
+          <div class="price-lbl">Valor</div>
           <div class="prod-price">R$ 209,00</div>
         </div>
         <div class="measures">
@@ -1238,7 +1321,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
         <img alt="Bolsa Adriana" src="adriana-img/bolsaadrianapreta.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;">
       </div>
       <div class="prod-info">
-        <div class="prod-tag">✦ Hearts Couro Legítimo — Pré-Venda Exclusiva</div>
+        <div class="prod-tag">✦ Hearts Couro Legítimo</div>
         <div class="prod-name">Ref: Adriana</div>
         <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
         <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
@@ -1247,7 +1330,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
           • Fechamento em zíper
         </div>
         <div class="prod-price-block">
-          <div class="price-lbl">Valor especial de pré-venda</div>
+          <div class="price-lbl">Valor</div>
           <div class="prod-price">R$ 189,00</div>
         </div>
         <div class="measures">
@@ -1264,14 +1347,14 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
         <img alt="Bolsa Miranda" src="miranda-img/pretoliso01.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;">
       </div>
       <div class="prod-info">
-        <div class="prod-tag">✦ Hearts Couro Legítimo — Pré-Venda Exclusiva</div>
+        <div class="prod-tag">✦ Hearts Couro Legítimo</div>
         <div class="prod-name">Ref: Miranda</div>
         <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
         <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
           • Descrição em breve<br>• Couro Legítimo<br>• Qualidade Hearts
         </div>
         <div class="prod-price-block">
-          <div class="price-lbl">Valor especial de pré-venda</div>
+          <div class="price-lbl">Valor</div>
           <div class="prod-price">R$ 259,00</div>
         </div>
       </div>
@@ -1284,14 +1367,14 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
         <img alt="Bolsa Denise" src="denise-img/denisepreta.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;">
       </div>
       <div class="prod-info">
-        <div class="prod-tag">✦ Hearts Couro Legítimo — Pré-Venda Exclusiva</div>
+        <div class="prod-tag">✦ Hearts Couro Legítimo</div>
         <div class="prod-name">Ref: Denise</div>
         <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
         <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
           • Descrição em breve<br>• Couro Legítimo<br>• Qualidade Hearts
         </div>
         <div class="prod-price-block">
-          <div class="price-lbl">Valor especial de pré-venda</div>
+          <div class="price-lbl">Valor</div>
           <div class="prod-price">R$ 189,00</div>
         </div>
       </div>
@@ -1304,7 +1387,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
         <img alt="Bolsa Júlia" src="julia.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;">
       </div>
       <div class="prod-info">
-        <div class="prod-tag">✦ Hearts Couro Legítimo — Pré-Venda Exclusiva</div>
+        <div class="prod-tag">✦ Hearts Couro Legítimo</div>
         <div class="prod-name">Ref: Júlia</div>
         <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
         <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
@@ -1313,7 +1396,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
           • Fechamento em zíper
         </div>
         <div class="prod-price-block">
-          <div class="price-lbl">Valor especial de pré-venda</div>
+          <div class="price-lbl">Valor</div>
           <div class="prod-price">R$ 299,00</div>
         </div>
       </div>
@@ -1326,14 +1409,14 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
         <img alt="Bolsa Renata" src="renata-img/pretarenata.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;">
       </div>
       <div class="prod-info">
-        <div class="prod-tag">✦ Hearts Couro Legítimo — Pré-Venda Exclusiva</div>
+        <div class="prod-tag">✦ Hearts Couro Legítimo</div>
         <div class="prod-name">Ref: Renata</div>
         <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
         <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
           • Descrição em breve<br>• Couro Legítimo<br>• Qualidade Hearts
         </div>
         <div class="prod-price-block">
-          <div class="price-lbl">Valor especial de pré-venda</div>
+          <div class="price-lbl">Valor</div>
           <div class="prod-price">R$ 279,00</div>
         </div>
       </div>
@@ -1346,14 +1429,14 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
         <img alt="Bolsa Megan" src="megan-img/meganpreta.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;">
       </div>
       <div class="prod-info">
-        <div class="prod-tag">✦ Hearts Couro Legítimo — Pré-Venda Exclusiva</div>
+        <div class="prod-tag">✦ Hearts Couro Legítimo</div>
         <div class="prod-name">Ref: Megan</div>
         <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
         <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
           • Descrição em breve<br>• Couro Legítimo<br>• Qualidade Hearts
         </div>
         <div class="prod-price-block">
-          <div class="price-lbl">Valor especial de pré-venda</div>
+          <div class="price-lbl">Valor</div>
           <div class="prod-price">R$ 289,00</div>
         </div>
       </div>
@@ -1366,14 +1449,14 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
         <img alt="Bolsa Manuela" src="manuela-img/manuelapreta.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;">
       </div>
       <div class="prod-info">
-        <div class="prod-tag">✦ Hearts Couro Legítimo — Pré-Venda Exclusiva</div>
+        <div class="prod-tag">✦ Hearts Couro Legítimo</div>
         <div class="prod-name">Ref: Manuela</div>
         <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
         <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
           • Couro Legítimo<br>• Qualidade Hearts
         </div>
         <div class="prod-price-block">
-          <div class="price-lbl">Valor especial de pré-venda</div>
+          <div class="price-lbl">Valor</div>
           <div class="prod-price">R$ 259,00</div>
         </div>
       </div>
@@ -1386,14 +1469,14 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
         <img alt="Bolsa Maria" src="maria-img/mariabolsapreta.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;">
       </div>
       <div class="prod-info">
-        <div class="prod-tag">✦ Hearts Couro Legítimo — Pré-Venda Exclusiva</div>
+        <div class="prod-tag">✦ Hearts Couro Legítimo</div>
         <div class="prod-name">Ref: Maria</div>
         <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
         <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
           • Couro Legítimo<br>• Qualidade Hearts
         </div>
         <div class="prod-price-block">
-          <div class="price-lbl">Valor especial de pré-venda</div>
+          <div class="price-lbl">Valor</div>
           <div class="prod-price">R$ 269,00</div>
         </div>
       </div>
@@ -1405,14 +1488,14 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
         <img alt="Bolsa Michele" src="michele-img/michele.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;">
       </div>
       <div class="prod-info">
-        <div class="prod-tag">✦ Hearts Couro Legítimo — Pré-Venda Exclusiva</div>
+        <div class="prod-tag">✦ Hearts Couro Legítimo</div>
         <div class="prod-name">Ref: Michele</div>
         <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
         <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
           • Descrição em breve<br>• Couro Legítimo<br>• Qualidade Hearts
         </div>
         <div class="prod-price-block">
-          <div class="price-lbl">Valor especial de pré-venda</div>
+          <div class="price-lbl">Valor</div>
           <div class="prod-price">R$ 259,00</div>
         </div>
       </div>
@@ -1428,14 +1511,25 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
     <div id="form-view">
 
       <div class="form-header">
-        <h1>Reserve a sua peça<br><em>com exclusividade</em></h1>
+        <h1>Finalize sua<br><em>compra</em></h1>
         <div class="gold-line"></div>
-        <p>Preencha os dados abaixo para garantir sua unidade com prioridade de entrega e condições especiais de lançamento.</p>
+        <p>Confirme seus dados de entrega e escolha a forma de pagamento para concluir o pedido.</p>
       </div>
 
       <form id="prevenda-form" novalidate>
 
+        <!-- Resumo quando logado -->
+        <div id="secao-logado" style="display:none">
+          <div style="background:rgba(201,150,60,0.06);border:1px solid rgba(201,150,60,0.25);border-radius:12px;padding:1rem 1.2rem;margin-bottom:1.2rem;">
+            <div style="font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:0.5rem;">Comprando como</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--text);" id="logado-nome-val"></div>
+            <div style="font-size:0.72rem;color:var(--muted);margin-top:0.3rem;" id="logado-end-val"></div>
+            <button type="button" onclick="sairContaEFecharForm()" style="margin-top:0.6rem;background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'Jost',sans-serif;font-size:0.65rem;padding:0.25rem 0.6rem;border-radius:4px;cursor:pointer;">Trocar conta</button>
+          </div>
+        </div>
+
         <!-- Dados pessoais -->
+        <div id="secao-dados">
         <div class="section-label">Seus dados</div>
 
         <div class="row">
@@ -1469,8 +1563,10 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
             <span class="error-msg" id="cpf-err">Insira seu CPF (obrigatório para PIX).</span>
           </div>
         </div>
+        </div>
 
         <!-- Endereço -->
+        <div id="secao-endereco">
         <div class="section-label">Endereço de entrega</div>
 
         <div class="field">
@@ -1527,6 +1623,8 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
           </div>
         </div>
 
+
+        </div><!-- fim secao-endereco -->
 
         <!-- Frete -->
         <div class="section-label">Opções de entrega <span style="color:var(--gold);font-size:0.7rem">*</span></div>
@@ -1641,9 +1739,8 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
         </div>
 
         <div class="submit-area">
-          <button type="submit" class="btn-submit">✦ &nbsp; Confirmar minha reserva</button>
-          <p class="note">Ao reservar, você concorda com nossa política de privacidade.<br>
-          Entraremos em contato via <strong>WhatsApp ou e-mail</strong> para confirmar sua pré-venda.</p>
+          <button type="submit" class="btn-submit">✦ &nbsp; Finalizar Compra</button>
+          <p class="note">Ao comprar, você concorda com nossa política de privacidade.</p>
           <div style="text-align:center;margin-top:0.9rem;padding:0.7rem 1rem;background:rgba(201,150,60,0.08);border:1px solid rgba(201,150,60,0.3);border-radius:10px;font-size:0.78rem;color:#d4b26a;line-height:1.5;">
             📦 O despacho do pedido é realizado em até <strong style="color:#e8c47a;">3 dias úteis</strong> após a confirmação do pagamento.
           </div>
@@ -1728,9 +1825,203 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
       <span class="cart-total-lbl">Total</span>
       <span class="cart-total-val" id="cart-total-val">R$ 0,00</span>
     </div>
+    <div class="conta-strip">
+      <div id="conta-guest">
+        <div class="conta-strip-text">Salve seus dados para facilitar futuras compras</div>
+        <button class="btn-conta-entrar" onclick="abrirLoginModal()">💛 Entrar / Criar conta</button>
+      </div>
+      <div id="conta-user">
+        <div style="flex:1;min-width:0;">
+          <div class="conta-strip-ola">Olá, <strong id="conta-user-nome"></strong>! 💛</div>
+          <div class="conta-strip-sub" id="conta-strip-end">Carregando endereço…</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.3rem;align-items:flex-end;flex-shrink:0;">
+          <button class="btn-conta-sair" onclick="sairConta()">Sair</button>
+          <button class="btn-conta-sair" style="color:var(--gold);border-color:rgba(201,150,60,0.4);" onclick="abrirEnderecoModal()">✏️ Alterar endereço</button>
+        </div>
+      </div>
+    </div>
     <button class="btn-checkout" id="btn-checkout" onclick="irParaFormulario()" disabled>Finalizar Pedido →</button>
     <div style="text-align:center;margin-top:0.5rem;font-size:0.72rem;color:#c9963c;letter-spacing:0.04em;">📦 Despacho em até <strong>3 dias úteis</strong> após confirmação do pagamento</div>
     <div class="cart-continue" onclick="fecharCarrinho()">← Continuar comprando</div>
+  </div>
+</div>
+
+<!-- MODAL ALTERAR ENDEREÇO -->
+<div id="end-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(26,21,16,0.75);z-index:2100;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px);">
+  <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;width:100%;max-width:400px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,0.22);animation:lmUp .28s ease;">
+    <div class="lm-header">
+      <span class="lm-logo">Endereço de Entrega</span>
+      <button class="lm-close" onclick="fecharEnderecoModal()">✕</button>
+    </div>
+    <div class="lm-body">
+      <div style="display:grid;grid-template-columns:1fr auto;gap:.5rem;align-items:end;margin-bottom:.8rem;">
+        <div class="lm-field" style="margin:0">
+          <label>CEP *</label>
+          <input type="text" id="end-cep" placeholder="00000-000" maxlength="9">
+        </div>
+        <button type="button" id="end-btn-cep" onclick="buscarCepEndModal()" style="padding:.52rem .7rem;background:transparent;border:1px solid var(--border);border-radius:7px;color:var(--muted);cursor:pointer;font-size:.8rem;white-space:nowrap;">🔍 Buscar</button>
+      </div>
+      <div class="lm-row">
+        <div class="lm-field" style="flex:2">
+          <label>Logradouro *</label>
+          <input type="text" id="end-logradouro" placeholder="Rua, Av...">
+        </div>
+        <div class="lm-field" style="flex:1">
+          <label>Número *</label>
+          <input type="text" id="end-numero" placeholder="123">
+        </div>
+      </div>
+      <div class="lm-row">
+        <div class="lm-field">
+          <label>Complemento</label>
+          <input type="text" id="end-complemento" placeholder="Apto, Casa...">
+        </div>
+        <div class="lm-field">
+          <label>Bairro *</label>
+          <input type="text" id="end-bairro" placeholder="Bairro">
+        </div>
+      </div>
+      <div class="lm-row">
+        <div class="lm-field">
+          <label>Cidade *</label>
+          <input type="text" id="end-cidade" placeholder="Cidade">
+        </div>
+        <div class="lm-field">
+          <label>Estado *</label>
+          <select id="end-estado" style="width:100%;background:var(--black-soft);border:1px solid var(--border);border-radius:7px;padding:.52rem .72rem;font-size:.84rem;color:var(--text);font-family:'Jost',sans-serif;outline:none;">
+            <option value="">UF</option>
+            <option>AC</option><option>AL</option><option>AP</option><option>AM</option>
+            <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
+            <option>GO</option><option>MA</option><option>MT</option><option>MS</option>
+            <option>MG</option><option>PA</option><option>PB</option><option>PR</option>
+            <option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
+            <option>RS</option><option>RO</option><option>RR</option><option>SC</option>
+            <option>SP</option><option>SE</option><option>TO</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:.5rem;margin:.6rem 0 .9rem;font-size:.75rem;color:var(--muted);">
+        <input type="checkbox" id="end-salvar" style="accent-color:var(--gold);width:14px;height:14px;">
+        <label for="end-salvar" style="cursor:pointer;text-transform:none;letter-spacing:0;color:var(--muted);">Salvar como meu endereço principal</label>
+      </div>
+      <div class="lm-error" id="end-erro"></div>
+      <button class="lm-btn" onclick="confirmarEnderecoModal()">Confirmar endereço</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL LOGIN / CRIAR CONTA -->
+<div id="login-modal-overlay">
+  <div id="login-modal">
+    <div class="lm-header">
+      <span class="lm-logo">Hearts Couro</span>
+      <button class="lm-close" onclick="fecharLoginModal()">✕</button>
+    </div>
+    <div class="lm-tabs">
+      <button class="lm-tab active" data-tab="entrar" onclick="setLoginTab('entrar', this)">Entrar</button>
+      <button class="lm-tab" data-tab="criar" onclick="setLoginTab('criar', this)">Criar conta</button>
+    </div>
+
+    <!-- Entrar -->
+    <div id="lm-form-entrar" class="lm-body">
+      <div class="lm-field">
+        <label>E-mail</label>
+        <input type="email" id="lm-email" placeholder="seu@email.com">
+      </div>
+      <div class="lm-field">
+        <label>Senha</label>
+        <input type="password" id="lm-senha" placeholder="••••••••" onkeydown="if(event.key==='Enter')fazerLogin()">
+      </div>
+      <div class="lm-error" id="lm-login-erro"></div>
+      <button class="lm-btn" id="lm-btn-entrar" onclick="fazerLogin()">Entrar</button>
+    </div>
+
+    <!-- Criar conta -->
+    <div id="lm-form-criar" class="lm-body" style="display:none">
+      <div class="lm-row">
+        <div class="lm-field">
+          <label>Nome *</label>
+          <input type="text" id="lm-reg-nome" placeholder="Ana">
+        </div>
+        <div class="lm-field">
+          <label>Sobrenome *</label>
+          <input type="text" id="lm-reg-sobrenome" placeholder="Lima">
+        </div>
+      </div>
+      <div class="lm-field">
+        <label>E-mail *</label>
+        <input type="email" id="lm-reg-email" placeholder="seu@email.com">
+      </div>
+      <div class="lm-row">
+        <div class="lm-field">
+          <label>WhatsApp *</label>
+          <input type="tel" id="lm-reg-whatsapp" placeholder="(11) 99999-0000" maxlength="15">
+        </div>
+        <div class="lm-field">
+          <label>CPF *</label>
+          <input type="text" id="lm-reg-cpf" placeholder="000.000.000-00" maxlength="14">
+        </div>
+      </div>
+
+      <div style="font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold-dim);font-weight:600;margin:0.8rem 0 0.6rem;">Endereço de Entrega</div>
+
+      <div style="display:grid;grid-template-columns:1fr auto;gap:0.5rem;align-items:end;margin-bottom:0.8rem;">
+        <div class="lm-field" style="margin:0">
+          <label>CEP *</label>
+          <input type="text" id="lm-reg-cep" placeholder="00000-000" maxlength="9">
+        </div>
+        <button type="button" id="lm-btn-cep" onclick="buscarCepModal()" style="padding:0.52rem 0.7rem;background:transparent;border:1px solid var(--border);border-radius:7px;color:var(--muted);cursor:pointer;font-size:0.8rem;transition:all .2s;white-space:nowrap;height:fit-content;">🔍 Buscar</button>
+      </div>
+      <div class="lm-row">
+        <div class="lm-field" style="flex:2">
+          <label>Logradouro *</label>
+          <input type="text" id="lm-reg-logradouro" placeholder="Rua, Av...">
+        </div>
+        <div class="lm-field" style="flex:1">
+          <label>Número *</label>
+          <input type="text" id="lm-reg-numero" placeholder="123">
+        </div>
+      </div>
+      <div class="lm-row">
+        <div class="lm-field">
+          <label>Complemento</label>
+          <input type="text" id="lm-reg-complemento" placeholder="Apto, Casa...">
+        </div>
+        <div class="lm-field">
+          <label>Bairro *</label>
+          <input type="text" id="lm-reg-bairro" placeholder="Bairro">
+        </div>
+      </div>
+      <div class="lm-row">
+        <div class="lm-field">
+          <label>Cidade *</label>
+          <input type="text" id="lm-reg-cidade" placeholder="Cidade">
+        </div>
+        <div class="lm-field">
+          <label>Estado *</label>
+          <select id="lm-reg-estado" style="width:100%;background:var(--black-soft);border:1px solid var(--border);border-radius:7px;padding:0.52rem 0.72rem;font-size:0.84rem;color:var(--text);font-family:'Jost',sans-serif;outline:none;">
+            <option value="">UF</option>
+            <option>AC</option><option>AL</option><option>AP</option><option>AM</option>
+            <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
+            <option>GO</option><option>MA</option><option>MT</option><option>MS</option>
+            <option>MG</option><option>PA</option><option>PB</option><option>PR</option>
+            <option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
+            <option>RS</option><option>RO</option><option>RR</option><option>SC</option>
+            <option>SP</option><option>SE</option><option>TO</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold-dim);font-weight:600;margin:0.8rem 0 0.6rem;">Acesso</div>
+
+      <div class="lm-field">
+        <label>Senha * (mínimo 6 caracteres)</label>
+        <input type="password" id="lm-reg-senha" placeholder="••••••••">
+      </div>
+      <div class="lm-error" id="lm-reg-erro"></div>
+      <button class="lm-btn" id="lm-btn-criar" onclick="fazerRegistro()">Criar conta</button>
+    </div>
   </div>
 </div>
 
@@ -1982,13 +2273,41 @@ function fecharCarrinho() {
 }
 
 function irParaFormulario() {
+  if (!contaSessao) {
+    pendingCheckout = true;
+    abrirLoginModal();
+    return;
+  }
   fecharCarrinho();
   renderCarrinhoForm();
   const formCard = document.getElementById('form-card');
   formCard.style.display = 'block';
+
+  // Oculta campos pessoais/endereço — já vêm do cadastro
+  document.getElementById('secao-dados').style.display    = 'none';
+  document.getElementById('secao-endereco').style.display = 'none';
+  document.getElementById('secao-logado').style.display   = 'block';
+
+  const c = contaSessao;
+  const end = enderecoEntrega || c;
+  document.getElementById('logado-nome-val').textContent = `${c.nome || ''} ${c.sobrenome || ''}`.trim();
+  const endPartes = [end.logradouro, end.numero, end.bairro, end.cidade, end.estado].filter(Boolean);
+  document.getElementById('logado-end-val').textContent = endPartes.join(', ') || 'Nenhum endereço cadastrado';
+
   setTimeout(() => {
     formCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    preencherFormComConta();
+    const cepParaFrete = (end.cep || '').replace(/\D/g, '');
+    if (cepParaFrete.length === 8) calcularFrete(cepParaFrete);
   }, 100);
+}
+
+function sairContaEFecharForm() {
+  sairConta();
+  document.getElementById('form-card').style.display = 'none';
+  document.getElementById('secao-dados').style.display    = 'block';
+  document.getElementById('secao-endereco').style.display = 'block';
+  document.getElementById('secao-logado').style.display   = 'none';
 }
 
 /* ══════════════════════════════════════════
@@ -2306,14 +2625,31 @@ document.getElementById('prevenda-form').addEventListener('submit', async functi
   e.preventDefault();
   let valid = true;
 
+  // Se logada, re-preenche campos ocultos antes de validar
+  if (contaSessao) preencherFormComConta();
+
   const isRetirada = document.querySelector('input[name="frete"][value="retirada"]')?.checked;
   const isPix = document.querySelector('input[name="pagamento"][value="Pix"]')?.checked;
   const camposBase = isPix ? ['nome','sobrenome','email','whatsapp','cpf'] : ['nome','sobrenome','email','whatsapp'];
   const camposEntrega = ['logradouro','numero','bairro','cidade','estado'];
   const campos = isRetirada ? camposBase : [...camposBase, ...camposEntrega];
 
+  // Verifica endereço incompleto quando logada e não for retirada
+  if (contaSessao && !isRetirada) {
+    const end = enderecoEntrega || contaSessao;
+    const faltaEnd = ['logradouro','numero','bairro','cidade','estado'].some(k => !end[k]);
+    if (faltaEnd) {
+      alert('Seu endereço cadastrado está incompleto.\nClique em "✏️ Alterar endereço" no carrinho para preencher.');
+      return;
+    }
+  }
+
   campos.forEach(id => {
     const el  = document.getElementById(id);
+    if (!el) return;
+    // Não valida campos dentro de seções ocultas (já vêm do cadastro)
+    const secaoOculta = el.closest('#secao-dados, #secao-endereco');
+    if (secaoOculta && secaoOculta.style.display === 'none') return;
     const err = el.nextElementSibling;
     const bad = !el.value.trim() || (id === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value));
     el.classList.toggle('invalid', bad);
@@ -2322,8 +2658,9 @@ document.getElementById('prevenda-form').addEventListener('submit', async functi
   });
 
   const cepEl = document.getElementById('cep');
-  if (!isRetirada) {
-    const cepBad = cepEl.value.replace(/\D/g,'').length !== 8;
+  const secaoEndOculta = document.getElementById('secao-endereco')?.style.display === 'none';
+  if (!isRetirada && !secaoEndOculta) {
+    const cepBad = (cepEl.value || '').replace(/\D/g,'').length !== 8;
     cepEl.classList.toggle('invalid', cepBad);
     document.getElementById('cep-err').style.display = cepBad ? 'block' : 'none';
     if (cepBad) valid = false;
@@ -2360,7 +2697,13 @@ document.getElementById('prevenda-form').addEventListener('submit', async functi
   if (!pag) valid = false;
 
   if (!valid) {
-    document.querySelector('.invalid, .error-msg[style*="block"]')?.scrollIntoView({ behavior:'smooth', block:'center' });
+    // Só scrolla para erros visíveis — nunca para campos em seções ocultas
+    const primeiroVisivel = [...document.querySelectorAll('.invalid, .error-msg[style*="block"]')]
+      .find(el => {
+        const s = el.closest('#secao-dados, #secao-endereco');
+        return !s || s.style.display !== 'none';
+      });
+    primeiroVisivel?.scrollIntoView({ behavior:'smooth', block:'center' });
     return;
   }
 
@@ -2403,6 +2746,8 @@ document.getElementById('prevenda-form').addEventListener('submit', async functi
       console.error('ERRO PAGAMENTO:', JSON.stringify(result));
       throw new Error((result.erro || 'Erro no servidor') + (result.detalhe ? ' — ' + result.detalhe : ''));
     }
+
+    salvarEnderecoNaConta(dados);
 
     if (result.tipo === 'pix') {
       document.getElementById('form-view').style.display = 'none';
@@ -2450,6 +2795,297 @@ Object.entries(PRODUTOS_INFO).forEach(([key, info]) => {
     if (card) card.style.display = 'none';
   }
 });
+
+/* ══════════════════════════════════════════
+   SISTEMA DE CONTAS
+═══════════════════════════════════════════ */
+let contaSessao = null;
+let pendingCheckout = false;
+let enderecoEntrega = null; // endereço temporário para esta compra
+
+function carregarSessao() {
+  try {
+    const s = localStorage.getItem('hearts_conta');
+    if (s) contaSessao = JSON.parse(s);
+  } catch { contaSessao = null; }
+  atualizarEstadoConta();
+}
+
+function atualizarEstadoConta() {
+  const guest = document.getElementById('conta-guest');
+  const user  = document.getElementById('conta-user');
+  const nome  = document.getElementById('conta-user-nome');
+  const endEl = document.getElementById('conta-strip-end');
+  if (!guest || !user) return;
+  if (contaSessao) {
+    guest.style.display = 'none';
+    user.style.display  = 'flex';
+    if (nome) nome.textContent = contaSessao.nome || '';
+    if (endEl) {
+      const end = enderecoEntrega || contaSessao;
+      const partes = [end.logradouro, end.numero, end.bairro, end.cidade].filter(Boolean);
+      endEl.textContent = partes.length ? partes.join(', ') : 'Nenhum endereço cadastrado';
+      if (enderecoEntrega) endEl.style.color = 'var(--gold-dim)';
+      else endEl.style.color = '';
+    }
+  } else {
+    guest.style.display = 'flex';
+    user.style.display  = 'none';
+    enderecoEntrega = null;
+  }
+}
+
+function abrirLoginModal() {
+  document.getElementById('login-modal-overlay').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function fecharLoginModal() {
+  document.getElementById('login-modal-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+  document.getElementById('lm-login-erro').textContent = '';
+  document.getElementById('lm-reg-erro').textContent   = '';
+}
+
+document.getElementById('login-modal-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('login-modal-overlay')) fecharLoginModal();
+});
+
+function setLoginTab(tab, btn) {
+  document.querySelectorAll('.lm-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('lm-form-entrar').style.display = tab === 'entrar' ? 'block' : 'none';
+  document.getElementById('lm-form-criar').style.display  = tab === 'criar'  ? 'block' : 'none';
+}
+
+async function fazerLogin() {
+  const btn  = document.getElementById('lm-btn-entrar');
+  const erro = document.getElementById('lm-login-erro');
+  const email = document.getElementById('lm-email').value.trim();
+  const senha = document.getElementById('lm-senha').value;
+  erro.textContent = '';
+  if (!email || !senha) { erro.textContent = 'Preencha e-mail e senha.'; return; }
+  btn.disabled = true; btn.textContent = 'Entrando…';
+  try {
+    const resp = await fetch('/api/conta/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, senha })
+    });
+    const result = await resp.json();
+    if (!resp.ok) { erro.textContent = result.erro || 'Erro ao entrar.'; return; }
+    contaSessao = result;
+    localStorage.setItem('hearts_conta', JSON.stringify(result));
+    atualizarEstadoConta();
+    fecharLoginModal();
+    if (pendingCheckout) { pendingCheckout = false; irParaFormulario(); }
+  } catch { erro.textContent = 'Erro de conexão. Tente novamente.'; }
+  finally { btn.disabled = false; btn.textContent = 'Entrar'; }
+}
+
+async function fazerRegistro() {
+  const btn  = document.getElementById('lm-btn-criar');
+  const erro = document.getElementById('lm-reg-erro');
+  const nome       = document.getElementById('lm-reg-nome').value.trim();
+  const sobrenome  = document.getElementById('lm-reg-sobrenome').value.trim();
+  const email      = document.getElementById('lm-reg-email').value.trim();
+  const whatsapp   = document.getElementById('lm-reg-whatsapp').value.trim();
+  const cpf        = document.getElementById('lm-reg-cpf').value.trim();
+  const cep        = document.getElementById('lm-reg-cep').value.trim();
+  const logradouro = document.getElementById('lm-reg-logradouro').value.trim();
+  const numero     = document.getElementById('lm-reg-numero').value.trim();
+  const complemento= document.getElementById('lm-reg-complemento').value.trim();
+  const bairro     = document.getElementById('lm-reg-bairro').value.trim();
+  const cidade     = document.getElementById('lm-reg-cidade').value.trim();
+  const estado     = document.getElementById('lm-reg-estado').value;
+  const senha      = document.getElementById('lm-reg-senha').value;
+
+  erro.textContent = '';
+  if (!nome)                                          { erro.textContent = 'Nome é obrigatório.'; return; }
+  if (!sobrenome)                                     { erro.textContent = 'Sobrenome é obrigatório.'; return; }
+  if (!email)                                         { erro.textContent = 'E-mail é obrigatório.'; return; }
+  if (!whatsapp)                                      { erro.textContent = 'WhatsApp é obrigatório.'; return; }
+  if (!cpf || cpf.replace(/\D/g,'').length !== 11)   { erro.textContent = 'CPF inválido (11 dígitos).'; return; }
+  if (!cep || cep.replace(/\D/g,'').length !== 8)    { erro.textContent = 'CEP inválido (8 dígitos).'; return; }
+  if (!logradouro)                                    { erro.textContent = 'Logradouro é obrigatório.'; return; }
+  if (!numero)                                        { erro.textContent = 'Número é obrigatório.'; return; }
+  if (!bairro)                                        { erro.textContent = 'Bairro é obrigatório.'; return; }
+  if (!cidade)                                        { erro.textContent = 'Cidade é obrigatória.'; return; }
+  if (!estado)                                        { erro.textContent = 'Estado é obrigatório.'; return; }
+  if (senha.length < 6)                               { erro.textContent = 'Senha: mínimo 6 caracteres.'; return; }
+
+  btn.disabled = true; btn.textContent = 'Criando…';
+  try {
+    const resp = await fetch('/api/conta/registrar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome, sobrenome, email, whatsapp, cpf, cep, logradouro, numero, complemento, bairro, cidade, estado, senha })
+    });
+    const result = await resp.json();
+    if (!resp.ok) { erro.textContent = result.erro || 'Erro ao criar conta.'; return; }
+    contaSessao = result;
+    localStorage.setItem('hearts_conta', JSON.stringify(result));
+    atualizarEstadoConta();
+    fecharLoginModal();
+    if (pendingCheckout) { pendingCheckout = false; irParaFormulario(); }
+  } catch { erro.textContent = 'Erro de conexão. Tente novamente.'; }
+  finally { btn.disabled = false; btn.textContent = 'Criar conta'; }
+}
+
+async function buscarCepModal() {
+  const input = document.getElementById('lm-reg-cep');
+  const btn   = document.getElementById('lm-btn-cep');
+  const raw   = input.value.replace(/\D/g, '');
+  if (raw.length !== 8) { alert('Insira um CEP com 8 dígitos.'); return; }
+  btn.disabled = true; btn.textContent = '...';
+  try {
+    const data = await (await fetch(`https://viacep.com.br/ws/${raw}/json/`)).json();
+    if (data.erro) { alert('CEP não encontrado.'); return; }
+    document.getElementById('lm-reg-logradouro').value = data.logradouro || '';
+    document.getElementById('lm-reg-bairro').value     = data.bairro     || '';
+    document.getElementById('lm-reg-cidade').value     = data.localidade || '';
+    const sel = document.getElementById('lm-reg-estado');
+    [...sel.options].forEach((o, i) => { if (o.value === data.uf) sel.selectedIndex = i; });
+    document.getElementById('lm-reg-numero').focus();
+  } catch { alert('Não foi possível buscar o CEP.'); }
+  finally { btn.disabled = false; btn.textContent = '🔍 Buscar'; }
+}
+
+function sairConta() {
+  contaSessao = null;
+  localStorage.removeItem('hearts_conta');
+  atualizarEstadoConta();
+}
+
+function preencherFormComConta() {
+  if (!contaSessao) return;
+  const pessoal = contaSessao;
+  const end = enderecoEntrega || contaSessao; // usa endereço temporário se houver
+  const mapa = {
+    nome: pessoal.nome, sobrenome: pessoal.sobrenome, email: pessoal.email,
+    whatsapp: pessoal.whatsapp, cpf: pessoal.cpf,
+    cep: end.cep, logradouro: end.logradouro, numero: end.numero,
+    complemento: end.complemento, bairro: end.bairro, cidade: end.cidade
+  };
+  Object.entries(mapa).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el && val) el.value = val;
+  });
+  const estadoVal = end.estado || pessoal.estado;
+  if (estadoVal) {
+    const sel = document.getElementById('estado');
+    if (sel) [...sel.options].forEach((o, i) => { if (o.value === estadoVal) sel.selectedIndex = i; });
+  }
+}
+
+// ── Modal de Alterar Endereço ────────────────────────────────────────────────
+function abrirEnderecoModal() {
+  const end = enderecoEntrega || contaSessao || {};
+  document.getElementById('end-cep').value         = end.cep || '';
+  document.getElementById('end-logradouro').value  = end.logradouro || '';
+  document.getElementById('end-numero').value      = end.numero || '';
+  document.getElementById('end-complemento').value = end.complemento || '';
+  document.getElementById('end-bairro').value      = end.bairro || '';
+  document.getElementById('end-cidade').value      = end.cidade || '';
+  document.getElementById('end-erro').textContent  = '';
+  document.getElementById('end-salvar').checked    = false;
+  const sel = document.getElementById('end-estado');
+  [...sel.options].forEach((o, i) => { if (o.value === (end.estado || '')) sel.selectedIndex = i; });
+  const overlay = document.getElementById('end-modal-overlay');
+  overlay.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function fecharEnderecoModal() {
+  document.getElementById('end-modal-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+document.getElementById('end-modal-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('end-modal-overlay')) fecharEnderecoModal();
+});
+
+async function confirmarEnderecoModal() {
+  const erro = document.getElementById('end-erro');
+  const cep         = document.getElementById('end-cep').value.trim();
+  const logradouro  = document.getElementById('end-logradouro').value.trim();
+  const numero      = document.getElementById('end-numero').value.trim();
+  const complemento = document.getElementById('end-complemento').value.trim();
+  const bairro      = document.getElementById('end-bairro').value.trim();
+  const cidade      = document.getElementById('end-cidade').value.trim();
+  const estado      = document.getElementById('end-estado').value;
+  const salvar      = document.getElementById('end-salvar').checked;
+
+  erro.textContent = '';
+  if (!cep || cep.replace(/\D/g,'').length !== 8) { erro.textContent = 'CEP inválido.'; return; }
+  if (!logradouro) { erro.textContent = 'Logradouro é obrigatório.'; return; }
+  if (!numero)     { erro.textContent = 'Número é obrigatório.'; return; }
+  if (!bairro)     { erro.textContent = 'Bairro é obrigatório.'; return; }
+  if (!cidade)     { erro.textContent = 'Cidade é obrigatória.'; return; }
+  if (!estado)     { erro.textContent = 'Estado é obrigatório.'; return; }
+
+  enderecoEntrega = { cep, logradouro, numero, complemento, bairro, cidade, estado };
+  atualizarEstadoConta();
+  fecharEnderecoModal();
+
+  if (salvar && contaSessao) {
+    await salvarEnderecoNaConta({ ...contaSessao, cep, logradouro, numero, complemento, bairro, cidade, estado });
+    Object.assign(contaSessao, { cep, logradouro, numero, complemento, bairro, cidade, estado });
+    localStorage.setItem('hearts_conta', JSON.stringify(contaSessao));
+  }
+}
+
+async function buscarCepEndModal() {
+  const input = document.getElementById('end-cep');
+  const btn   = document.getElementById('end-btn-cep');
+  const raw   = input.value.replace(/\D/g, '');
+  if (raw.length !== 8) { alert('Insira um CEP com 8 dígitos.'); return; }
+  btn.disabled = true; btn.textContent = '...';
+  try {
+    const data = await (await fetch(`https://viacep.com.br/ws/${raw}/json/`)).json();
+    if (data.erro) { alert('CEP não encontrado.'); return; }
+    document.getElementById('end-logradouro').value = data.logradouro || '';
+    document.getElementById('end-bairro').value     = data.bairro     || '';
+    document.getElementById('end-cidade').value     = data.localidade || '';
+    const sel = document.getElementById('end-estado');
+    [...sel.options].forEach((o, i) => { if (o.value === data.uf) sel.selectedIndex = i; });
+    document.getElementById('end-numero').focus();
+  } catch { alert('Não foi possível buscar o CEP.'); }
+  finally { btn.disabled = false; btn.textContent = '🔍 Buscar'; }
+}
+
+async function salvarEnderecoNaConta(dados) {
+  if (!contaSessao) return;
+  try {
+    const resp = await fetch('/api/conta/perfil', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-conta-id': contaSessao.id,
+        'x-conta-token': contaSessao.token_sessao
+      },
+      body: JSON.stringify({
+        nome: dados.nome, sobrenome: dados.sobrenome,
+        whatsapp: dados.whatsapp, cpf: dados.cpf,
+        cep: dados.cep, logradouro: dados.logradouro,
+        numero: dados.numero, complemento: dados.complemento,
+        bairro: dados.bairro, cidade: dados.cidade, estado: dados.estado
+      })
+    });
+    if (resp.ok) {
+      Object.assign(contaSessao, {
+        nome: dados.nome, sobrenome: dados.sobrenome,
+        whatsapp: dados.whatsapp, cpf: dados.cpf,
+        cep: dados.cep, logradouro: dados.logradouro,
+        numero: dados.numero, complemento: dados.complemento,
+        bairro: dados.bairro, cidade: dados.cidade, estado: dados.estado
+      });
+      localStorage.setItem('hearts_conta', JSON.stringify(contaSessao));
+    }
+  } catch { /* silent */ }
+}
+
+carregarSessao();
 </script>
 
 </body>

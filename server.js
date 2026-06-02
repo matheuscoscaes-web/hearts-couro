@@ -4,6 +4,7 @@ const nodemailer = require('nodemailer');
 const { createClient } = require('@supabase/supabase-js');
 const { MercadoPagoConfig, Payment, Preference } = require('mercadopago');
 const { v4: uuidv4 } = require('uuid');
+const crypto = require('crypto');
 
 const app = express();
 app.use(express.json());
@@ -66,6 +67,44 @@ const transporter = (EMAIL_USER && EMAIL_PASS) ? nodemailer.createTransport({
   service: 'gmail',
   auth: { user: EMAIL_USER, pass: EMAIL_PASS }
 }) : null;
+
+// ── Segurança: hash de senha (scrypt nativo) ──
+function hashSenha(senha) {
+  return new Promise((resolve, reject) => {
+    const salt = crypto.randomBytes(16).toString('hex');
+    crypto.scrypt(senha, salt, 64, (err, key) => {
+      if (err) reject(err);
+      else resolve(`${salt}:${key.toString('hex')}`);
+    });
+  });
+}
+
+function verificarSenha(senha, hash) {
+  return new Promise((resolve, reject) => {
+    const [salt, key] = hash.split(':');
+    if (!salt || !key) return resolve(false);
+    crypto.scrypt(senha, salt, 64, (err, derivedKey) => {
+      if (err) reject(err);
+      else resolve(crypto.timingSafeEqual(Buffer.from(key, 'hex'), derivedKey));
+    });
+  });
+}
+
+function gerarTokenSessao() {
+  return crypto.randomBytes(32).toString('hex');
+}
+
+// ── Auth: campos públicos (sem senha e token) ──
+const CAMPOS_PUBLICOS = 'id, email, nome, sobrenome, cpf, whatsapp, cep, logradouro, numero, complemento, bairro, cidade, estado';
+
+async function validarSessao(req, res) {
+  const id    = req.headers['x-conta-id'];
+  const token = req.headers['x-conta-token'];
+  if (!id || !token) { res.status(401).json({ erro: 'Não autenticado.' }); return null; }
+  const { data } = await supabase.from('contas').select('id').eq('id', id).eq('token_sessao', token).single();
+  if (!data) { res.status(401).json({ erro: 'Sessão inválida.' }); return null; }
+  return data;
+}
 
 function enviarBackupPorEmail(pedido) {
   if (!transporter) return;
@@ -427,7 +466,7 @@ app.get('/api/estoque', async (req, res) => {
     const { data, error } = await supabase
       .from('pedidos')
       .select('produto, cor, status')
-      .in('status', ['approved', 'enviado', 'entregue', 'retirado'])
+      .in('status', ['approved', 'etiqueta_criada', 'enviado', 'entregue', 'retirado'])
       .gte('created_at', ESTOQUE_RESET_DATA);
 
     if (error) throw error;
@@ -631,6 +670,156 @@ app.get('/api/diagnostico', async (req, res) => {
   }
 
   res.json(resultado);
+});
+
+// ── ROTA: Registrar Conta ──
+app.post('/api/conta/registrar', async (req, res) => {
+  const { email, senha, nome, sobrenome, whatsapp, cpf, cep, logradouro, numero, complemento, bairro, cidade, estado } = req.body;
+  if (!email || !senha || !nome) return res.status(400).json({ erro: 'Nome, e-mail e senha são obrigatórios.' });
+  if (senha.length < 6) return res.status(400).json({ erro: 'Senha deve ter pelo menos 6 caracteres.' });
+
+  try {
+    const senhaHash = await hashSenha(senha);
+    const token = gerarTokenSessao();
+
+    // INSERT com campos básicos
+    const { data: novo, error } = await supabase.from('contas').insert([{
+      email: email.toLowerCase().trim(),
+      senha_hash: senhaHash,
+      token_sessao: token,
+      nome: nome.trim(),
+      sobrenome: (sobrenome || '').trim(),
+      whatsapp: whatsapp || '',
+      cpf: cpf || ''
+    }]).select('id').single();
+
+    if (error) {
+      if (error.code === '23505') return res.status(409).json({ erro: 'E-mail já cadastrado. Tente entrar.' });
+      throw error;
+    }
+
+    // UPDATE separado para endereço (contorna cache do PostgREST)
+    const upd = await supabase.from('contas').update({
+      cep: cep || null, logradouro: logradouro || null, numero: numero || null,
+      complemento: complemento || null, bairro: bairro || null,
+      cidade: cidade || null, estado: estado || null
+    }).eq('id', novo.id);
+
+    const { data } = await supabase.from('contas').select(CAMPOS_PUBLICOS).eq('id', novo.id).single();
+    res.json({ ...data, token_sessao: token });
+  } catch (err) {
+    console.error('Erro ao registrar conta:', err);
+    res.status(500).json({ erro: 'Erro ao criar conta.' });
+  }
+});
+
+// ── ROTA: Login ──
+app.post('/api/conta/login', async (req, res) => {
+  const { email, senha } = req.body;
+  if (!email || !senha) return res.status(400).json({ erro: 'E-mail e senha são obrigatórios.' });
+
+  try {
+    const { data: conta } = await supabase.from('contas').select('*').eq('email', email.toLowerCase().trim()).single();
+    if (!conta) return res.status(401).json({ erro: 'E-mail ou senha incorretos.' });
+
+    const ok = await verificarSenha(senha, conta.senha_hash);
+    if (!ok) return res.status(401).json({ erro: 'E-mail ou senha incorretos.' });
+
+    const token = gerarTokenSessao();
+    await supabase.from('contas').update({ token_sessao: token }).eq('id', conta.id);
+
+    const { senha_hash, token_sessao, ...pub } = conta;
+    res.json({ ...pub, token_sessao: token });
+  } catch (err) {
+    console.error('Erro ao fazer login:', err);
+    res.status(500).json({ erro: 'Erro ao entrar.' });
+  }
+});
+
+// ── ROTA: Perfil ──
+app.get('/api/conta/perfil', async (req, res) => {
+  const sess = await validarSessao(req, res);
+  if (!sess) return;
+  const { data } = await supabase.from('contas').select(CAMPOS_PUBLICOS).eq('id', sess.id).single();
+  res.json(data || {});
+});
+
+// ── ROTA: Atualizar Perfil ──
+app.put('/api/conta/perfil', async (req, res) => {
+  const sess = await validarSessao(req, res);
+  if (!sess) return;
+
+  const permitido = ['nome', 'sobrenome', 'whatsapp', 'cpf', 'cep', 'logradouro', 'numero', 'complemento', 'bairro', 'cidade', 'estado'];
+  const update = {};
+  permitido.forEach(k => { if (req.body[k] !== undefined) update[k] = req.body[k]; });
+
+  await supabase.from('contas').update(update).eq('id', sess.id);
+  res.json({ ok: true });
+});
+
+// ── ROTA: Clientes CRM / Fidelidade ──
+app.get('/api/clientes', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('pedidos')
+      .select('*')
+      .order('created_at', { ascending: true });
+
+    if (error) throw error;
+
+    const STATUS_CONFIRMADO = ['approved', 'etiqueta_criada', 'enviado', 'entregue', 'retirado'];
+    const mapa = {};
+
+    (data || []).forEach(p => {
+      const chave = (p.cpf || '').replace(/\D/g, '') || p.email || p.whatsapp;
+      if (!chave) return;
+
+      if (!mapa[chave]) {
+        mapa[chave] = {
+          cpf: p.cpf,
+          nome: p.nome,
+          sobrenome: p.sobrenome,
+          email: p.email,
+          whatsapp: p.whatsapp,
+          cidade: p.cidade,
+          estado: p.estado,
+          primeira_compra: p.created_at,
+          ultima_compra: p.created_at,
+          pedidos: [],
+          total_gasto: 0,
+          pontos: 0
+        };
+      }
+
+      const c = mapa[chave];
+      if (p.nome) c.nome = p.nome;
+      if (p.sobrenome) c.sobrenome = p.sobrenome;
+      if (p.email) c.email = p.email;
+      if (p.whatsapp) c.whatsapp = p.whatsapp;
+      if (p.cidade) c.cidade = p.cidade;
+      if (p.estado) c.estado = p.estado;
+      c.ultima_compra = p.created_at;
+      c.pedidos.push(p);
+
+      if (STATUS_CONFIRMADO.includes(p.status)) {
+        const valor = parseFloat(p.valor_total) || 0;
+        c.total_gasto += valor;
+        c.pontos += Math.floor(valor);
+      }
+    });
+
+    const clientes = Object.values(mapa).map(c => ({
+      ...c,
+      num_pedidos: c.pedidos.length,
+      compras_confirmadas: c.pedidos.filter(p => STATUS_CONFIRMADO.includes(p.status)).length,
+      nivel: c.pontos >= 1000 ? 'Ouro' : c.pontos >= 300 ? 'Prata' : 'Bronze'
+    })).sort((a, b) => b.pontos - a.pontos);
+
+    res.json(clientes);
+  } catch (err) {
+    console.error('Erro ao carregar clientes:', err);
+    res.status(500).json([]);
+  }
 });
 
 const PORT = process.env.PORT || 5000;

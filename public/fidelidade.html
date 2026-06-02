@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hearts — Fidelidade</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #faf7f2;
+            --card-bg: #ffffff;
+            --border: #ddd5c3;
+            --gold: #b8832a;
+            --gold-light: #c9963c;
+            --gold-dim: #8a6520;
+            --text: #1a1510;
+            --muted: #7a6a55;
+            --white: #1a1510;
+            --green-whatsapp: #25d366;
+            --bronze-color: #cd7f32;
+            --prata-color: #8a9ab0;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background: var(--black);
+            font-family: 'Jost', sans-serif;
+            color: var(--text);
+            padding: 0;
+            margin: 0;
+        }
+
+        /* ── STICKY HEADER ── */
+        .sticky-top {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(250,247,242,0.97);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border);
+            padding: 1.2rem 1rem 0.8rem;
+        }
+
+        .header-admin {
+            text-align: center;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .btn-nav {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: 'Jost', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 500;
+            color: var(--muted);
+            background: transparent;
+            border: 1px solid var(--border);
+            padding: 0.4rem 0.9rem;
+            border-radius: 50px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-nav:hover { color: var(--gold); border-color: var(--gold-dim); }
+
+        .header-admin h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            color: var(--gold);
+            letter-spacing: 0.05em;
+            margin: 0 0 0.2rem;
+        }
+
+        .header-admin p {
+            color: var(--gold-dim);
+            font-size: 0.65rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin: 0;
+        }
+
+        /* ── STATS SUMMARY ── */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.6rem;
+            max-width: 640px;
+            margin: 0 auto 0.7rem;
+        }
+
+        .stat-mini {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.75rem 0.5rem;
+            text-align: center;
+        }
+
+        .stat-mini-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.6rem;
+            color: var(--gold);
+            line-height: 1;
+        }
+
+        .stat-mini-label {
+            font-size: 0.56rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-top: 0.2rem;
+        }
+
+        /* Level mini row */
+        .level-row {
+            display: flex;
+            justify-content: center;
+            gap: 1.2rem;
+            margin-bottom: 0.7rem;
+        }
+
+        .level-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.7rem;
+            color: var(--muted);
+        }
+
+        .level-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .level-dot.ouro   { background: var(--gold); }
+        .level-dot.prata  { background: var(--prata-color); }
+        .level-dot.bronze { background: var(--bronze-color); }
+
+        /* ── TABS ── */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.7rem;
+        }
+
+        .tab-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-size: 0.78rem;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            font-family: 'Jost', sans-serif;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover { border-color: var(--gold-dim); color: var(--text); }
+        .tab-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(201,150,60,0.08); }
+        .tab-btn.tab-ouro.active   { border-color: var(--gold); color: var(--gold); background: rgba(184,131,42,0.08); }
+        .tab-btn.tab-prata.active  { border-color: var(--prata-color); color: var(--prata-color); background: rgba(138,154,176,0.08); }
+        .tab-btn.tab-bronze.active { border-color: var(--bronze-color); color: var(--bronze-color); background: rgba(205,127,50,0.08); }
+
+        .tab-count {
+            display: inline-block;
+            background: rgba(201,150,60,0.18);
+            color: var(--gold);
+            border-radius: 20px;
+            font-size: 0.68rem;
+            padding: 0 0.4rem;
+            margin-left: 0.3rem;
+            font-weight: 600;
+            min-width: 1.4rem;
+            text-align: center;
+        }
+
+        /* ── BUSCA ── */
+        .search-wrap {
+            display: flex;
+            justify-content: center;
+        }
+
+        .search-input {
+            width: 100%;
+            max-width: 420px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 0.55rem 1.2rem 0.55rem 2.8rem;
+            font-size: 0.82rem;
+            color: var(--text);
+            font-family: 'Jost', sans-serif;
+            outline: none;
+            transition: border-color 0.2s;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%237a7060' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 1rem center;
+        }
+
+        .search-input:focus { border-color: var(--gold-dim); }
+        .search-input::placeholder { color: var(--muted); }
+
+        /* ── MAIN CONTENT ── */
+        .main-content { padding: 1.5rem 1rem 3rem; }
+
+        /* ── GRID DE CLIENTES ── */
+        .clients-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        /* ── CARD DE CLIENTE ── */
+        .client-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: border-color 0.25s, box-shadow 0.25s;
+            animation: fadeIn 0.35s ease both;
+            cursor: pointer;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .client-card:hover { border-color: var(--gold-dim); box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+
+        .client-card-body {
+            padding: 1rem 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+        }
+
+        .client-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            flex-shrink: 0;
+            border: 2px solid;
+        }
+
+        .client-avatar.ouro   { background: rgba(184,131,42,0.12);  color: var(--gold);         border-color: rgba(184,131,42,0.45); }
+        .client-avatar.prata  { background: rgba(138,154,176,0.12); color: var(--prata-color);  border-color: rgba(138,154,176,0.4); }
+        .client-avatar.bronze { background: rgba(205,127,50,0.12);  color: var(--bronze-color); border-color: rgba(205,127,50,0.4); }
+
+        .client-info { flex: 1; min-width: 0; }
+
+        .client-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.15rem;
+            color: var(--white);
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+            transition: color 0.2s;
+        }
+
+        .client-card:hover .client-name { color: var(--gold-light); }
+
+        .client-meta {
+            font-size: 0.68rem;
+            color: var(--muted);
+            margin-top: 0.2rem;
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .client-right { text-align: right; flex-shrink: 0; }
+
+        .client-points {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            color: var(--gold);
+            line-height: 1;
+        }
+
+        .client-points-label {
+            font-size: 0.56rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .level-badge {
+            display: inline-block;
+            font-size: 0.57rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+            padding: 0.18rem 0.5rem;
+            border-radius: 4px;
+            margin-top: 0.25rem;
+        }
+
+        .level-badge.ouro   { background: rgba(184,131,42,0.12);  color: var(--gold);         border: 1px solid rgba(184,131,42,0.4); }
+        .level-badge.prata  { background: rgba(138,154,176,0.12); color: var(--prata-color);  border: 1px solid rgba(138,154,176,0.3); }
+        .level-badge.bronze { background: rgba(205,127,50,0.12);  color: var(--bronze-color); border: 1px solid rgba(205,127,50,0.3); }
+
+        .progress-wrap { padding: 0 1.2rem 1rem; }
+
+        .progress-bar-bg {
+            background: rgba(0,0,0,0.06);
+            border-radius: 50px;
+            height: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 50px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-bar-fill.ouro   { background: linear-gradient(90deg, var(--gold-dim), var(--gold-light)); }
+        .progress-bar-fill.prata  { background: linear-gradient(90deg, var(--prata-color), #c0cad8); }
+        .progress-bar-fill.bronze { background: linear-gradient(90deg, var(--bronze-color), #e8a060); }
+
+        .progress-label {
+            font-size: 0.6rem;
+            color: var(--muted);
+            margin-top: 0.3rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .empty-msg {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 4rem;
+            color: var(--muted);
+            font-style: italic;
+        }
+
+        .loading-spinner {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 4rem;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        /* ── MODAL ── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(26,21,16,0.65);
+            z-index: 500;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            backdrop-filter: blur(3px);
+        }
+
+        .modal-overlay.open { display: flex; }
+
+        .modal-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            width: 100%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.18);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            padding: 1.4rem 1.5rem 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .modal-avatar {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            flex-shrink: 0;
+            border: 2px solid;
+        }
+
+        .modal-avatar.ouro   { background: rgba(184,131,42,0.12);  color: var(--gold);         border-color: rgba(184,131,42,0.45); }
+        .modal-avatar.prata  { background: rgba(138,154,176,0.12); color: var(--prata-color);  border-color: rgba(138,154,176,0.4); }
+        .modal-avatar.bronze { background: rgba(205,127,50,0.12);  color: var(--bronze-color); border-color: rgba(205,127,50,0.4); }
+
+        .modal-title-area { flex: 1; min-width: 0; }
+
+        .modal-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            color: var(--white);
+            font-weight: 600;
+            line-height: 1.1;
+        }
+
+        .modal-subtitle { font-size: 0.68rem; color: var(--muted); margin-top: 0.3rem; }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 0.3rem;
+            line-height: 1;
+            flex-shrink: 0;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover { color: var(--text); }
+
+        .modal-body { padding: 1.2rem 1.5rem; }
+
+        .modal-section { margin-bottom: 1.4rem; }
+
+        .modal-section-title {
+            font-size: 0.58rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--gold-dim);
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Pontos section */
+        .points-display {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .points-big {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3.2rem;
+            color: var(--gold);
+            line-height: 1;
+        }
+
+        .points-unit {
+            font-size: 0.72rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .modal-progress-bg {
+            background: rgba(0,0,0,0.06);
+            border-radius: 50px;
+            height: 6px;
+            overflow: hidden;
+            margin-bottom: 0.4rem;
+        }
+
+        .modal-progress-fill {
+            height: 100%;
+            border-radius: 50px;
+            transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        .modal-progress-fill.ouro   { background: linear-gradient(90deg, var(--gold-dim), var(--gold-light)); }
+        .modal-progress-fill.prata  { background: linear-gradient(90deg, var(--prata-color), #c0cad8); }
+        .modal-progress-fill.bronze { background: linear-gradient(90deg, var(--bronze-color), #e8a060); }
+
+        .modal-progress-text {
+            font-size: 0.66rem;
+            color: var(--muted);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Info grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+        }
+
+        .info-label {
+            font-size: 0.56rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 0.2rem;
+        }
+
+        .info-value {
+            font-size: 0.82rem;
+            color: var(--text);
+            font-weight: 500;
+            word-break: break-all;
+        }
+
+        /* Purchase stats */
+        .purchase-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+        }
+
+        .purchase-stat {
+            background: var(--black);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.9rem;
+            text-align: center;
+        }
+
+        .purchase-stat-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            color: var(--gold);
+            line-height: 1;
+        }
+
+        .purchase-stat-label {
+            font-size: 0.58rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-top: 0.25rem;
+        }
+
+        /* History */
+        .history-list { display: flex; flex-direction: column; gap: 0.45rem; }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding: 0.6rem 0.8rem;
+            background: var(--black);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.74rem;
+        }
+
+        .history-date { color: var(--muted); flex-shrink: 0; min-width: 62px; font-size: 0.68rem; }
+        .history-product { flex: 1; color: var(--text); font-weight: 500; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .history-value { color: var(--gold); font-weight: 600; flex-shrink: 0; }
+        .history-status { flex-shrink: 0; }
+
+        .s-badge {
+            font-size: 0.57rem;
+            text-transform: uppercase;
+            padding: 0.18rem 0.45rem;
+            border-radius: 4px;
+            letter-spacing: 0.08em;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .s-aguardando_pagamento, .s-pendente { background: rgba(255,190,60,0.1); color: #ffbe3c; border: 1px solid rgba(255,190,60,0.3); }
+        .s-approved                          { background: rgba(80,160,255,0.1); color: #50a0ff; border: 1px solid rgba(80,160,255,0.3); }
+        .s-etiqueta_criada                   { background: rgba(140,100,200,0.1); color: #a070e0; border: 1px solid rgba(140,100,200,0.3); }
+        .s-enviado                           { background: rgba(201,150,60,0.1); color: var(--gold); border: 1px solid rgba(201,150,60,0.3); }
+        .s-entregue                          { background: rgba(0,188,212,0.1); color: #00bcd4; border: 1px solid rgba(0,188,212,0.3); }
+        .s-retirado                          { background: rgba(255,140,0,0.1); color: #ff8c00; border: 1px solid rgba(255,140,0,0.3); }
+
+        /* Modal actions */
+        .modal-actions {
+            padding: 1rem 1.5rem 1.4rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 0.7rem;
+        }
+
+        .btn-modal {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            transition: filter 0.2s;
+            font-family: 'Jost', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: none;
+        }
+
+        .btn-wpp { background: var(--green-whatsapp); color: #000; }
+        .btn-wpp:hover { filter: brightness(1.1); }
+        .btn-wpp.disabled { opacity: 0.4; pointer-events: none; }
+
+        /* Toast */
+        #toast-container {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .toast {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.75rem 1.1rem;
+            font-size: 0.78rem;
+            color: var(--text);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            animation: toastIn 0.3s ease;
+            max-width: 280px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(16px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        .toast.hide { animation: toastOut 0.3s ease forwards; }
+
+        @keyframes toastOut {
+            to { opacity: 0; transform: translateX(16px); }
+        }
+
+        .toast.success { border-left: 3px solid #25d366; }
+        .toast.error   { border-left: 3px solid #ff4757; }
+        .toast.info    { border-left: 3px solid var(--gold); }
+
+        @media (max-width: 600px) {
+            .btn-nav { position: static; transform: none; display: block; margin-bottom: 0.6rem; text-align: center; }
+            .info-grid { grid-template-columns: 1fr; }
+            .stats-row { gap: 0.4rem; }
+            .stat-mini-num { font-size: 1.3rem; }
+            .modal-box { max-height: 95vh; }
+            .history-item { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="toast-container"></div>
+
+<!-- STICKY HEADER -->
+<div class="sticky-top">
+    <div class="header-admin">
+        <a href="/pedidos.html" class="btn-nav">← Pedidos</a>
+        <h1>Hearts Fidelidade</h1>
+        <p>Clube de Clientes</p>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat-mini">
+            <div class="stat-mini-num" id="stat-clientes">—</div>
+            <div class="stat-mini-label">Clientes</div>
+        </div>
+        <div class="stat-mini">
+            <div class="stat-mini-num" id="stat-receita">—</div>
+            <div class="stat-mini-label">Total Compras</div>
+        </div>
+        <div class="stat-mini">
+            <div class="stat-mini-num" id="stat-pontos">—</div>
+            <div class="stat-mini-label">Pontos</div>
+        </div>
+    </div>
+
+    <div class="level-row">
+        <span class="level-stat"><span class="level-dot ouro"></span><span id="cnt-ouro">0</span> Ouro</span>
+        <span class="level-stat"><span class="level-dot prata"></span><span id="cnt-prata">0</span> Prata</span>
+        <span class="level-stat"><span class="level-dot bronze"></span><span id="cnt-bronze">0</span> Bronze</span>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" data-nivel="todos" onclick="setNivel('todos', this)">
+            Todos <span class="tab-count" id="tab-todos">0</span>
+        </button>
+        <button class="tab-btn tab-ouro" data-nivel="Ouro" onclick="setNivel('Ouro', this)">
+            Ouro <span class="tab-count" id="tab-ouro">0</span>
+        </button>
+        <button class="tab-btn tab-prata" data-nivel="Prata" onclick="setNivel('Prata', this)">
+            Prata <span class="tab-count" id="tab-prata">0</span>
+        </button>
+        <button class="tab-btn tab-bronze" data-nivel="Bronze" onclick="setNivel('Bronze', this)">
+            Bronze <span class="tab-count" id="tab-bronze">0</span>
+        </button>
+    </div>
+
+    <div class="search-wrap">
+        <input class="search-input" type="text" id="search" placeholder="Buscar por nome, WhatsApp, cidade…" oninput="renderClientes()">
+    </div>
+</div>
+
+<!-- GRID DE CLIENTES -->
+<div class="main-content">
+    <div class="clients-grid" id="grid">
+        <div class="loading-spinner">Carregando clientes…</div>
+    </div>
+</div>
+
+<!-- MODAL DE DETALHE -->
+<div class="modal-overlay" id="modal-overlay">
+    <div class="modal-box" id="modal-box">
+        <div class="modal-header">
+            <div class="modal-avatar" id="modal-avatar"></div>
+            <div class="modal-title-area">
+                <div class="modal-name" id="modal-name"></div>
+                <div class="modal-subtitle" id="modal-subtitle"></div>
+            </div>
+            <button class="modal-close" id="modal-close">✕</button>
+        </div>
+        <div class="modal-body">
+
+            <div class="modal-section">
+                <div class="modal-section-title">Pontos &amp; Nível</div>
+                <div class="points-display">
+                    <div class="points-big" id="modal-pontos">0</div>
+                    <div class="points-unit">pontos</div>
+                    <span class="level-badge" id="modal-nivel-badge"></span>
+                </div>
+                <div class="modal-progress-bg">
+                    <div class="modal-progress-fill" id="modal-progress-fill" style="width:0%"></div>
+                </div>
+                <div class="modal-progress-text" id="modal-progress-text">
+                    <span></span><span></span>
+                </div>
+            </div>
+
+            <div class="modal-section">
+                <div class="modal-section-title">Contato</div>
+                <div class="info-grid" id="modal-contato"></div>
+            </div>
+
+            <div class="modal-section">
+                <div class="modal-section-title">Resumo de Compras</div>
+                <div class="purchase-stats" id="modal-compras"></div>
+            </div>
+
+            <div class="modal-section">
+                <div class="modal-section-title">Histórico de Pedidos</div>
+                <div class="history-list" id="modal-historico"></div>
+            </div>
+
+        </div>
+        <div class="modal-actions" id="modal-actions"></div>
+    </div>
+</div>
+
+<script>
+    let todosClientes = [];
+    let listaFiltrada = [];
+    let nivelAtivo = 'todos';
+
+    // ── Carregar ────────────────────────────────────────────────────────────
+    async function carregarClientes() {
+        try {
+            const resp = await fetch('/api/clientes');
+            if (!resp.ok) throw new Error();
+            todosClientes = await resp.json();
+            atualizarStats();
+            renderClientes();
+        } catch {
+            document.getElementById('grid').innerHTML = '<div class="empty-msg">Erro ao carregar clientes.</div>';
+            toast('Erro ao carregar dados.', 'error');
+        }
+    }
+
+    // ── Stats ───────────────────────────────────────────────────────────────
+    function atualizarStats() {
+        const ouro   = todosClientes.filter(c => c.nivel === 'Ouro').length;
+        const prata  = todosClientes.filter(c => c.nivel === 'Prata').length;
+        const bronze = todosClientes.filter(c => c.nivel === 'Bronze').length;
+        const receita = todosClientes.reduce((s, c) => s + c.total_gasto, 0);
+        const pontos  = todosClientes.reduce((s, c) => s + c.pontos, 0);
+
+        document.getElementById('stat-clientes').textContent = todosClientes.length;
+        document.getElementById('stat-receita').textContent = fmtR(receita);
+        document.getElementById('stat-pontos').textContent = pontos.toLocaleString('pt-BR');
+        document.getElementById('cnt-ouro').textContent = ouro;
+        document.getElementById('cnt-prata').textContent = prata;
+        document.getElementById('cnt-bronze').textContent = bronze;
+        document.getElementById('tab-todos').textContent = todosClientes.length;
+        document.getElementById('tab-ouro').textContent = ouro;
+        document.getElementById('tab-prata').textContent = prata;
+        document.getElementById('tab-bronze').textContent = bronze;
+    }
+
+    // ── Renderizar ──────────────────────────────────────────────────────────
+    function renderClientes() {
+        const busca = document.getElementById('search').value.toLowerCase().trim();
+
+        listaFiltrada = todosClientes.filter(c => {
+            const matchNivel = nivelAtivo === 'todos' || c.nivel === nivelAtivo;
+            if (!matchNivel) return false;
+            if (!busca) return true;
+            return [c.nome, c.sobrenome, c.email, c.whatsapp, c.cpf, c.cidade]
+                .map(v => (v || '').toLowerCase())
+                .some(v => v.includes(busca));
+        });
+
+        const grid = document.getElementById('grid');
+        if (listaFiltrada.length === 0) {
+            grid.innerHTML = '<div class="empty-msg">Nenhum cliente encontrado.</div>';
+            return;
+        }
+        grid.innerHTML = listaFiltrada.map((c, i) => htmlCard(c, i)).join('');
+    }
+
+    // ── HTML do card ────────────────────────────────────────────────────────
+    function htmlCard(c, idx) {
+        const n = c.nivel.toLowerCase();
+        const inicial = (c.nome || '?')[0].toUpperCase();
+        const { pct, texto } = calcProgress(c.pontos, c.nivel);
+        const local = [c.cidade, c.estado].filter(Boolean).join(' / ');
+        const compras = c.compras_confirmadas;
+        return `<div class="client-card" data-index="${idx}">
+            <div class="client-card-body">
+                <div class="client-avatar ${n}">${inicial}</div>
+                <div class="client-info">
+                    <span class="client-name">${c.nome || ''} ${c.sobrenome || ''}</span>
+                    <div class="client-meta">
+                        ${local ? `<span>${local}</span>` : ''}
+                        <span>${compras} compra${compras !== 1 ? 's' : ''}</span>
+                    </div>
+                </div>
+                <div class="client-right">
+                    <div class="client-points">${c.pontos.toLocaleString('pt-BR')}</div>
+                    <div class="client-points-label">pts</div>
+                    <div class="level-badge ${n}">${c.nivel}</div>
+                </div>
+            </div>
+            <div class="progress-wrap">
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill ${n}" style="width:${pct}%"></div>
+                </div>
+                <div class="progress-label">
+                    <span>${c.nivel}</span>
+                    <span>${texto}</span>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    // ── Event delegation ────────────────────────────────────────────────────
+    document.getElementById('grid').addEventListener('click', e => {
+        const card = e.target.closest('.client-card');
+        if (card && card.dataset.index !== undefined) {
+            abrirModal(parseInt(card.dataset.index));
+        }
+    });
+
+    // ── Progresso ───────────────────────────────────────────────────────────
+    function calcProgress(pontos, nivel) {
+        if (nivel === 'Ouro') {
+            return { pct: 100, texto: 'Nível máximo ✨' };
+        } else if (nivel === 'Prata') {
+            const falta = 1000 - pontos;
+            return { pct: Math.round((pontos - 300) / 700 * 100), texto: `faltam ${falta} pts → Ouro` };
+        } else {
+            const falta = 300 - pontos;
+            return { pct: Math.min(99, Math.round(pontos / 300 * 100)), texto: `faltam ${falta} pts → Prata` };
+        }
+    }
+
+    // ── Abrir modal ─────────────────────────────────────────────────────────
+    function abrirModal(idx) {
+        const c = listaFiltrada[idx];
+        if (!c) return;
+
+        const n = c.nivel.toLowerCase();
+        const nomeCompleto = `${c.nome || ''} ${c.sobrenome || ''}`.trim();
+        const inicial = (c.nome || '?')[0].toUpperCase();
+        const { pct, texto } = calcProgress(c.pontos, c.nivel);
+
+        // Header
+        const av = document.getElementById('modal-avatar');
+        av.textContent = inicial;
+        av.className = `modal-avatar ${n}`;
+        document.getElementById('modal-name').textContent = nomeCompleto;
+        document.getElementById('modal-subtitle').textContent = `Cliente desde ${fmtData(c.primeira_compra)}`;
+
+        // Pontos
+        document.getElementById('modal-pontos').textContent = c.pontos.toLocaleString('pt-BR');
+        const badge = document.getElementById('modal-nivel-badge');
+        badge.textContent = c.nivel;
+        badge.className = `level-badge ${n}`;
+        const fill = document.getElementById('modal-progress-fill');
+        fill.style.width = '0%';
+        fill.className = `modal-progress-fill ${n}`;
+        setTimeout(() => { fill.style.width = pct + '%'; }, 60);
+        const ptText = document.getElementById('modal-progress-text');
+        ptText.innerHTML = `<span>${c.nivel}</span><span>${texto}</span>`;
+
+        // Contato
+        document.getElementById('modal-contato').innerHTML = `
+            <div>
+                <div class="info-label">WhatsApp</div>
+                <div class="info-value">${c.whatsapp || '—'}</div>
+            </div>
+            <div>
+                <div class="info-label">E-mail</div>
+                <div class="info-value">${c.email || '—'}</div>
+            </div>
+            <div>
+                <div class="info-label">CPF</div>
+                <div class="info-value">${c.cpf || '—'}</div>
+            </div>
+            <div>
+                <div class="info-label">Cidade</div>
+                <div class="info-value">${[c.cidade, c.estado].filter(Boolean).join(' / ') || '—'}</div>
+            </div>
+        `;
+
+        // Compras
+        document.getElementById('modal-compras').innerHTML = `
+            <div class="purchase-stat">
+                <div class="purchase-stat-num">${c.compras_confirmadas}</div>
+                <div class="purchase-stat-label">Compras</div>
+            </div>
+            <div class="purchase-stat">
+                <div class="purchase-stat-num">${fmtR(c.total_gasto)}</div>
+                <div class="purchase-stat-label">Total Gasto</div>
+            </div>
+        `;
+
+        // Histórico
+        const pedidos = [...(c.pedidos || [])].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        document.getElementById('modal-historico').innerHTML = pedidos.length === 0
+            ? '<div style="color:var(--muted);font-size:0.75rem;font-style:italic;">Nenhum pedido registrado.</div>'
+            : pedidos.map(p => `
+                <div class="history-item">
+                    <div class="history-date">${fmtData(p.created_at)}</div>
+                    <div class="history-product">${p.produto || 'Bolsa'}${p.cor ? ' — ' + p.cor : ''}</div>
+                    <div class="history-value">${fmtR(p.valor_total)}</div>
+                    <div class="history-status"><span class="s-badge s-${p.status}">${labelStatus(p.status)}</span></div>
+                </div>
+            `).join('');
+
+        // Ações
+        const tel = (c.whatsapp || '').replace(/\D/g, '');
+        const msg = gerarMensagem(c);
+        const wppUrl = tel ? `https://wa.me/55${tel}?text=${encodeURIComponent(msg)}` : '#';
+        document.getElementById('modal-actions').innerHTML = `
+            <a href="${wppUrl}" target="_blank" class="btn-modal btn-wpp ${!tel ? 'disabled' : ''}">
+                WhatsApp — Mensagem de Fidelidade
+            </a>
+        `;
+
+        document.getElementById('modal-overlay').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    // ── Mensagem WhatsApp por nível ─────────────────────────────────────────
+    function gerarMensagem(c) {
+        const nome = c.nome || 'cliente';
+        const pts = c.pontos.toLocaleString('pt-BR');
+
+        if (c.nivel === 'Ouro') {
+            return `Oi ${nome}! 🥇\n\nVocê é uma das nossas clientes mais especiais — nível *Ouro* com ${pts} pontos Hearts!\n\nTemos novidades imperdíveis esperando por você. Quando posso te mostrar? 💛\n\n— Hearts Couro`;
+        } else if (c.nivel === 'Prata') {
+            const falta = (1000 - c.pontos).toLocaleString('pt-BR');
+            return `Oi ${nome}! ✨\n\nVocê está no nível *Prata* com ${pts} pontos Hearts — incrível!\n\nFaltam apenas ${falta} pontos para você se tornar *Ouro* e ter acesso a benefícios exclusivos 🎁\n\n— Hearts Couro`;
+        } else {
+            const falta = (300 - c.pontos).toLocaleString('pt-BR');
+            return `Oi ${nome}! 💛\n\nVocê já tem ${pts} pontos no nosso *Clube Hearts*!\n\nFaltam só ${falta} pontos para subir para o nível *Prata* — que tal garantir sua próxima bolsa? 🛍️\n\n— Hearts Couro`;
+        }
+    }
+
+    // ── Fechar modal ────────────────────────────────────────────────────────
+    document.getElementById('modal-overlay').addEventListener('click', e => {
+        if (e.target === document.getElementById('modal-overlay')) fecharModal();
+    });
+
+    document.getElementById('modal-close').addEventListener('click', fecharModal);
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') fecharModal();
+    });
+
+    function fecharModal() {
+        document.getElementById('modal-overlay').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    // ── Filtro por nível ────────────────────────────────────────────────────
+    function setNivel(nivel, btn) {
+        nivelAtivo = nivel;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderClientes();
+    }
+
+    // ── Helpers ─────────────────────────────────────────────────────────────
+    function fmtR(v) {
+        return 'R$ ' + Math.round(parseFloat(v || 0)).toLocaleString('pt-BR');
+    }
+
+    function fmtData(iso) {
+        if (!iso) return '—';
+        return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    const STATUS_LABEL = {
+        aguardando_pagamento: 'Aguardando',
+        pendente: 'Pendente',
+        approved: 'Pago',
+        etiqueta_criada: 'Etiqueta',
+        enviado: 'Contactado',
+        entregue: 'Enviado',
+        retirado: 'Retirado'
+    };
+
+    function labelStatus(s) { return STATUS_LABEL[s] || s; }
+
+    function toast(msg, tipo = 'info') {
+        const el = document.createElement('div');
+        el.className = `toast ${tipo}`;
+        el.textContent = msg;
+        document.getElementById('toast-container').appendChild(el);
+        setTimeout(() => {
+            el.classList.add('hide');
+            setTimeout(() => el.remove(), 350);
+        }, 4000);
+    }
+
+    carregarClientes();
+</script>
+</body>
+</html>

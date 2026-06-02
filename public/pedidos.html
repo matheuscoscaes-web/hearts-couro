@@ -563,20 +563,10 @@
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">Hearts</div>
 
-        <button class="sidebar-item active" id="side-aguardando" onclick="filtrarSidebar('aguardando')">
-            <span class="sidebar-item-icon">⏳</span>
-            <span class="sidebar-item-label">Aguardando</span>
-            <span class="tab-count" id="side-count-aguardando">0</span>
-        </button>
-        <button class="sidebar-item" id="side-pagos" onclick="filtrarSidebar('pagos')">
+        <button class="sidebar-item active" id="side-pagos" onclick="filtrarSidebar('pagos')">
             <span class="sidebar-item-icon">✅</span>
             <span class="sidebar-item-label">Pagos</span>
             <span class="tab-count" id="side-count-pagos">0</span>
-        </button>
-        <button class="sidebar-item" id="side-enviado" onclick="filtrarSidebar('enviado')">
-            <span class="sidebar-item-icon">💬</span>
-            <span class="sidebar-item-label">Contactados</span>
-            <span class="tab-count" id="side-count-enviado">0</span>
         </button>
         <button class="sidebar-item" id="side-entregue" onclick="filtrarSidebar('entregue')">
             <span class="sidebar-item-icon">📬</span>
@@ -612,6 +602,7 @@
         <div class="header-admin">
             <h1>Gestão Hearts</h1>
             <p>Fila de Atendimento</p>
+            <a href="/fidelidade.html" style="display:inline-block;margin-top:0.5rem;font-size:0.65rem;color:var(--gold-dim);text-decoration:none;letter-spacing:0.25em;text-transform:uppercase;transition:color .2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--gold-dim)'">♥ Clube de Fidelidade</a>
         </div>
 
         <!-- Mobile bar: hamburguer + aba ativa -->
@@ -619,13 +610,11 @@
             <button class="hamburger-btn" onclick="abrirMenu()" aria-label="Menu">
                 <span></span><span></span><span></span>
             </button>
-            <span class="active-tab-label" id="active-tab-label">Aguardando</span>
+            <span class="active-tab-label" id="active-tab-label">Pagos</span>
         </div>
 
         <div class="tabs">
-            <button class="tab-btn active" data-status="aguardando" onclick="filtrar('aguardando')">Aguardando <span class="tab-count" id="count-aguardando">0</span></button>
-            <button class="tab-btn" data-status="pagos" onclick="filtrar('pagos')">Pagos <span class="tab-count" id="count-pagos">0</span></button>
-            <button class="tab-btn" data-status="enviado" onclick="filtrar('enviado')">Contactados <span class="tab-count" id="count-enviado">0</span></button>
+            <button class="tab-btn active" data-status="pagos" onclick="filtrar('pagos')">Pagos <span class="tab-count" id="count-pagos">0</span></button>
             <button class="tab-btn" data-status="entregue" onclick="filtrar('entregue')">Enviados <span class="tab-count" id="count-entregue">0</span></button>
             <button class="tab-btn" data-status="retirado" onclick="filtrar('retirado')">Retirados <span class="tab-count" id="count-retirado">0</span></button>
             <button class="tab-btn" data-status="todos" onclick="filtrar('todos')">Geral <span class="tab-count" id="count-todos">0</span></button>
@@ -676,7 +665,7 @@
         // ── BUSCA ─────────────────────────────────────────────────────────
         function onSearch() {
             termoBusca = document.getElementById('search-input').value.toLowerCase().trim();
-            const abaAtiva = document.querySelector('.tab-btn[data-status].active')?.dataset.status || 'aguardando';
+            const abaAtiva = document.querySelector('.tab-btn[data-status].active')?.dataset.status || 'pagos';
             if (abaAtiva !== 'resumo') filtrar(abaAtiva);
         }
 
@@ -693,7 +682,7 @@
                 database = await response.json();
                 atualizarContadores();
                 atualizarFiltroProduto();
-                const abaAtiva = document.querySelector('.tab-btn[data-status].active')?.dataset.status || 'aguardando';
+                const abaAtiva = document.querySelector('.tab-btn[data-status].active')?.dataset.status || 'pagos';
                 if (abaAtiva === 'resumo') mostrarResumo();
                 else filtrar(abaAtiva);
             } catch (error) {
@@ -756,13 +745,15 @@
         }
 
         function atualizarFiltroProduto() {
-            const produtosNoBanco = [...new Set(database.map(p => p.produto).filter(Boolean))].sort();
             const wrap = document.getElementById('filtro-produto');
-            wrap.style.display = produtosNoBanco.length > 1 ? 'flex' : 'none';
+            wrap.style.display = 'flex';
+            const todosProdutos = Object.keys(PRODUTO_LABELS);
             wrap.innerHTML = `<button class="tab-btn ${produtoAtivo === 'todos' ? 'active' : ''}" style="font-size:0.75rem;padding:0.5rem 1rem;" data-produto="todos" onclick="filtrarProduto('todos')">Todos</button>`;
-            produtosNoBanco.forEach(pr => {
-                const label = PRODUTO_LABELS[pr] || pr;
-                wrap.innerHTML += `<button class="tab-btn ${produtoAtivo === pr ? 'active' : ''}" style="font-size:0.75rem;padding:0.5rem 1rem;" data-produto="${pr}" onclick="filtrarProduto('${pr}')">${label}</button>`;
+            const statusConfirmado = ['approved', 'etiqueta_criada', 'entregue', 'retirado'];
+            todosProdutos.forEach(pr => {
+                const qtd = database.filter(p => p.produto === pr && statusConfirmado.includes(p.status)).length;
+                const label = PRODUTO_LABELS[pr];
+                wrap.innerHTML += `<button class="tab-btn ${produtoAtivo === pr ? 'active' : ''}" style="font-size:0.75rem;padding:0.5rem 1rem;" data-produto="${pr}" onclick="filtrarProduto('${pr}')">${label}${qtd ? ` <span class="tab-count">${qtd}</span>` : ''}</button>`;
             });
         }
 
@@ -771,7 +762,7 @@
             document.querySelectorAll('#filtro-produto .tab-btn').forEach(b => {
                 b.classList.toggle('active', b.dataset.produto === produto);
             });
-            const abaAtiva = document.querySelector('.tab-btn[data-status].active')?.dataset.status || 'aguardando';
+            const abaAtiva = document.querySelector('.tab-btn[data-status].active')?.dataset.status || 'pagos';
             if (abaAtiva === 'resumo') mostrarResumo();
             else filtrar(abaAtiva);
         }
@@ -825,6 +816,8 @@
             'Lara':    'Lara',
             'Adriana': 'Adriana',
             'Miranda': 'Miranda',
+            'Manuela': 'Manuela',
+            'Maria':   'Maria',
             'Modelo3': 'Denise',
             'Julia':   'Julia',
             'Renata':  'Renata',
@@ -964,19 +957,20 @@
                 el.classList.toggle('active', el.id === 'side-resumo');
             });
 
-            // Pedidos confirmados: pagos, etiqueta criada, enviados e retirados na loja
+            // Resumo: pagos + enviados + retirados
             const pagas = database.filter(p =>
-                p.status === 'approved' || p.status === 'etiqueta_criada' || p.status === 'enviado' || p.status === 'entregue' || p.status === 'retirado'
+                p.status === 'approved' || p.status === 'etiqueta_criada' || p.status === 'entregue' || p.status === 'retirado'
             );
             const base = produtoAtivo === 'todos' ? pagas : pagas.filter(p => p.produto === produtoAtivo);
-            const total = base.length;
+            const baseComProduto = base.filter(p => p.produto);
+            const total = baseComProduto.length;
             const totalValor = base.reduce((s, p) => s + (parseFloat(p.valor_total) || 0), 0);
             const fmtBRL = v => 'R$ ' + v.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
             // Vendas por produto
             const porProduto = {};
-            base.forEach(p => {
-                const pr = PRODUTO_LABELS[p.produto] || p.produto || 'Sem produto';
+            baseComProduto.forEach(p => {
+                const pr = PRODUTO_LABELS[p.produto] || p.produto;
                 porProduto[pr] = (porProduto[pr] || 0) + 1;
             });
             const produtosOrdenados = Object.entries(porProduto).sort((a, b) => b[1] - a[1]);
