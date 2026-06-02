@@ -39,14 +39,14 @@ const PACOTE = { height: 11, width: 30, length: 32, weight: 1.0 };
 
 // Estoque inicial por produto_cor
 const ESTOQUE_INICIAL = {
-  'Paola_White':            6,
-  'Paola_Whiskey':          7,
-  'Paola_Preto':            3,
+  'Paola_White':            7,
+  'Paola_Whiskey':          8,
+  'Paola_Preto':            2,
   'Paola_Cafe':             0,
   'Paola_Azul':             0,
   'Paola_Argila':          16,
-  'Paola_Pink':             2,
-  'Paola_Caramelo':         3,
+  'Paola_Pink':             3,
+  'Paola_Caramelo':         4,
   'Carol_Preto':           20,
   'Carol_Caramelo_brilho': 20,
 };
