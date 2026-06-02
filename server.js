@@ -41,7 +41,7 @@ const PACOTE = { height: 11, width: 30, length: 32, weight: 1.0 };
 const ESTOQUE_INICIAL = {
   'Paola_White':            7,
   'Paola_Whiskey':          8,
-  'Paola_Preto':            2,
+  'Paola_Preto':            1,
   'Paola_Cafe':             0,
   'Paola_Azul':             0,
   'Paola_Argila':          16,
