@@ -1179,6 +1179,21 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
 }
 .lm-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
 .lm-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+.pw-wrap { position: relative; }
+.pw-wrap input { padding-right: 2.2rem !important; }
+.pw-eye {
+  position: absolute; right: 0.55rem; top: 50%; transform: translateY(-50%);
+  background: transparent; border: none; cursor: pointer; color: var(--muted);
+  font-size: 1rem; padding: 0; line-height: 1; transition: color .2s;
+}
+.pw-eye:hover { color: var(--gold); }
+.lm-link-esqueci {
+  background: none; border: none; color: var(--muted); font-size: 0.7rem;
+  font-family: 'Jost', sans-serif; cursor: pointer; text-decoration: underline;
+  padding: 0; transition: color .2s; display: block; text-align: right; margin-bottom: 0.5rem;
+}
+.lm-link-esqueci:hover { color: var(--gold); }
+.lm-ok { font-size: .72rem; color: #5cb85c; min-height: .9rem; margin-bottom: .6rem; text-align: center; }
 </style>
 </head>
 <body>
@@ -1931,10 +1946,27 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
       </div>
       <div class="lm-field">
         <label>Senha</label>
-        <input type="password" id="lm-senha" placeholder="••••••••" onkeydown="if(event.key==='Enter')fazerLogin()">
+        <div class="pw-wrap">
+          <input type="password" id="lm-senha" placeholder="••••••••" onkeydown="if(event.key==='Enter')fazerLogin()">
+          <button type="button" class="pw-eye" onclick="toggleSenha('lm-senha',this)" tabindex="-1">👁</button>
+        </div>
       </div>
+      <button type="button" class="lm-link-esqueci" onclick="mostrarEsqueciSenha()">Esqueci minha senha</button>
       <div class="lm-error" id="lm-login-erro"></div>
       <button class="lm-btn" id="lm-btn-entrar" onclick="fazerLogin()">Entrar</button>
+    </div>
+
+    <!-- Esqueci minha senha -->
+    <div id="lm-form-esqueci" class="lm-body" style="display:none">
+      <p style="font-size:0.82rem;color:var(--muted);margin-bottom:1rem;line-height:1.5;">Digite seu e-mail e enviaremos um link para redefinir sua senha.</p>
+      <div class="lm-field">
+        <label>E-mail</label>
+        <input type="email" id="lm-esqueci-email" placeholder="seu@email.com">
+      </div>
+      <div class="lm-ok" id="lm-esqueci-ok" style="display:none;"></div>
+      <div class="lm-error" id="lm-esqueci-erro"></div>
+      <button class="lm-btn" id="lm-btn-esqueci" onclick="enviarLinkRecuperacao()">Enviar link</button>
+      <button type="button" onclick="voltarParaLogin()" style="display:block;width:100%;text-align:center;background:transparent;border:none;color:var(--muted);font-size:0.75rem;cursor:pointer;font-family:'Jost',sans-serif;margin-top:0.8rem;transition:color .2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--muted)'">← Voltar para entrar</button>
     </div>
 
     <!-- Criar conta -->
@@ -2017,11 +2049,32 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
 
       <div class="lm-field">
         <label>Senha * (mínimo 6 caracteres)</label>
-        <input type="password" id="lm-reg-senha" placeholder="••••••••">
+        <div class="pw-wrap">
+          <input type="password" id="lm-reg-senha" placeholder="••••••••">
+          <button type="button" class="pw-eye" onclick="toggleSenha('lm-reg-senha',this)" tabindex="-1">👁</button>
+        </div>
       </div>
       <div class="lm-error" id="lm-reg-erro"></div>
       <button class="lm-btn" id="lm-btn-criar" onclick="fazerRegistro()">Criar conta</button>
     </div>
+  </div>
+</div>
+
+<!-- MODAL REDEFINIR SENHA -->
+<div id="redefinir-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(26,21,16,0.88);z-index:3000;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px);">
+  <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:2rem 1.5rem;max-width:380px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.28);animation:lmUp .28s ease;">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--gold);margin-bottom:0.3rem;text-align:center;">Hearts Couro</div>
+    <div style="font-size:0.78rem;color:var(--muted);text-align:center;margin-bottom:1.2rem;">Crie sua nova senha</div>
+    <div class="lm-field">
+      <label>Nova senha * (mínimo 6 caracteres)</label>
+      <div class="pw-wrap">
+        <input type="password" id="rd-nova-senha" placeholder="••••••••" onkeydown="if(event.key==='Enter')redefinirSenha()">
+        <button type="button" class="pw-eye" onclick="toggleSenha('rd-nova-senha',this)" tabindex="-1">👁</button>
+      </div>
+    </div>
+    <div class="lm-ok" id="rd-ok" style="display:none;"></div>
+    <div class="lm-error" id="rd-erro"></div>
+    <button class="lm-btn" id="rd-btn" onclick="redefinirSenha()">Salvar nova senha</button>
   </div>
 </div>
 
@@ -3086,6 +3139,95 @@ async function salvarEnderecoNaConta(dados) {
 }
 
 carregarSessao();
+
+// ── Mostrar/esconder senha ──────────────────────────────────────────────────
+function toggleSenha(id, btn) {
+  const input = document.getElementById(id);
+  if (input.type === 'password') { input.type = 'text'; btn.textContent = '🙈'; }
+  else { input.type = 'password'; btn.textContent = '👁'; }
+}
+
+// ── Esqueci minha senha ────────────────────────────────────────────────────
+function mostrarEsqueciSenha() {
+  document.getElementById('lm-form-entrar').style.display  = 'none';
+  document.getElementById('lm-form-criar').style.display   = 'none';
+  document.getElementById('lm-form-esqueci').style.display = 'block';
+  document.querySelectorAll('.lm-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('lm-esqueci-erro').textContent = '';
+  document.getElementById('lm-esqueci-ok').style.display  = 'none';
+  document.getElementById('lm-esqueci-ok').textContent    = '';
+  document.getElementById('lm-esqueci-email').value = document.getElementById('lm-email').value || '';
+}
+
+function voltarParaLogin() {
+  document.getElementById('lm-form-esqueci').style.display = 'none';
+  document.getElementById('lm-form-entrar').style.display  = 'block';
+  document.querySelectorAll('.lm-tab').forEach((b, i) => { if (i === 0) b.classList.add('active'); });
+}
+
+async function enviarLinkRecuperacao() {
+  const btn  = document.getElementById('lm-btn-esqueci');
+  const erro = document.getElementById('lm-esqueci-erro');
+  const ok   = document.getElementById('lm-esqueci-ok');
+  const email = document.getElementById('lm-esqueci-email').value.trim();
+  erro.textContent = ''; ok.style.display = 'none'; ok.textContent = '';
+  if (!email) { erro.textContent = 'Digite seu e-mail.'; return; }
+  btn.disabled = true; btn.textContent = 'Enviando…';
+  try {
+    await fetch('/api/conta/esqueci-senha', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    ok.textContent = 'Se esse e-mail estiver cadastrado, você receberá um link em breve. Verifique sua caixa de entrada (e spam).';
+    ok.style.display = 'block';
+  } catch {
+    erro.textContent = 'Erro de conexão. Tente novamente.';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Enviar link';
+  }
+}
+
+// ── Redefinir senha via link ───────────────────────────────────────────────
+let _resetToken = null;
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('acao') === 'redefinir' && params.get('token')) {
+    _resetToken = params.get('token');
+    document.getElementById('redefinir-modal-overlay').style.display = 'flex';
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+})();
+
+async function redefinirSenha() {
+  const btn  = document.getElementById('rd-btn');
+  const erro = document.getElementById('rd-erro');
+  const ok   = document.getElementById('rd-ok');
+  const novaSenha = document.getElementById('rd-nova-senha').value;
+  erro.textContent = ''; ok.style.display = 'none';
+  if (novaSenha.length < 6) { erro.textContent = 'Senha: mínimo 6 caracteres.'; return; }
+  btn.disabled = true; btn.textContent = 'Salvando…';
+  try {
+    const resp = await fetch('/api/conta/redefinir-senha', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: _resetToken, novaSenha })
+    });
+    const result = await resp.json();
+    if (!resp.ok) { erro.textContent = result.erro || 'Erro ao redefinir senha.'; return; }
+    document.getElementById('rd-nova-senha').value = '';
+    ok.textContent = 'Senha redefinida com sucesso!';
+    ok.style.display = 'block';
+    setTimeout(() => {
+      document.getElementById('redefinir-modal-overlay').style.display = 'none';
+      abrirLoginModal();
+    }, 1800);
+  } catch {
+    erro.textContent = 'Erro de conexão. Tente novamente.';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Salvar nova senha';
+  }
+}
 </script>
 
 </body>

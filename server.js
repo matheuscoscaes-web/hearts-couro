@@ -822,5 +822,82 @@ app.get('/api/clientes', async (req, res) => {
   }
 });
 
+// ── ROTA: Esqueci minha senha ──
+app.post('/api/conta/esqueci-senha', async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ erro: 'E-mail obrigatório.' });
+
+  try {
+    const { data: conta } = await supabase
+      .from('contas').select('id, nome').eq('email', email.toLowerCase().trim()).single();
+
+    // Sempre responde ok — não revela se o e-mail existe
+    if (!conta) return res.json({ ok: true });
+
+    const token  = crypto.randomBytes(32).toString('hex');
+    const expiry = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 1 hora
+
+    await supabase.from('contas').update({
+      reset_token: token,
+      reset_token_expiry: expiry
+    }).eq('id', conta.id);
+
+    const link = `${process.env.BASE_URL || 'http://localhost:5000'}/?acao=redefinir&token=${token}`;
+
+    if (transporter) {
+      await transporter.sendMail({
+        from: `"Hearts Couro" <${EMAIL_USER}>`,
+        to: email,
+        subject: 'Redefinição de senha — Hearts Couro',
+        html: `<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:1.5rem;">
+          <h2 style="color:#c9963c;">Redefinir senha</h2>
+          <p>Olá, <strong>${conta.nome || ''}</strong>!</p>
+          <p>Recebemos uma solicitação para redefinir a senha da sua conta Hearts Couro.</p>
+          <p>Clique no botão abaixo para criar uma nova senha. O link é válido por <strong>1 hora</strong>.</p>
+          <div style="text-align:center;margin:2rem 0;">
+            <a href="${link}" style="background:#c9963c;color:#fff;padding:0.8rem 2rem;border-radius:8px;text-decoration:none;font-weight:600;font-size:1rem;display:inline-block;">Redefinir minha senha</a>
+          </div>
+          <p style="font-size:0.8rem;color:#aaa;">Se você não solicitou isso, ignore este e-mail. Sua senha não será alterada.</p>
+          <p style="color:#aaa;font-size:0.8rem;">Hearts Couro Legítimo</p>
+        </div>`
+      });
+    }
+
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Erro ao enviar e-mail de recuperação:', err);
+    res.status(500).json({ erro: 'Erro ao processar solicitação.' });
+  }
+});
+
+// ── ROTA: Redefinir Senha ──
+app.post('/api/conta/redefinir-senha', async (req, res) => {
+  const { token, novaSenha } = req.body;
+  if (!token || !novaSenha) return res.status(400).json({ erro: 'Token e nova senha são obrigatórios.' });
+  if (novaSenha.length < 6) return res.status(400).json({ erro: 'Senha deve ter pelo menos 6 caracteres.' });
+
+  try {
+    const { data: conta } = await supabase
+      .from('contas').select('id, reset_token_expiry').eq('reset_token', token).single();
+
+    if (!conta) return res.status(400).json({ erro: 'Link inválido ou expirado.' });
+    if (new Date(conta.reset_token_expiry) < new Date()) {
+      return res.status(400).json({ erro: 'Link expirado. Solicite um novo.' });
+    }
+
+    const novoHash = await hashSenha(novaSenha);
+    await supabase.from('contas').update({
+      senha_hash: novoHash,
+      reset_token: null,
+      reset_token_expiry: null
+    }).eq('id', conta.id);
+
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Erro ao redefinir senha:', err);
+    res.status(500).json({ erro: 'Erro ao redefinir senha.' });
+  }
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🔥 Hearts Online na porta ${PORT}`));
