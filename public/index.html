@@ -1507,10 +1507,6 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
           </div>
         </div>
 
-        <!-- Prazo sob encomenda -->
-        <div style="background:rgba(201,150,60,0.10);border:1px solid rgba(201,150,60,0.35);border-radius:10px;padding:0.75rem 1rem;margin-bottom:1rem;font-size:0.82rem;color:#d4b26a;line-height:1.5;">
-          ⏰ <strong>Este produto é sob encomenda.</strong> Prazo de entrega: <strong>10 a 15 dias úteis</strong> — independente da forma escolhida abaixo.
-        </div>
 
         <!-- Frete -->
         <div class="section-label">Opções de entrega <span style="color:var(--gold);font-size:0.7rem">*</span></div>
@@ -2163,7 +2159,7 @@ function renderizarFrete(opcoes) {
         <span class="frete-check">✓</span>
         <div class="frete-info">
           <div class="frete-nome">${op.nome}</div>
-          <div class="frete-prazo">Prazo: 12 a 15 dias úteis</div>
+          <div class="frete-prazo"></div>
         </div>
         <span class="frete-preco">R$ ${op.preco.toFixed(2).replace('.', ',')}</span>
       </div>`;
