@@ -35,8 +35,13 @@ const PRODUTOS = {
   'Michele': 259.00,
 };
 
-// Embalagem da bolsa (para cálculo de frete)
+// Embalagem padrão
 const PACOTE = { height: 11, width: 30, length: 32, weight: 1.0 };
+
+// Dimensões específicas por produto (sobrescreve o padrão)
+const PACOTE_PRODUTO = {
+  'Maria': { height: 11, width: 35, length: 35, weight: 1.0 },
+};
 
 // Estoque inicial por produto_cor
 const ESTOQUE_INICIAL = {
@@ -130,11 +135,19 @@ app.post('/api/calcular-frete', async (req, res) => {
   if (cepDestino.length !== 8) return res.status(400).json({ erro: 'CEP inválido.' });
 
   const qtd = Math.max(1, parseInt(req.body.quantidade) || 1);
+  const itens = Array.isArray(req.body.itens) ? req.body.itens : [];
+
+  // Usa a maior embalagem entre os produtos do carrinho
+  const base = itens.reduce((maior, item) => {
+    const p = PACOTE_PRODUTO[item.produto] || PACOTE;
+    return (p.width * p.length > maior.width * maior.length) ? p : maior;
+  }, PACOTE);
+
   const pacoteCalc = {
-    height: Math.min(PACOTE.height * qtd, 70),
-    width:  PACOTE.width,
-    length: PACOTE.length,
-    weight: PACOTE.weight * qtd
+    height: Math.min(base.height * qtd, 70),
+    width:  base.width,
+    length: base.length,
+    weight: base.weight * qtd
   };
 
   try {

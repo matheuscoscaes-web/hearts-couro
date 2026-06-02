@@ -2233,7 +2233,7 @@ async function calcularFrete(cep) {
     const resp = await fetch('/api/calcular-frete', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ cep, quantidade: qtdCarrinho })
+      body: JSON.stringify({ cep, quantidade: qtdCarrinho, itens: carrinho.map(i => ({ produto: i.produto })) })
     });
     const opcoes = await resp.json();
 
