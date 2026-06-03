@@ -366,8 +366,9 @@ app.post('/api/processar-pagamento', async (req, res) => {
     };
 
     if (!isPix) {
-      paymentBody.token        = formData.token;
-      paymentBody.installments = parseInt(formData.installments) || 1;
+      paymentBody.token               = formData.token;
+      paymentBody.installments        = parseInt(formData.installments) || 1;
+      paymentBody.three_d_secure_mode = 'optional';
       if (formData.issuer_id) paymentBody.issuer_id = formData.issuer_id;
     }
 

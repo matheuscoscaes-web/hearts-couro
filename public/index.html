@@ -2869,8 +2869,10 @@ async function inicializarBrick(pedidoId, total, dados) {
             const result = await resp.json();
 
             if (!resp.ok) {
-              reject(new Error(result.erro || 'Erro ao processar pagamento.'));
-              alert('Ops! ' + (result.erro || 'Erro ao processar pagamento.'));
+              const msgErro = result.erro || 'Erro ao processar pagamento.';
+              const detalhe = result.detalhe ? '\n\nDetalhe: ' + result.detalhe : '';
+              reject(new Error(msgErro));
+              alert('Ops! ' + msgErro + detalhe);
               return;
             }
 
