@@ -620,6 +620,7 @@
             <button class="tab-btn" data-status="todos" onclick="filtrar('todos')">Geral <span class="tab-count" id="count-todos">0</span></button>
             <button class="tab-btn" data-status="resumo" onclick="mostrarResumo()">Resumo de Vendas</button>
             <button id="btn-verificar-todos" class="tab-btn" onclick="verificarTodos()" style="background:rgba(80,160,255,0.15);border-color:#50a0ff;color:#50a0ff;">🔄 Verificar Todos</button>
+            <button class="tab-btn" onclick="mostrarProdutos()" id="tab-produtos" style="background:rgba(201,150,60,0.15);border-color:var(--gold-light);color:var(--gold);">🛍 Produtos</button>
         </div>
 
         <!-- Busca rápida -->
@@ -667,6 +668,7 @@
     <div class="main-content">
         <div class="orders-grid" id="grid"></div>
         <div class="resumo-container" id="resumo-view" style="display:none;"></div>
+        <div id="produtos-view" style="display:none; padding:1.5rem 1rem; max-width:900px; margin:0 auto;"></div>
     </div>
 
     <script>
@@ -1184,6 +1186,152 @@
             }
         }
 
+        // ── PRODUTOS ─────────────────────────────────────────────────────
+        let _adminSenha = sessionStorage.getItem('admin_senha') || '';
+
+        async function mostrarProdutos() {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-produtos').classList.add('active');
+            document.getElementById('grid').style.display = 'none';
+            document.getElementById('resumo-view').style.display = 'none';
+            document.getElementById('search-wrap').style.display = 'none';
+            document.getElementById('filtro-produto').style.display = 'none';
+            const view = document.getElementById('produtos-view');
+            view.style.display = 'block';
+            view.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem;">Carregando produtos…</p>';
+
+            const resp = await fetch('/api/produtos');
+            const produtos = await resp.json();
+            renderProdutos(produtos);
+        }
+
+        function renderProdutos(produtos) {
+            const view = document.getElementById('produtos-view');
+            view.innerHTML = `
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:0.5rem;">
+                <h2 style="font-family:'Cormorant Garamond',serif;color:var(--gold);font-size:1.6rem;margin:0;">Produtos</h2>
+                <button onclick="abrirModalNovoProduto()" style="background:var(--gold);color:#fff;border:none;border-radius:8px;padding:0.6rem 1.2rem;font-family:'Jost',sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;">+ Novo Produto</button>
+              </div>
+              <div style="display:grid;gap:1rem;">
+                ${produtos.map(p => `
+                  <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:1.2rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;" id="prod-row-${p.chave}">
+                    <div style="flex:1;min-width:140px;">
+                      <div style="font-weight:600;font-size:1rem;color:var(--text);">${p.nome}</div>
+                      <div style="font-size:0.75rem;color:var(--muted);">chave: ${p.chave}</div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:0.4rem;">
+                      <span style="font-size:0.75rem;color:var(--muted);">R$</span>
+                      <input type="number" value="${p.preco}" min="1" style="width:80px;padding:0.4rem 0.5rem;border:1px solid var(--border);border-radius:6px;font-size:0.95rem;font-family:'Jost',sans-serif;" id="preco-${p.chave}">
+                    </div>
+                    <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.85rem;color:var(--text);">
+                      <input type="checkbox" ${p.ativo ? 'checked' : ''} id="ativo-${p.chave}" onchange="salvarProduto('${p.chave}')">
+                      Ativo
+                    </label>
+                    <button onclick="abrirEditDesc('${p.chave}', ${JSON.stringify(JSON.stringify(p.desc))})" style="background:rgba(201,150,60,0.12);color:var(--gold);border:1px solid var(--gold-light);border-radius:6px;padding:0.35rem 0.8rem;font-size:0.8rem;cursor:pointer;font-family:'Jost',sans-serif;">Descrição</button>
+                    <button onclick="salvarProduto('${p.chave}')" style="background:var(--gold);color:#fff;border:none;border-radius:6px;padding:0.4rem 1rem;font-size:0.85rem;cursor:pointer;font-family:'Jost',sans-serif;font-weight:600;">Salvar</button>
+                  </div>
+                `).join('')}
+              </div>
+
+              <!-- Modal editar descrição -->
+              <div id="modal-desc" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;">
+                <div style="background:#fff;border-radius:16px;padding:2rem;width:100%;max-width:480px;margin:1rem;">
+                  <h3 style="font-family:'Cormorant Garamond',serif;color:var(--gold);margin:0 0 1rem;">Editar Descrição</h3>
+                  <input type="hidden" id="desc-chave">
+                  <textarea id="desc-texto" rows="6" style="width:100%;padding:0.75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:0.9rem;resize:vertical;" placeholder="Uma linha por característica"></textarea>
+                  <p style="font-size:0.75rem;color:var(--muted);margin:0.4rem 0 1rem;">Uma característica por linha (ex: Bolso Interno)</p>
+                  <div style="display:flex;gap:0.8rem;justify-content:flex-end;">
+                    <button onclick="fecharModalDesc()" style="background:transparent;border:1px solid var(--border);border-radius:8px;padding:0.5rem 1.2rem;cursor:pointer;font-family:'Jost',sans-serif;">Cancelar</button>
+                    <button onclick="salvarDesc()" style="background:var(--gold);color:#fff;border:none;border-radius:8px;padding:0.5rem 1.2rem;cursor:pointer;font-family:'Jost',sans-serif;font-weight:600;">Salvar</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Modal novo produto -->
+              <div id="modal-novo-produto" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;">
+                <div style="background:#fff;border-radius:16px;padding:2rem;width:100%;max-width:420px;margin:1rem;">
+                  <h3 style="font-family:'Cormorant Garamond',serif;color:var(--gold);margin:0 0 1.2rem;">Novo Produto</h3>
+                  <label style="font-size:0.8rem;color:var(--muted);">Chave (sem espaços, ex: Paola)</label>
+                  <input id="np-chave" type="text" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:7px;margin:0.3rem 0 0.8rem;font-family:'Jost',sans-serif;">
+                  <label style="font-size:0.8rem;color:var(--muted);">Nome de exibição</label>
+                  <input id="np-nome" type="text" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:7px;margin:0.3rem 0 0.8rem;font-family:'Jost',sans-serif;">
+                  <label style="font-size:0.8rem;color:var(--muted);">Preço (R$)</label>
+                  <input id="np-preco" type="number" min="1" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:7px;margin:0.3rem 0 1.2rem;font-family:'Jost',sans-serif;">
+                  <p id="np-erro" style="color:#c0392b;font-size:0.82rem;min-height:1em;margin:0 0 0.8rem;"></p>
+                  <div style="display:flex;gap:0.8rem;justify-content:flex-end;">
+                    <button onclick="fecharModalNovoProduto()" style="background:transparent;border:1px solid var(--border);border-radius:8px;padding:0.5rem 1.2rem;cursor:pointer;font-family:'Jost',sans-serif;">Cancelar</button>
+                    <button onclick="criarProduto()" style="background:var(--gold);color:#fff;border:none;border-radius:8px;padding:0.5rem 1.2rem;cursor:pointer;font-family:'Jost',sans-serif;font-weight:600;">Criar</button>
+                  </div>
+                </div>
+              </div>
+            `;
+        }
+
+        async function salvarProduto(chave) {
+            const preco = parseInt(document.getElementById('preco-' + chave).value);
+            const ativo = document.getElementById('ativo-' + chave).checked;
+
+            const resp = await fetch('/api/admin/produtos/' + chave, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'senha': _adminSenha },
+                body: JSON.stringify({ preco, ativo })
+            });
+            if (resp.ok) toast('Produto atualizado!', 'success');
+            else toast('Erro ao salvar.', 'error');
+        }
+
+        function abrirEditDesc(chave, descJson) {
+            const desc = JSON.parse(descJson);
+            document.getElementById('desc-chave').value = chave;
+            document.getElementById('desc-texto').value = Array.isArray(desc) ? desc.join('\n') : '';
+            document.getElementById('modal-desc').style.display = 'flex';
+        }
+
+        function fecharModalDesc() {
+            document.getElementById('modal-desc').style.display = 'none';
+        }
+
+        async function salvarDesc() {
+            const chave = document.getElementById('desc-chave').value;
+            const texto = document.getElementById('desc-texto').value;
+            const desc  = texto.split('\n').map(l => l.trim()).filter(Boolean);
+
+            const resp = await fetch('/api/admin/produtos/' + chave, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'senha': _adminSenha },
+                body: JSON.stringify({ desc })
+            });
+            if (resp.ok) { fecharModalDesc(); toast('Descrição atualizada!', 'success'); mostrarProdutos(); }
+            else toast('Erro ao salvar.', 'error');
+        }
+
+        function abrirModalNovoProduto() {
+            document.getElementById('modal-novo-produto').style.display = 'flex';
+        }
+
+        function fecharModalNovoProduto() {
+            document.getElementById('modal-novo-produto').style.display = 'none';
+        }
+
+        async function criarProduto() {
+            const chave = document.getElementById('np-chave').value.trim();
+            const nome  = document.getElementById('np-nome').value.trim();
+            const preco = parseInt(document.getElementById('np-preco').value);
+            const erro  = document.getElementById('np-erro');
+            erro.textContent = '';
+
+            if (!chave || !nome || !preco) { erro.textContent = 'Preencha todos os campos.'; return; }
+            if (/\s/.test(chave)) { erro.textContent = 'Chave não pode ter espaços.'; return; }
+
+            const resp = await fetch('/api/admin/produtos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'senha': _adminSenha },
+                body: JSON.stringify({ chave, nome, preco, ativo: true })
+            });
+            if (resp.ok) { fecharModalNovoProduto(); toast('Produto criado!', 'success'); mostrarProdutos(); }
+            else { const r = await resp.json(); erro.textContent = r.erro || 'Erro ao criar.'; }
+        }
+
         // ── LOGIN ────────────────────────────────────────────────────────
         async function fazerLogin() {
             const senha = document.getElementById('login-senha').value;
@@ -1199,6 +1347,8 @@
 
             if (resp.ok) {
                 localStorage.setItem('admin_auth', Date.now());
+                sessionStorage.setItem('admin_senha', senha);
+                _adminSenha = senha;
                 document.getElementById('login-overlay').style.display = 'none';
                 carregarPedidos();
                 setInterval(carregarPedidos, 30000);

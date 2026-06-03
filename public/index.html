@@ -2480,6 +2480,26 @@ async function carregarEstoque() {
 }
 carregarEstoque();
 
+// Sincroniza preço e ativo com o banco de dados
+(async function sincronizarProdutos() {
+  try {
+    const resp = await fetch('/api/produtos');
+    if (!resp.ok) return;
+    const lista = await resp.json();
+    lista.forEach(p => {
+      if (PRODUTOS_INFO[p.chave]) {
+        PRODUTOS_INFO[p.chave].preco = p.preco;
+        PRODUTOS_INFO[p.chave].ativo = p.ativo;
+        if (p.desc && p.desc.length) PRODUTOS_INFO[p.chave].desc = p.desc;
+        if (!p.ativo) {
+          const card = document.getElementById('card-' + p.chave);
+          if (card) card.style.display = 'none';
+        }
+      }
+    });
+  } catch (e) { console.error('Erro ao sincronizar produtos:', e); }
+})();
+
 /* ── Tela de sucesso após retorno do Checkout Pro ── */
 (function () {
   const p = new URLSearchParams(location.search);

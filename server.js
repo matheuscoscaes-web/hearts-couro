@@ -867,6 +867,60 @@ app.get('/api/conta/pedidos', async (req, res) => {
   }
 });
 
+// ── ROTA: Listar Produtos (público — usado pelo index.html) ──
+app.get('/api/produtos', async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('produtos').select('*').order('ordem');
+    if (error) throw error;
+    res.json(data || []);
+  } catch (err) {
+    res.status(500).json([]);
+  }
+});
+
+// ── ROTA: Atualizar Produto (admin) ──
+app.put('/api/admin/produtos/:chave', async (req, res) => {
+  const { senha } = req.headers;
+  if (senha !== process.env.ADMIN_SENHA) return res.status(401).json({ erro: 'Não autorizado.' });
+
+  const { chave } = req.params;
+  const { nome, preco, ativo, desc } = req.body;
+  try {
+    const update = {};
+    if (nome  !== undefined) update.nome  = nome;
+    if (preco !== undefined) update.preco = parseInt(preco);
+    if (ativo !== undefined) update.ativo = ativo;
+    if (desc  !== undefined) update.desc  = desc;
+
+    const { error } = await supabase.from('produtos').update(update).eq('chave', chave);
+    if (error) throw error;
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+});
+
+// ── ROTA: Criar Produto (admin) ──
+app.post('/api/admin/produtos', async (req, res) => {
+  const { senha } = req.headers;
+  if (senha !== process.env.ADMIN_SENHA) return res.status(401).json({ erro: 'Não autorizado.' });
+
+  const { chave, nome, preco, ativo, desc, ordem } = req.body;
+  if (!chave || !nome || !preco) return res.status(400).json({ erro: 'chave, nome e preco são obrigatórios.' });
+  try {
+    const { error } = await supabase.from('produtos').insert([{
+      chave, nome, preco: parseInt(preco),
+      ativo: ativo !== false,
+      desc: desc || [],
+      ordem: ordem || 99
+    }]);
+    if (error) throw error;
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+});
+
 // ── ROTA: Login Gestão ──
 app.post('/api/admin/login', (req, res) => {
   const { senha } = req.body;
