@@ -637,6 +637,32 @@
         <div id="filtro-produto" style="display:none; flex-wrap:wrap; margin-bottom:0.5rem;"></div>
     </div>
 
+    <!-- LOGIN OVERLAY -->
+    <div id="login-overlay" style="
+        display:none; position:fixed; inset:0; z-index:9999;
+        background:#faf7f2; align-items:center; justify-content:center;
+    ">
+        <div style="
+            background:#fff; border:1px solid #ddd5c3; border-radius:16px;
+            padding:2.5rem 2rem; width:100%; max-width:360px; text-align:center;
+            box-shadow:0 8px 40px rgba(0,0,0,0.08);
+        ">
+            <h2 style="font-family:'Cormorant Garamond',serif;color:#b8832a;font-size:1.8rem;margin:0 0 0.3rem;">Hearts</h2>
+            <p style="font-size:0.62rem;letter-spacing:0.3em;text-transform:uppercase;color:#8a6520;margin:0 0 2rem;">Área Restrita</p>
+            <input id="login-senha" type="password" placeholder="Senha" style="
+                width:100%; padding:0.75rem 1rem; border:1px solid #ddd5c3;
+                border-radius:8px; font-size:1rem; font-family:'Jost',sans-serif;
+                outline:none; margin-bottom:0.8rem; color:#1a1510;
+            " onkeydown="if(event.key==='Enter') fazerLogin()">
+            <p id="login-erro" style="color:#c0392b;font-size:0.82rem;min-height:1.2em;margin:0 0 0.8rem;"></p>
+            <button onclick="fazerLogin()" style="
+                width:100%; padding:0.8rem; background:#b8832a; color:#fff;
+                border:none; border-radius:8px; font-size:1rem; font-family:'Jost',sans-serif;
+                font-weight:600; cursor:pointer; letter-spacing:0.05em;
+            ">Entrar</button>
+        </div>
+    </div>
+
     <!-- CONTEÚDO -->
     <div class="main-content">
         <div class="orders-grid" id="grid"></div>
@@ -1158,9 +1184,47 @@
             }
         }
 
+        // ── LOGIN ────────────────────────────────────────────────────────
+        async function fazerLogin() {
+            const senha = document.getElementById('login-senha').value;
+            const erro  = document.getElementById('login-erro');
+            erro.textContent = '';
+            if (!senha) { erro.textContent = 'Digite a senha.'; return; }
+
+            const resp = await fetch('/api/admin/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ senha })
+            });
+
+            if (resp.ok) {
+                localStorage.setItem('admin_auth', Date.now());
+                document.getElementById('login-overlay').style.display = 'none';
+                carregarPedidos();
+                setInterval(carregarPedidos, 30000);
+            } else {
+                erro.textContent = 'Senha incorreta.';
+                document.getElementById('login-senha').value = '';
+                document.getElementById('login-senha').focus();
+            }
+        }
+
+        function verificarAuth() {
+            const auth = localStorage.getItem('admin_auth');
+            const oito_horas = 8 * 60 * 60 * 1000;
+            if (auth && Date.now() - parseInt(auth) < oito_horas) {
+                carregarPedidos();
+                setInterval(carregarPedidos, 30000);
+            } else {
+                localStorage.removeItem('admin_auth');
+                const overlay = document.getElementById('login-overlay');
+                overlay.style.display = 'flex';
+                setTimeout(() => document.getElementById('login-senha').focus(), 100);
+            }
+        }
+
         // Inicia
-        carregarPedidos();
-        setInterval(carregarPedidos, 30000);
+        verificarAuth();
     </script>
 </body>
 </html>

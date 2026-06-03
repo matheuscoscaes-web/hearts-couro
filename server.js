@@ -867,6 +867,15 @@ app.get('/api/conta/pedidos', async (req, res) => {
   }
 });
 
+// ── ROTA: Login Gestão ──
+app.post('/api/admin/login', (req, res) => {
+  const { senha } = req.body;
+  if (senha && senha === process.env.ADMIN_SENHA) {
+    return res.json({ ok: true });
+  }
+  return res.status(401).json({ ok: false, erro: 'Senha incorreta.' });
+});
+
 // ── ROTA: Diagnóstico ──
 app.get('/api/diagnostico', async (req, res) => {
   const resultado = {
