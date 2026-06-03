@@ -378,8 +378,11 @@ app.post('/api/processar-pagamento', async (req, res) => {
     });
 
     const status = pagamento.status;
+    const novoStatus = status === 'approved' ? 'approved'
+      : status === 'rejected' ? 'rejected'
+      : 'aguardando_pagamento';
     await supabase.from('pedidos').update({
-      status: status === 'approved' ? 'approved' : 'aguardando_pagamento',
+      status: novoStatus,
       pagamento: metodo
     }).eq('id', pedidoId);
 

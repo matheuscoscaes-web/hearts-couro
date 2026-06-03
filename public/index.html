@@ -2908,6 +2908,8 @@ async function inicializarBrick(pedidoId, total, dados) {
               document.getElementById('success-view').style.display  = 'block';
               const msg = result.status === 'approved'
                 ? 'Pagamento <strong>aprovado</strong>! 🎉 Nossa equipe entrará em contato via WhatsApp em breve.'
+                : result.status === 'rejected'
+                ? 'Pagamento <strong>recusado</strong> pelo banco. Por favor, tente outro cartão ou entre em contato com seu banco.'
                 : 'Pedido recebido! Assim que o pagamento for confirmado entraremos em contato.';
               document.getElementById('success-msg').innerHTML = msg;
             }
