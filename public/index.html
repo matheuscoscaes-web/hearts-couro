@@ -1827,12 +1827,28 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
         <div style="display:flex;flex-direction:column;gap:0.3rem;align-items:flex-end;flex-shrink:0;">
           <button class="btn-conta-sair" onclick="sairConta()">Sair</button>
           <button class="btn-conta-sair" style="color:var(--gold);border-color:rgba(201,150,60,0.4);" onclick="abrirEnderecoModal()">✏️ Alterar endereço</button>
+          <button class="btn-conta-sair" style="color:#a0c4ff;border-color:rgba(160,196,255,0.4);" onclick="abrirMeusPedidos()">📦 Meus pedidos</button>
         </div>
       </div>
     </div>
     <button class="btn-checkout" id="btn-checkout" onclick="irParaFormulario()" disabled>Finalizar Pedido →</button>
     <div style="text-align:center;margin-top:0.5rem;font-size:0.72rem;color:#c9963c;letter-spacing:0.04em;">📦 Despacho em até <strong>3 dias úteis</strong> após confirmação do pagamento</div>
     <div class="cart-continue" onclick="fecharCarrinho()">← Continuar comprando</div>
+  </div>
+</div>
+
+<!-- MODAL MEUS PEDIDOS -->
+<div id="pedidos-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(26,21,16,0.78);z-index:2100;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px);" onclick="e => { if(e.target===this) fecharMeusPedidos(); }">
+  <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;width:100%;max-width:460px;max-height:88vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,0.22);animation:lmUp .28s ease;">
+    <div class="lm-header">
+      <span class="lm-logo">Meus Pedidos</span>
+      <button class="lm-close" onclick="fecharMeusPedidos()">✕</button>
+    </div>
+    <div class="lm-body">
+      <div id="pedidos-lista" style="display:flex;flex-direction:column;gap:1rem;">
+        <div style="text-align:center;color:var(--muted);padding:2rem 0;font-size:0.85rem;">Carregando…</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -3288,6 +3304,89 @@ async function redefinirSenha() {
     erro.textContent = 'Erro de conexão. Tente novamente.';
   } finally {
     btn.disabled = false; btn.textContent = 'Salvar nova senha';
+  }
+}
+
+// ── MEUS PEDIDOS ──
+async function abrirMeusPedidos() {
+  const overlay = document.getElementById('pedidos-modal-overlay');
+  overlay.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  await carregarMeusPedidos();
+}
+
+function fecharMeusPedidos() {
+  document.getElementById('pedidos-modal-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+document.getElementById('pedidos-modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) fecharMeusPedidos();
+});
+
+async function carregarMeusPedidos() {
+  const lista = document.getElementById('pedidos-lista');
+  if (!contaSessao) return;
+
+  lista.innerHTML = '<div style="text-align:center;color:var(--muted);padding:2rem 0;font-size:0.85rem;">Carregando…</div>';
+
+  try {
+    const resp = await fetch('/api/conta/pedidos', {
+      headers: { 'x-conta-id': contaSessao.id, 'x-conta-token': contaSessao.token_sessao }
+    });
+    const pedidos = await resp.json();
+
+    if (!pedidos.length) {
+      lista.innerHTML = '<div style="text-align:center;color:var(--muted);padding:2rem 0;font-size:0.85rem;">Nenhum pedido encontrado.</div>';
+      return;
+    }
+
+    const statusLabel = {
+      aguardando_pagamento: { txt: 'Aguardando pagamento', cor: '#a0a0a0' },
+      approved:             { txt: 'Pagamento confirmado', cor: '#c9963c' },
+      etiqueta_criada:      { txt: 'Preparando envio',    cor: '#a070e0' },
+      enviado:              { txt: 'A caminho',           cor: '#50a0ff' },
+      entregue:             { txt: 'Entregue',            cor: '#25d366' },
+      retirado:             { txt: 'Retirado na loja',    cor: '#ff8c00' },
+    };
+
+    const fmtData = d => new Date(d).toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric' });
+    const fmtVal  = v => 'R$ ' + parseFloat(v || 0).toFixed(2).replace('.', ',');
+
+    lista.innerHTML = pedidos.map(p => {
+      const st  = statusLabel[p.status] || { txt: p.status, cor: '#a0a0a0' };
+      const frete = parseFloat(p.frete_valor) > 0
+        ? `<span style="color:var(--muted);font-size:0.78rem;">+ ${fmtVal(p.frete_valor)} frete (${p.frete_nome || ''})</span>`
+        : `<span style="color:var(--muted);font-size:0.78rem;">Retirada na loja</span>`;
+
+      const rastreio = p.codigo_rastreio
+        ? `<div style="margin-top:0.6rem;padding:0.6rem 0.8rem;background:rgba(80,160,255,0.08);border:1px solid rgba(80,160,255,0.25);border-radius:8px;">
+            <div style="font-size:0.72rem;color:var(--muted);margin-bottom:0.2rem;">Código de rastreio</div>
+            <div style="font-size:0.9rem;font-weight:600;letter-spacing:0.06em;color:var(--text);">${p.codigo_rastreio}</div>
+            <a href="https://rastreamento.correios.com.br/app/index.php" target="_blank" rel="noopener"
+               style="display:inline-block;margin-top:0.4rem;font-size:0.75rem;color:#50a0ff;text-decoration:none;">
+              🔍 Rastrear nos Correios →
+            </a>
+           </div>`
+        : '';
+
+      return `
+        <div style="border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;background:var(--black);">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.5rem;margin-bottom:0.5rem;">
+            <div>
+              <div style="font-size:0.95rem;font-weight:600;color:var(--text);">${p.produto || 'Bolsa Hearts'} — ${p.cor || ''}</div>
+              <div style="font-size:0.72rem;color:var(--muted);margin-top:0.15rem;">${fmtData(p.created_at)}</div>
+            </div>
+            <span style="font-size:0.7rem;font-weight:600;padding:0.2rem 0.6rem;border-radius:20px;background:${st.cor}22;color:${st.cor};white-space:nowrap;flex-shrink:0;">${st.txt}</span>
+          </div>
+          <div style="font-size:0.9rem;font-weight:600;color:var(--gold-light);">${fmtVal(p.valor_total)}</div>
+          ${frete}
+          ${rastreio}
+        </div>`;
+    }).join('');
+
+  } catch {
+    lista.innerHTML = '<div style="text-align:center;color:#c0614a;padding:2rem 0;font-size:0.85rem;">Erro ao carregar pedidos.</div>';
   }
 }
 </script>

@@ -699,10 +699,9 @@ app.get('/api/pedidos', async (req, res) => {
 app.post('/api/status', async (req, res) => {
   const { id, status, codigo_rastreio } = req.body;
   try {
-    const { error } = await supabase
-      .from('pedidos')
-      .update({ status })
-      .eq('id', id);
+    const update = { status };
+    if (codigo_rastreio) update.codigo_rastreio = codigo_rastreio;
+    const { error } = await supabase.from('pedidos').update(update).eq('id', id);
     if (error) throw error;
     res.send('ok');
   } catch {
@@ -822,11 +821,41 @@ app.post('/api/gerar-etiqueta/:id', async (req, res) => {
 app.post('/api/enviar-rastreio', async (req, res) => {
   const { id, codigo_rastreio } = req.body;
   try {
+    if (codigo_rastreio) {
+      await supabase.from('pedidos').update({ codigo_rastreio }).eq('id', id);
+    }
     const { data: pedido } = await supabase.from('pedidos').select('*').eq('id', id).single();
     if (pedido) enviarEmailRastreio(pedido, codigo_rastreio || '');
     res.send('ok');
   } catch {
     res.status(500).send('erro');
+  }
+});
+
+// ── ROTA: Pedidos do Cliente Logado ──
+app.get('/api/conta/pedidos', async (req, res) => {
+  const sess = await validarSessao(req, res);
+  if (!sess) return;
+
+  const { data: conta } = await supabase.from('contas').select('email, cpf').eq('id', sess.id).single();
+  if (!conta) return res.status(404).json([]);
+
+  try {
+    const cpfLimpo = (conta.cpf || '').replace(/\D/g, '');
+    let query = supabase.from('pedidos').select('id, produto, cor, valor_total, frete_nome, frete_valor, status, codigo_rastreio, created_at, pagamento').order('created_at', { ascending: false });
+
+    if (cpfLimpo.length === 11) {
+      query = query.or(`email.eq.${conta.email},cpf.ilike.%${cpfLimpo}%`);
+    } else {
+      query = query.eq('email', conta.email);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+    res.json(data || []);
+  } catch (err) {
+    console.error('Erro ao buscar pedidos do cliente:', err);
+    res.status(500).json([]);
   }
 });
 
