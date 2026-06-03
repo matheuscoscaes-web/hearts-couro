@@ -251,6 +251,157 @@ app.post('/api/calcular-frete', async (req, res) => {
   }
 });
 
+// ── ROTA: Chave Pública MP (para Bricks no frontend) ──
+app.get('/api/mp-public-key', (req, res) => {
+  res.json({ publicKey: process.env.MP_PUBLIC_KEY });
+});
+
+// ── ROTA: Preparar Pedido (Step 1 — Bricks) ──
+app.post('/api/preparar-pedido', async (req, res) => {
+  const body = req.body;
+
+  const itens = Array.isArray(body.itens) && body.itens.length > 0
+    ? body.itens
+    : [{ produto: body.produto, cor: body.cor, quantidade: 1, preco: PRODUTOS[body.produto] || PRECO_PRODUTO }];
+
+  const freteValor = parseFloat(body.frete_valor) || 0;
+  const subtotal = itens.reduce((s, i) => s + (PRODUTOS[i.produto] || i.preco || PRECO_PRODUTO) * (i.quantidade || 1), 0);
+  const total = Math.round((subtotal + freteValor) * 100) / 100;
+
+  body.produto = itens[0].produto;
+  body.cor     = itens[0].cor;
+
+  // Verifica estoque
+  try {
+    const reservaDesde = new Date(Date.now() - 20 * 60 * 1000).toISOString();
+    const [{ data: confirmados }, { data: pendentes }] = await Promise.all([
+      supabase.from('pedidos').select('produto, cor')
+        .in('status', ['approved', 'etiqueta_criada', 'enviado', 'entregue', 'retirado'])
+        .gte('created_at', ESTOQUE_RESET_DATA),
+      supabase.from('pedidos').select('produto, cor')
+        .eq('status', 'aguardando_pagamento')
+        .gte('created_at', reservaDesde)
+    ]);
+
+    const ocupados = {};
+    [...(confirmados || []), ...(pendentes || [])].forEach(p => {
+      if (p.produto && p.cor) {
+        const k = `${p.produto}_${p.cor}`;
+        ocupados[k] = (ocupados[k] || 0) + 1;
+      }
+    });
+
+    for (const item of itens) {
+      const key = `${item.produto}_${item.cor}`;
+      if (key in ESTOQUE_INICIAL) {
+        const disponivel = Math.max(0, ESTOQUE_INICIAL[key] - (ocupados[key] || 0));
+        if (disponivel < (item.quantidade || 1)) {
+          return res.status(409).json({
+            erro: `Essa bolsa (${item.produto} — ${item.cor}) não está mais disponível no momento.`
+          });
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Erro ao verificar estoque:', err);
+    return res.status(500).json({ erro: 'Erro ao verificar estoque.' });
+  }
+
+  // Cria pedido no Supabase
+  try {
+    const { data, error } = await supabase
+      .from('pedidos')
+      .insert([{
+        nome: body.nome, sobrenome: body.sobrenome,
+        whatsapp: body.whatsapp, email: body.email, cpf: body.cpf,
+        cep: body.cep, logradouro: body.logradouro, numero: body.numero,
+        complemento: body.complemento, bairro: body.bairro,
+        cidade: body.cidade, estado: body.estado,
+        cor: body.cor, pagamento: 'aguardando', obs: body.obs,
+        frete_nome: body.frete_nome || null, frete_valor: freteValor || null,
+        frete_prazo: body.frete_prazo || null, valor_total: total,
+        produto: body.produto || null, status: 'aguardando_pagamento'
+      }])
+      .select().single();
+
+    if (error) throw error;
+    enviarBackupPorEmail(data);
+    return res.json({ pedidoId: data.id, total });
+  } catch (err) {
+    console.error('Erro ao preparar pedido:', err);
+    return res.status(500).json({ erro: 'Erro ao registrar pedido.', detalhe: String(err?.message || err) });
+  }
+});
+
+// ── ROTA: Processar Pagamento Brick (Step 2) ──
+app.post('/api/processar-pagamento', async (req, res) => {
+  const { pedidoId, formData } = req.body;
+  if (!pedidoId || !formData) return res.status(400).json({ erro: 'Dados incompletos.' });
+
+  const { data: pedido, error: errPedido } = await supabase
+    .from('pedidos').select('*').eq('id', pedidoId).single();
+  if (errPedido || !pedido) return res.status(404).json({ erro: 'Pedido não encontrado.' });
+
+  const total  = parseFloat(pedido.valor_total);
+  const isPix  = formData.payment_method_id === 'pix';
+  const metodo = isPix ? 'Pix' : 'Cartão';
+
+  try {
+    const cpfLimpo = (pedido.cpf || '').replace(/\D/g, '');
+    const payerIdent = cpfLimpo.length === 11
+      ? { type: 'CPF', number: cpfLimpo }
+      : (formData.payer?.identification || {});
+
+    const paymentBody = {
+      transaction_amount: total,
+      payment_method_id: formData.payment_method_id,
+      external_reference: String(pedidoId),
+      payer: {
+        email: pedido.email,
+        first_name: pedido.nome,
+        last_name: pedido.sobrenome || '',
+        identification: payerIdent
+      }
+    };
+
+    if (!isPix) {
+      paymentBody.token        = formData.token;
+      paymentBody.installments = formData.installments || 1;
+      paymentBody.issuer_id    = formData.issuer_id;
+    }
+
+    const pagamento = await mpPayment.create({
+      body: paymentBody,
+      requestOptions: { idempotencyKey: uuidv4() }
+    });
+
+    const status = pagamento.status;
+    await supabase.from('pedidos').update({
+      status: status === 'approved' ? 'approved' : 'aguardando_pagamento',
+      pagamento: metodo
+    }).eq('id', pedidoId);
+
+    if (status === 'approved') {
+      enviarEmailConfirmacaoPagamento({ ...pedido, pagamento: metodo });
+    }
+
+    if (isPix) {
+      const txData = pagamento.point_of_interaction?.transaction_data;
+      return res.json({
+        tipo: 'pix', status, pedidoId, total,
+        qrCode: txData?.qr_code,
+        qrCodeBase64: txData?.qr_code_base64
+      });
+    }
+
+    return res.json({ tipo: 'card', status, pedidoId });
+  } catch (err) {
+    const detalhe = err?.cause || err;
+    console.error('Erro ao processar pagamento brick:', JSON.stringify(detalhe, null, 2));
+    return res.status(500).json({ erro: 'Erro ao processar pagamento.', detalhe: String(detalhe?.message || detalhe) });
+  }
+});
+
 // ── ROTA: Criar Pedido + Pagamento Mercado Pago ──
 app.post('/api/criar-pagamento', async (req, res) => {
   const body = req.body;

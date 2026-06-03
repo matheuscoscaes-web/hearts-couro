@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hearts Couro Legítimo</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://sdk.mercadopago.com/js/v2"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1673,44 +1674,8 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
         <!-- Forma de pagamento -->
         <div class="section-label">Forma de pagamento <span style="color:var(--gold);font-size:0.7rem">*</span></div>
 
-        <div class="payment-grid">
-          <label class="pay-option">
-            <input type="radio" name="pagamento" value="Pix" id="pay-pix">
-            <div class="pay-card">
-              <span class="pay-check">✓</span>
-              <span class="pay-icon">⚡</span>
-              <span class="pay-title">Pix</span>
-              <span class="pay-desc">Aprovação imediata. Chave enviada após confirmação.</span>
-              <span class="pay-tag">Pagamento à vista</span>
-            </div>
-          </label>
-
-          <label class="pay-option">
-            <input type="radio" name="pagamento" value="Link de pagamento" id="pay-link">
-            <div class="pay-card">
-              <span class="pay-check">✓</span>
-              <span class="pay-icon">💳</span>
-              <span class="pay-title">Link</span>
-              <span class="pay-desc">Cartão de crédito pelo link. Sem juros.</span>
-              <span class="pay-tag">Até 6x sem juros</span>
-            </div>
-          </label>
-        </div>
-        <span class="error-msg" id="pag-err" style="margin-top:0.5rem;display:none;">Selecione uma forma de pagamento.</span>
-
-        <!-- Parcelas (aparece só se Link for selecionado) -->
-        <div class="parcelas-wrap" id="parcelas-wrap">
-          <div class="field" style="margin-top:0.2rem;margin-bottom:0;">
-            <label for="parcelas">Número de parcelas</label>
-            <select id="parcelas">
-              <option value="1">1x — à vista</option>
-              <option value="2">2x sem juros</option>
-              <option value="3">3x sem juros</option>
-              <option value="4">4x sem juros</option>
-              <option value="5">5x sem juros</option>
-              <option value="6">6x sem juros</option>
-            </select>
-          </div>
+        <div style="background:rgba(201,150,60,0.07);border:1px solid rgba(201,150,60,0.25);border-radius:10px;padding:0.8rem 1rem;font-size:0.82rem;color:var(--muted);line-height:1.6;">
+          💳 &nbsp;Você escolhe a forma de pagamento na próxima etapa — <strong style="color:var(--gold-light);">Pix ou cartão de crédito</strong>, tudo dentro do site.
         </div>
 
         <!-- Observações -->
@@ -1754,7 +1719,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
         </div>
 
         <div class="submit-area">
-          <button type="submit" class="btn-submit">✦ &nbsp; Finalizar Compra</button>
+          <button type="submit" class="btn-submit">✦ &nbsp; Ir para pagamento</button>
           <p class="note">Ao comprar, você concorda com nossa política de privacidade.</p>
           <div style="text-align:center;margin-top:0.9rem;padding:0.7rem 1rem;background:rgba(201,150,60,0.08);border:1px solid rgba(201,150,60,0.3);border-radius:10px;font-size:0.78rem;color:#d4b26a;line-height:1.5;">
             📦 O despacho do pedido é realizado em até <strong style="color:#e8c47a;">3 dias úteis</strong> após a confirmação do pagamento.
@@ -1762,6 +1727,15 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
         </div>
 
       </form>
+    </div>
+
+    <!-- Brick de Pagamento -->
+    <div id="brick-view" style="display:none;">
+      <div style="margin-bottom:1.2rem;">
+        <button onclick="voltarParaFormulario()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.85rem;padding:0;">← Voltar e editar</button>
+      </div>
+      <div id="brick-resumo" style="background:rgba(201,150,60,0.07);border:1px solid rgba(201,150,60,0.2);border-radius:12px;padding:1rem 1.2rem;margin-bottom:1.2rem;font-size:0.88rem;color:var(--text);line-height:1.8;"></div>
+      <div id="paymentBrick_container"></div>
     </div>
 
     <!-- Sucesso (pós-redirect cartão / fallback) -->
@@ -2650,13 +2624,9 @@ document.getElementById('btn-cep').addEventListener('click', async function () {
   finally { this.disabled = false; this.textContent = '🔍 Buscar CEP'; }
 });
 
-/* ── Parcelas: exibe só quando Link for selecionado ── */
-document.querySelectorAll('input[name="pagamento"]').forEach(radio => {
-  radio.addEventListener('change', function () {
-    document.getElementById('parcelas-wrap').classList.toggle('visible', this.value === 'Link de pagamento');
-    const isPix = this.value === 'Pix';
-    document.getElementById('cpf-obrigatorio').style.display = isPix ? 'inline' : 'none';
-  });
+/* ── CPF sempre visível (Brick pede nos dois casos) ── */
+document.getElementById('cpf-obrigatorio') && (document.getElementById('cpf-obrigatorio').style.display = 'inline');
+{
 });
 
 /* ── Copiar código PIX ── */
@@ -2744,13 +2714,7 @@ document.getElementById('prevenda-form').addEventListener('submit', async functi
     freteErr.style.display = 'none';
   }
 
-  const pag    = document.querySelector('input[name="pagamento"]:checked');
-  const pagErr = document.getElementById('pag-err');
-  pagErr.style.display = pag ? 'none' : 'block';
-  if (!pag) valid = false;
-
   if (!valid) {
-    // Só scrolla para erros visíveis — nunca para campos em seções ocultas
     const primeiroVisivel = [...document.querySelectorAll('.invalid, .error-msg[style*="block"]')]
       .find(el => {
         const s = el.closest('#secao-dados, #secao-endereco');
@@ -2762,7 +2726,7 @@ document.getElementById('prevenda-form').addEventListener('submit', async functi
 
   const btnSubmit = this.querySelector('.btn-submit');
   btnSubmit.disabled = true;
-  btnSubmit.textContent = pag.value === 'Pix' ? 'Gerando PIX...' : 'Redirecionando...';
+  btnSubmit.textContent = 'Aguarde...';
 
   const dados = {
     nome:        document.getElementById('nome').value.trim(),
@@ -2778,8 +2742,6 @@ document.getElementById('prevenda-form').addEventListener('submit', async functi
     cidade:      document.getElementById('cidade').value,
     estado:      document.getElementById('estado').value,
     itens:       carrinho.map(i => ({ produto: i.produto, cor: i.cor, quantidade: i.quantidade, preco: i.preco })),
-    pagamento:   pag.value,
-    parcelas:    document.getElementById('parcelas').value,
     obs:         document.getElementById('obs').value,
     frete_nome:  freteRadio ? freteRadio.dataset.nome  : '',
     frete_valor: freteRadio ? freteRadio.dataset.preco : 0,
@@ -2787,7 +2749,7 @@ document.getElementById('prevenda-form').addEventListener('submit', async functi
   };
 
   try {
-    const resp = await fetch('/api/criar-pagamento', {
+    const resp = await fetch('/api/preparar-pedido', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(dados)
@@ -2796,51 +2758,152 @@ document.getElementById('prevenda-form').addEventListener('submit', async functi
     const result = await resp.json();
 
     if (!resp.ok) {
-      console.error('ERRO PAGAMENTO:', JSON.stringify(result));
       if (resp.status === 409) throw new Error(result.erro || 'Produto indisponível.');
-      throw new Error((result.erro || 'Erro no servidor') + (result.detalhe ? ' — ' + result.detalhe : ''));
+      throw new Error(result.erro || 'Erro ao preparar pedido.');
     }
 
     salvarEnderecoNaConta(dados);
 
-    if (result.tipo === 'pix') {
-      document.getElementById('form-view').style.display = 'none';
-      document.getElementById('pix-view').style.display  = 'block';
-      document.getElementById('pix-qr-img').src = `data:image/png;base64,${result.qrCodeBase64}`;
-      document.getElementById('pix-code-input').value = result.qrCode;
-      // Atualiza valor exibido na tela PIX
-      const totalPix = document.querySelector('#pix-view .pix-info strong');
-      if (totalPix && result.total) {
-        totalPix.textContent = 'R$ ' + result.total.toFixed(2).replace('.', ',');
-      }
+    // Exibe tela do Brick
+    document.getElementById('form-view').style.display = 'none';
+    document.getElementById('brick-view').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
-      // Polling: verifica a cada 5s se o PIX foi pago (até 10 min)
-      const pixPedidoId = result.pedidoId;
-      const pixPoll = setInterval(async () => {
-        try {
-          const pr = await fetch(`/api/verificar-pagamento/${pixPedidoId}`);
-          const pd = await pr.json();
-          if (pd.status === 'approved') {
-            clearInterval(pixPoll);
-            document.getElementById('pix-view').style.display = 'none';
-            document.getElementById('success-view').style.display = 'block';
-            document.getElementById('success-msg').innerHTML =
-              'Seu pagamento foi <strong>aprovado</strong>! 🎉<br>Nossa equipe entrará em contato via WhatsApp em breve.';
-          }
-        } catch (_) {}
-      }, 5000);
-      setTimeout(() => clearInterval(pixPoll), 600000);
+    // Resumo no topo do brick
+    const fmtV = v => 'R$ ' + parseFloat(v).toFixed(2).replace('.', ',');
+    const nomeProdutos = dados.itens.map(i => `${i.produto} (${i.cor})`).join(', ');
+    document.getElementById('brick-resumo').innerHTML =
+      `<strong>${nomeProdutos}</strong><br>` +
+      (dados.frete_nome ? `Entrega: ${dados.frete_nome} — ${fmtV(dados.frete_valor)}<br>` : '') +
+      `<strong style="color:var(--gold-light);">Total: ${fmtV(result.total)}</strong>`;
 
-    } else if (result.tipo === 'link') {
-      window.location.href = result.checkoutUrl;
-    }
+    await inicializarBrick(result.pedidoId, result.total, dados);
 
   } catch (err) {
     alert('Ops! ' + (err.message || 'Tivemos um problema. Tente novamente em instantes.'));
     btnSubmit.disabled = false;
-    btnSubmit.textContent = '✦   Confirmar minha reserva';
+    btnSubmit.textContent = '✦   Ir para pagamento';
   }
 });
+
+function voltarParaFormulario() {
+  document.getElementById('brick-view').style.display = 'none';
+  document.getElementById('form-view').style.display  = 'block';
+  if (window.paymentBrickController) {
+    window.paymentBrickController.unmount();
+    window.paymentBrickController = null;
+  }
+  document.querySelector('.btn-submit').disabled = false;
+  document.querySelector('.btn-submit').textContent = '✦   Ir para pagamento';
+}
+
+async function inicializarBrick(pedidoId, total, dados) {
+  const { publicKey } = await fetch('/api/mp-public-key').then(r => r.json());
+  const mp = new MercadoPago(publicKey, { locale: 'pt-BR' });
+  const bricksBuilder = mp.bricks();
+
+  if (window.paymentBrickController) {
+    window.paymentBrickController.unmount();
+    window.paymentBrickController = null;
+  }
+
+  const cpfLimpo = (dados.cpf || '').replace(/\D/g, '');
+
+  window.paymentBrickController = await bricksBuilder.create('payment', 'paymentBrick_container', {
+    initialization: {
+      amount: total,
+      payer: {
+        firstName: dados.nome,
+        lastName:  dados.sobrenome || '',
+        email:     dados.email,
+        ...(cpfLimpo.length === 11 && {
+          identification: { type: 'CPF', number: cpfLimpo }
+        })
+      }
+    },
+    customization: {
+      paymentMethods: {
+        creditCard: 'all',
+        debitCard:  'all',
+        bankTransfer: ['pix'],
+      },
+      visual: {
+        style: {
+          theme: 'default',
+          customVariables: {
+            baseColor:       '#c9963c',
+            baseColorFirstVariant:  '#b8832a',
+            baseColorSecondVariant: '#8a6520',
+            buttonTextColor: '#ffffff',
+            fontSizeSmall:   '13px',
+          }
+        }
+      }
+    },
+    callbacks: {
+      onReady: () => {},
+      onError: (err) => console.error('Brick error:', err),
+      onSubmit: ({ formData }) => {
+        return new Promise(async (resolve, reject) => {
+          try {
+            const resp = await fetch('/api/processar-pagamento', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ pedidoId, formData })
+            });
+
+            const result = await resp.json();
+
+            if (!resp.ok) {
+              reject(new Error(result.erro || 'Erro ao processar pagamento.'));
+              alert('Ops! ' + (result.erro || 'Erro ao processar pagamento.'));
+              return;
+            }
+
+            resolve();
+
+            if (result.tipo === 'pix') {
+              document.getElementById('brick-view').style.display = 'none';
+              document.getElementById('pix-view').style.display   = 'block';
+              document.getElementById('pix-qr-img').src = `data:image/png;base64,${result.qrCodeBase64}`;
+              document.getElementById('pix-code-input').value = result.qrCode;
+              const totalPix = document.querySelector('#pix-view .pix-info strong');
+              if (totalPix) totalPix.textContent = 'R$ ' + parseFloat(result.total).toFixed(2).replace('.', ',');
+
+              // Polling PIX
+              const pixPoll = setInterval(async () => {
+                try {
+                  const pr = await fetch(`/api/verificar-pagamento/${pedidoId}`);
+                  const pd = await pr.json();
+                  if (pd.status === 'approved') {
+                    clearInterval(pixPoll);
+                    document.getElementById('pix-view').style.display    = 'none';
+                    document.getElementById('success-view').style.display = 'block';
+                    document.getElementById('success-msg').innerHTML =
+                      'Seu pagamento foi <strong>aprovado</strong>! 🎉<br>Nossa equipe entrará em contato via WhatsApp em breve.';
+                  }
+                } catch (_) {}
+              }, 5000);
+              setTimeout(() => clearInterval(pixPoll), 600000);
+
+            } else {
+              document.getElementById('brick-view').style.display    = 'none';
+              document.getElementById('success-view').style.display  = 'block';
+              const msg = result.status === 'approved'
+                ? 'Pagamento <strong>aprovado</strong>! 🎉 Nossa equipe entrará em contato via WhatsApp em breve.'
+                : 'Pedido recebido! Assim que o pagamento for confirmado entraremos em contato.';
+              document.getElementById('success-msg').innerHTML = msg;
+            }
+
+          } catch (err) {
+            reject(err);
+            alert('Ops! ' + (err.message || 'Erro inesperado.'));
+          }
+        });
+      }
+    }
+  });
+}
 
 // Oculta cards de produtos inativos
 Object.entries(PRODUTOS_INFO).forEach(([key, info]) => {
