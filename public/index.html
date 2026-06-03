@@ -2827,9 +2827,10 @@ async function inicializarBrick(pedidoId, total, dados) {
     initialization: {
       amount: total,
       payer: {
-        firstName: dados.nome,
-        lastName:  dados.sobrenome || '',
-        email:     dados.email,
+        entityType:  'individual',
+        firstName:   dados.nome,
+        lastName:    dados.sobrenome || '',
+        email:       dados.email,
         ...(cpfLimpo.length === 11 && {
           identification: { type: 'CPF', number: cpfLimpo }
         })

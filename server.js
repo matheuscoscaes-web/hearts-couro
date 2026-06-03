@@ -398,9 +398,12 @@ app.post('/api/processar-pagamento', async (req, res) => {
 
     return res.json({ tipo: 'card', status, pedidoId });
   } catch (err) {
-    const detalhe = err?.cause || err;
-    console.error('Erro ao processar pagamento brick:', JSON.stringify(detalhe, null, 2));
-    return res.status(500).json({ erro: 'Erro ao processar pagamento.', detalhe: String(detalhe?.message || detalhe) });
+    const causes = err?.cause ?? err;
+    const mpErro = Array.isArray(causes)
+      ? causes.map(c => `${c.code}: ${c.description}`).join(' | ')
+      : (err?.message || String(causes));
+    console.error('Erro ao processar pagamento brick:', JSON.stringify(causes, null, 2));
+    return res.status(500).json({ erro: 'Erro ao processar pagamento.', detalhe: mpErro });
   }
 });
 
