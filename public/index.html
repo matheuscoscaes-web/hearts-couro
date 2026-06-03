@@ -2490,7 +2490,7 @@ carregarEstoque();
       if (PRODUTOS_INFO[p.chave]) {
         PRODUTOS_INFO[p.chave].preco = p.preco;
         PRODUTOS_INFO[p.chave].ativo = p.ativo;
-        if (p.desc && p.desc.length) PRODUTOS_INFO[p.chave].desc = p.desc;
+        if (p.descricao && p.descricao.length) PRODUTOS_INFO[p.chave].desc = p.descricao;
         if (!p.ativo) {
           const card = document.getElementById('card-' + p.chave);
           if (card) card.style.display = 'none';

@@ -28,16 +28,16 @@ CREATE TABLE IF NOT EXISTS contas (
 
 -- ── TABELA DE PRODUTOS ──────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS produtos (
-  chave   TEXT PRIMARY KEY,
-  nome    TEXT NOT NULL,
-  preco   INTEGER NOT NULL,
-  ativo   BOOLEAN DEFAULT true,
-  desc    JSONB DEFAULT '[]',
-  ordem   INTEGER DEFAULT 0
+  chave      TEXT PRIMARY KEY,
+  nome       TEXT NOT NULL,
+  preco      INTEGER NOT NULL,
+  ativo      BOOLEAN DEFAULT true,
+  descricao  JSONB DEFAULT '[]',
+  ordem      INTEGER DEFAULT 0
 );
 
 -- Dados iniciais
-INSERT INTO produtos (chave, nome, preco, ativo, desc, ordem) VALUES
+INSERT INTO produtos (chave, nome, preco, ativo, descricao, ordem) VALUES
   ('Paola',   'Paola',   229, true,  '["Bolsão c/ Abertura p/ o Braço","Super Chique!","Bolso Interno","Fechamento em Ímã","Carregue tudo que precisa!"]', 1),
   ('Carol',   'Carol',   289, true,  '["Duas formas: braço e transversal","Campeã de vendas","Fechamento em Zíper","Bolso Externo","Bolso Interno"]', 2),
   ('Modelo4', 'Celina',  199, true,  '["Bolsa média com bolso frontal","Fechamento em Zíper","Alça regulável"]', 3),

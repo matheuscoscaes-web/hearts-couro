@@ -1227,7 +1227,7 @@
                       <input type="checkbox" ${p.ativo ? 'checked' : ''} id="ativo-${p.chave}" onchange="salvarProduto('${p.chave}')">
                       Ativo
                     </label>
-                    <button onclick="abrirEditDesc('${p.chave}', ${JSON.stringify(JSON.stringify(p.desc))})" style="background:rgba(201,150,60,0.12);color:var(--gold);border:1px solid var(--gold-light);border-radius:6px;padding:0.35rem 0.8rem;font-size:0.8rem;cursor:pointer;font-family:'Jost',sans-serif;">Descrição</button>
+                    <button onclick="abrirEditDesc('${p.chave}', ${JSON.stringify(JSON.stringify(p.descricao || []))})"style="background:rgba(201,150,60,0.12);color:var(--gold);border:1px solid var(--gold-light);border-radius:6px;padding:0.35rem 0.8rem;font-size:0.8rem;cursor:pointer;font-family:'Jost',sans-serif;">Descrição</button>
                     <button onclick="salvarProduto('${p.chave}')" style="background:var(--gold);color:#fff;border:none;border-radius:6px;padding:0.4rem 1rem;font-size:0.85rem;cursor:pointer;font-family:'Jost',sans-serif;font-weight:600;">Salvar</button>
                   </div>
                 `).join('')}

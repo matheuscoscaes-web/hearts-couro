@@ -890,7 +890,7 @@ app.put('/api/admin/produtos/:chave', async (req, res) => {
     if (nome  !== undefined) update.nome  = nome;
     if (preco !== undefined) update.preco = parseInt(preco);
     if (ativo !== undefined) update.ativo = ativo;
-    if (desc  !== undefined) update.desc  = desc;
+    if (desc  !== undefined) update.descricao = desc;
 
     const { error } = await supabase.from('produtos').update(update).eq('chave', chave);
     if (error) throw error;
@@ -911,7 +911,7 @@ app.post('/api/admin/produtos', async (req, res) => {
     const { error } = await supabase.from('produtos').insert([{
       chave, nome, preco: parseInt(preco),
       ativo: ativo !== false,
-      desc: desc || [],
+      descricao: desc || [],
       ordem: ordem || 99
     }]);
     if (error) throw error;
