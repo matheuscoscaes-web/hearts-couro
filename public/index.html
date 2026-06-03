@@ -1136,7 +1136,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
 #login-modal {
   background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px;
   width: 100%; max-width: 400px; box-shadow: 0 24px 64px rgba(0,0,0,0.22);
-  animation: lmUp 0.28s ease; overflow: hidden;
+  animation: lmUp 0.28s ease; overflow-y: auto; max-height: 92vh;
 }
 @keyframes lmUp {
   from { opacity: 0; transform: translateY(18px); }
