@@ -2765,7 +2765,7 @@ document.getElementById('prevenda-form').addEventListener('submit', async functi
     // Exibe tela do Brick
     document.getElementById('form-view').style.display = 'none';
     document.getElementById('brick-view').style.display = 'block';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.getElementById('brick-view').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
     // Resumo no topo do brick
     const fmtV = v => 'R$ ' + parseFloat(v).toFixed(2).replace('.', ',');
