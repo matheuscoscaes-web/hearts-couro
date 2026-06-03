@@ -354,6 +354,7 @@ app.post('/api/processar-pagamento', async (req, res) => {
 
     const paymentBody = {
       transaction_amount: total,
+      description: `Bolsa Hearts Couro — ${pedido.produto || 'Bolsa'} (${pedido.cor || ''})`,
       payment_method_id: formData.payment_method_id,
       external_reference: String(pedidoId),
       payer: {
@@ -366,8 +367,8 @@ app.post('/api/processar-pagamento', async (req, res) => {
 
     if (!isPix) {
       paymentBody.token        = formData.token;
-      paymentBody.installments = formData.installments || 1;
-      paymentBody.issuer_id    = formData.issuer_id;
+      paymentBody.installments = parseInt(formData.installments) || 1;
+      if (formData.issuer_id) paymentBody.issuer_id = formData.issuer_id;
     }
 
     const pagamento = await mpPayment.create({
