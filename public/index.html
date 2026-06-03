@@ -2797,6 +2797,7 @@ document.getElementById('prevenda-form').addEventListener('submit', async functi
 
     if (!resp.ok) {
       console.error('ERRO PAGAMENTO:', JSON.stringify(result));
+      if (resp.status === 409) throw new Error(result.erro || 'Produto indisponível.');
       throw new Error((result.erro || 'Erro no servidor') + (result.detalhe ? ' — ' + result.detalhe : ''));
     }
 
@@ -3229,6 +3230,36 @@ async function redefinirSenha() {
   }
 }
 </script>
+
+<!-- Botão flutuante WhatsApp -->
+<a href="https://wa.me/5521966668724?text=Ol%C3%A1%2C%20vim%20pelo%20site%20e%20preciso%20de%20ajuda%20com%20um%20pedido%20Hearts%20Couro!" target="_blank" rel="noopener" id="wpp-btn" aria-label="Falar no WhatsApp" title="Falar no WhatsApp">
+  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" width="30" height="30">
+    <path d="M16 2C8.268 2 2 8.268 2 16c0 2.47.664 4.786 1.822 6.782L2 30l7.418-1.794A13.934 13.934 0 0 0 16 30c7.732 0 14-6.268 14-14S23.732 2 16 2Z" fill="#25D366"/>
+    <path d="M22.003 19.394c-.303-.152-1.795-.885-2.073-.986-.278-.1-.48-.152-.683.152-.202.303-.783.986-.96 1.189-.177.202-.354.227-.657.076-.303-.152-1.28-.472-2.438-1.504-.9-.803-1.508-1.794-1.685-2.097-.177-.303-.019-.467.133-.618.136-.135.303-.354.455-.53.151-.177.202-.303.303-.505.1-.202.05-.379-.025-.53-.076-.152-.683-1.644-.936-2.25-.247-.59-.497-.51-.683-.52l-.581-.01c-.202 0-.53.076-.808.379-.278.303-1.06 1.035-1.06 2.525 0 1.49 1.085 2.929 1.236 3.132.152.202 2.136 3.26 5.178 4.572.724.312 1.288.499 1.728.639.727.231 1.388.199 1.911.12.583-.086 1.795-.734 2.049-1.443.253-.71.253-1.318.177-1.444-.075-.127-.278-.202-.58-.354Z" fill="#fff"/>
+  </svg>
+</a>
+<style>
+#wpp-btn {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 9999;
+  background: #25D366;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(37,211,102,0.45);
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+}
+#wpp-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 22px rgba(37,211,102,0.6);
+}
+</style>
 
 </body>
 </html>

@@ -269,6 +269,45 @@ app.post('/api/criar-pagamento', async (req, res) => {
   body.produto = itens[0].produto;
   body.cor     = itens[0].cor;
 
+  // 0. Verifica estoque antes de criar o pedido
+  // Conta confirmados + aguardando dos últimos 20 min (reserva contra compra simultânea)
+  try {
+    const reservaDesde = new Date(Date.now() - 20 * 60 * 1000).toISOString();
+
+    const [{ data: confirmados }, { data: pendentes }] = await Promise.all([
+      supabase.from('pedidos').select('produto, cor')
+        .in('status', ['approved', 'etiqueta_criada', 'enviado', 'entregue', 'retirado'])
+        .gte('created_at', ESTOQUE_RESET_DATA),
+      supabase.from('pedidos').select('produto, cor')
+        .eq('status', 'aguardando_pagamento')
+        .gte('created_at', reservaDesde)
+    ]);
+
+    const ocupados = {};
+    [...(confirmados || []), ...(pendentes || [])].forEach(p => {
+      if (p.produto && p.cor) {
+        const k = `${p.produto}_${p.cor}`;
+        ocupados[k] = (ocupados[k] || 0) + 1;
+      }
+    });
+
+    for (const item of itens) {
+      const key = `${item.produto}_${item.cor}`;
+      if (key in ESTOQUE_INICIAL) {
+        const disponivel = Math.max(0, ESTOQUE_INICIAL[key] - (ocupados[key] || 0));
+        const solicitado = item.quantidade || 1;
+        if (disponivel < solicitado) {
+          return res.status(409).json({
+            erro: `Essa bolsa (${item.produto} — ${item.cor}) não está mais disponível no momento. Tente outra cor ou entre em contato.`
+          });
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Erro ao verificar estoque:', err);
+    return res.status(500).json({ erro: 'Erro ao verificar estoque.' });
+  }
+
   // 1. Salva pedido no Supabase
   let pedidoId = null;
   try {
