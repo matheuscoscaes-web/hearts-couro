@@ -52,3 +52,6 @@ INSERT INTO produtos (chave, nome, preco, ativo, descricao, ordem) VALUES
   ('Manuela', 'Manuela', 259, true,  '["Couro Legítimo","Qualidade Hearts"]', 12),
   ('Michele', 'Michele', 259, true,  '["Couro Legítimo","Qualidade Hearts"]', 13)
 ON CONFLICT (chave) DO NOTHING;
+
+-- Adiciona coluna de imagens (se ainda não existir)
+ALTER TABLE produtos ADD COLUMN IF NOT EXISTS imgs JSONB DEFAULT '[]';

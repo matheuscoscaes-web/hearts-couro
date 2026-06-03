@@ -5,6 +5,8 @@ const { createClient } = require('@supabase/supabase-js');
 const { MercadoPagoConfig, Payment, Preference } = require('mercadopago');
 const { v4: uuidv4 } = require('uuid');
 const crypto = require('crypto');
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 
 const app = express();
 app.use(express.json());
@@ -867,6 +869,35 @@ app.get('/api/conta/pedidos', async (req, res) => {
   }
 });
 
+// ── ROTA: Upload de Imagem para Supabase Storage ──
+app.post('/api/admin/upload-imagem', upload.single('imagem'), async (req, res) => {
+  if (req.headers['senha'] !== process.env.ADMIN_SENHA) return res.status(401).json({ erro: 'Não autorizado.' });
+  if (!req.file) return res.status(400).json({ erro: 'Nenhuma imagem enviada.' });
+
+  const ext = req.file.originalname.split('.').pop().toLowerCase();
+  const nome = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+  const { error } = await supabase.storage
+    .from('produtos-imgs')
+    .upload(nome, req.file.buffer, { contentType: req.file.mimetype, upsert: false });
+
+  if (error) return res.status(500).json({ erro: error.message });
+
+  const { data } = supabase.storage.from('produtos-imgs').getPublicUrl(nome);
+  res.json({ url: data.publicUrl });
+});
+
+// ── ROTA: Remover Imagem do Supabase Storage ──
+app.delete('/api/admin/imagem', async (req, res) => {
+  if (req.headers['senha'] !== process.env.ADMIN_SENHA) return res.status(401).json({ erro: 'Não autorizado.' });
+  const { url } = req.body;
+  if (!url) return res.status(400).json({ erro: 'URL obrigatória.' });
+
+  const nome = url.split('/').pop();
+  await supabase.storage.from('produtos-imgs').remove([nome]);
+  res.json({ ok: true });
+});
+
 // ── ROTA: Listar Produtos (público — usado pelo index.html) ──
 app.get('/api/produtos', async (req, res) => {
   try {
@@ -884,13 +915,14 @@ app.put('/api/admin/produtos/:chave', async (req, res) => {
   if (senha !== process.env.ADMIN_SENHA) return res.status(401).json({ erro: 'Não autorizado.' });
 
   const { chave } = req.params;
-  const { nome, preco, ativo, desc } = req.body;
+  const { nome, preco, ativo, desc, imgs } = req.body;
   try {
     const update = {};
     if (nome  !== undefined) update.nome  = nome;
     if (preco !== undefined) update.preco = parseInt(preco);
     if (ativo !== undefined) update.ativo = ativo;
     if (desc  !== undefined) update.descricao = desc;
+    if (imgs  !== undefined) update.imgs = imgs;
 
     const { error } = await supabase.from('produtos').update(update).eq('chave', chave);
     if (error) throw error;

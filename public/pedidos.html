@@ -1231,20 +1231,31 @@
                       <input type="checkbox" ${p.ativo ? 'checked' : ''} id="ativo-${p.chave}" onchange="salvarProduto('${p.chave}')">
                       Ativo
                     </label>
-                    <button onclick="abrirEditDesc('${p.chave}', ${JSON.stringify(JSON.stringify(p.descricao || []))})"style="background:rgba(201,150,60,0.12);color:var(--gold);border:1px solid var(--gold-light);border-radius:6px;padding:0.35rem 0.8rem;font-size:0.8rem;cursor:pointer;font-family:'Jost',sans-serif;">Descrição</button>
+                    <button onclick="abrirEditProduto('${p.chave}', ${JSON.stringify(JSON.stringify(p.descricao || []))}, ${JSON.stringify(JSON.stringify(p.imgs || []))})"style="background:rgba(201,150,60,0.12);color:var(--gold);border:1px solid var(--gold-light);border-radius:6px;padding:0.35rem 0.8rem;font-size:0.8rem;cursor:pointer;font-family:'Jost',sans-serif;">Descrição</button>
                     <button onclick="salvarProduto('${p.chave}')" style="background:var(--gold);color:#fff;border:none;border-radius:6px;padding:0.4rem 1rem;font-size:0.85rem;cursor:pointer;font-family:'Jost',sans-serif;font-weight:600;">Salvar</button>
                   </div>
                 `).join('')}
               </div>
 
-              <!-- Modal editar descrição -->
-              <div id="modal-desc" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;">
-                <div style="background:#fff;border-radius:16px;padding:2rem;width:100%;max-width:480px;margin:1rem;">
-                  <h3 style="font-family:'Cormorant Garamond',serif;color:var(--gold);margin:0 0 1rem;">Editar Descrição</h3>
+              <!-- Modal editar produto (descrição + fotos) -->
+              <div id="modal-desc" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;padding:1rem;">
+                <div style="background:#fff;border-radius:16px;padding:2rem;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;">
+                  <h3 style="font-family:'Cormorant Garamond',serif;color:var(--gold);margin:0 0 1.5rem;font-size:1.4rem;">Editar Produto</h3>
                   <input type="hidden" id="desc-chave">
-                  <textarea id="desc-texto" rows="6" style="width:100%;padding:0.75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:0.9rem;resize:vertical;" placeholder="Uma linha por característica"></textarea>
-                  <p style="font-size:0.75rem;color:var(--muted);margin:0.4rem 0 1rem;">Uma característica por linha (ex: Bolso Interno)</p>
-                  <div style="display:flex;gap:0.8rem;justify-content:flex-end;">
+
+                  <p style="font-weight:600;font-size:0.85rem;margin:0 0 0.4rem;">Descrição</p>
+                  <textarea id="desc-texto" rows="5" style="width:100%;padding:0.75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:0.9rem;resize:vertical;" placeholder="Uma característica por linha"></textarea>
+                  <p style="font-size:0.72rem;color:var(--muted);margin:0.3rem 0 1.5rem;">Uma característica por linha (ex: Bolso Interno)</p>
+
+                  <p style="font-weight:600;font-size:0.85rem;margin:0 0 0.8rem;">Fotos do produto</p>
+                  <div id="imgs-lista" style="display:flex;flex-wrap:wrap;gap:0.6rem;margin-bottom:1rem;"></div>
+                  <label style="display:flex;align-items:center;gap:0.6rem;cursor:pointer;background:rgba(201,150,60,0.08);border:1px dashed var(--gold-light);border-radius:8px;padding:0.7rem 1rem;font-size:0.85rem;color:var(--gold);">
+                    <span>+ Adicionar foto</span>
+                    <input type="file" id="input-foto" accept="image/*" style="display:none;" onchange="uploadFoto()">
+                  </label>
+                  <p id="upload-status" style="font-size:0.75rem;color:var(--muted);min-height:1.2em;margin:0.4rem 0 0;"></p>
+
+                  <div style="display:flex;gap:0.8rem;justify-content:flex-end;margin-top:1.5rem;">
                     <button onclick="fecharModalDesc()" style="background:transparent;border:1px solid var(--border);border-radius:8px;padding:0.5rem 1.2rem;cursor:pointer;font-family:'Jost',sans-serif;">Cancelar</button>
                     <button onclick="salvarDesc()" style="background:var(--gold);color:#fff;border:none;border-radius:8px;padding:0.5rem 1.2rem;cursor:pointer;font-family:'Jost',sans-serif;font-weight:600;">Salvar</button>
                   </div>
@@ -1284,11 +1295,55 @@
             else toast('Erro ao salvar.', 'error');
         }
 
-        function abrirEditDesc(chave, descJson) {
+        let _imgsEdicao = [];
+
+        function abrirEditProduto(chave, descJson, imgsJson) {
             const desc = JSON.parse(descJson);
+            _imgsEdicao = JSON.parse(imgsJson) || [];
             document.getElementById('desc-chave').value = chave;
             document.getElementById('desc-texto').value = Array.isArray(desc) ? desc.join('\n') : '';
+            document.getElementById('upload-status').textContent = '';
+            renderImgsEdicao();
             document.getElementById('modal-desc').style.display = 'flex';
+        }
+
+        function renderImgsEdicao() {
+            const lista = document.getElementById('imgs-lista');
+            if (!_imgsEdicao.length) { lista.innerHTML = '<span style="font-size:0.8rem;color:var(--muted);">Nenhuma foto adicionada</span>'; return; }
+            lista.innerHTML = _imgsEdicao.map((url, i) => `
+              <div style="position:relative;width:80px;">
+                <img src="${url}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid var(--border);">
+                <button onclick="removerFoto(${i})" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:#c0392b;color:#fff;border:none;cursor:pointer;font-size:0.7rem;line-height:1;display:flex;align-items:center;justify-content:center;">✕</button>
+              </div>
+            `).join('');
+        }
+
+        function removerFoto(idx) {
+            _imgsEdicao.splice(idx, 1);
+            renderImgsEdicao();
+        }
+
+        async function uploadFoto() {
+            const file = document.getElementById('input-foto').files[0];
+            if (!file) return;
+            const status = document.getElementById('upload-status');
+            status.textContent = 'Enviando…';
+            const form = new FormData();
+            form.append('imagem', file);
+            const resp = await fetch('/api/admin/upload-imagem', {
+                method: 'POST',
+                headers: { 'senha': _adminSenha },
+                body: form
+            });
+            if (resp.ok) {
+                const { url } = await resp.json();
+                _imgsEdicao.push(url);
+                renderImgsEdicao();
+                status.textContent = 'Foto adicionada!';
+                document.getElementById('input-foto').value = '';
+            } else {
+                status.textContent = 'Erro ao enviar foto.';
+            }
         }
 
         function fecharModalDesc() {
@@ -1303,9 +1358,9 @@
             const resp = await fetch('/api/admin/produtos/' + chave, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'senha': _adminSenha },
-                body: JSON.stringify({ desc })
+                body: JSON.stringify({ desc, imgs: _imgsEdicao })
             });
-            if (resp.ok) { fecharModalDesc(); toast('Descrição atualizada!', 'success'); mostrarProdutos(); }
+            if (resp.ok) { fecharModalDesc(); toast('Produto atualizado!', 'success'); mostrarProdutos(); }
             else toast('Erro ao salvar.', 'error');
         }
 
