@@ -1285,6 +1285,14 @@
                   <input id="np-nome" type="text" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:7px;margin:0.3rem 0 0.8rem;font-family:'Jost',sans-serif;">
                   <label style="font-size:0.8rem;color:var(--muted);">Preço (R$)</label>
                   <input id="np-preco" type="number" min="1" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:7px;margin:0.3rem 0 1rem;font-family:'Jost',sans-serif;">
+                  <p style="font-weight:600;font-size:0.85rem;margin:0 0 0.5rem;">Fotos do produto</p>
+                  <div id="np-imgs-lista" style="display:flex;flex-wrap:wrap;gap:0.6rem;margin-bottom:0.7rem;min-height:1rem;"></div>
+                  <label style="display:flex;align-items:center;gap:0.6rem;cursor:pointer;background:rgba(201,150,60,0.08);border:1px dashed var(--gold-light);border-radius:8px;padding:0.6rem 1rem;font-size:0.82rem;color:var(--gold);margin-bottom:0.3rem;">
+                    <span>+ Adicionar foto</span>
+                    <input type="file" id="np-input-foto" accept="image/*" style="display:none;" onchange="uploadNpFoto()">
+                  </label>
+                  <p id="np-upload-status" style="font-size:0.75rem;color:var(--muted);min-height:1.2em;margin:0 0 0.8rem;"></p>
+
                   <p style="font-weight:600;font-size:0.85rem;margin:0 0 0.4rem;">Cores disponíveis</p>
                   <p style="font-size:0.72rem;color:var(--muted);margin:0 0 0.6rem;">Nome + cor hex + URL da imagem do swatch (opcional)</p>
                   <div id="np-cores-lista" style="display:flex;flex-direction:column;gap:0.4rem;margin-bottom:0.6rem;min-height:1.2rem;"></div>
@@ -1316,6 +1324,7 @@
         let _produtosData = [];
         let _npCores = [];
         let _coresEdicao = [];
+        let _npImgs = [];
 
         function renderNpCores() {
             const lista = document.getElementById('np-cores-lista');
@@ -1333,6 +1342,41 @@
         function npAdicionarCor() {
             _npCores.push({ label: '', cor: '#1a1a1a', img: '' });
             renderNpCores();
+        }
+
+        function renderNpImgs() {
+            const lista = document.getElementById('np-imgs-lista');
+            if (!lista) return;
+            if (!_npImgs.length) { lista.innerHTML = '<span style="font-size:0.75rem;color:var(--muted);">Nenhuma foto adicionada.</span>'; return; }
+            lista.innerHTML = _npImgs.map((url, i) => `
+              <div style="position:relative;width:80px;">
+                <img src="${url}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid var(--border);">
+                <button type="button" onclick="_npImgs.splice(${i},1);renderNpImgs()" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:#c0392b;color:#fff;border:none;cursor:pointer;font-size:0.7rem;display:flex;align-items:center;justify-content:center;">✕</button>
+              </div>`).join('');
+        }
+
+        async function uploadNpFoto() {
+            const file = document.getElementById('np-input-foto').files[0];
+            if (!file) return;
+            const status = document.getElementById('np-upload-status');
+            status.textContent = 'Enviando…';
+            const form = new FormData();
+            form.append('imagem', file);
+            const resp = await fetch('/api/admin/upload-imagem', {
+                method: 'POST',
+                headers: { 'senha': _adminSenha },
+                body: form
+            });
+            if (resp.ok) {
+                const { url } = await resp.json();
+                _npImgs.push(url);
+                renderNpImgs();
+                status.textContent = 'Foto adicionada!';
+                document.getElementById('np-input-foto').value = '';
+            } else {
+                const errData = await resp.json().catch(() => ({}));
+                status.textContent = 'Erro: ' + (errData.erro || 'falha no servidor (' + resp.status + ')');
+            }
         }
 
         function renderCoresEdicao() {
@@ -1427,7 +1471,9 @@
 
         function abrirModalNovoProduto() {
             _npCores = [];
+            _npImgs  = [];
             renderNpCores();
+            renderNpImgs();
             document.getElementById('modal-novo-produto').style.display = 'flex';
         }
 
@@ -1449,9 +1495,9 @@
             const resp = await fetch('/api/admin/produtos', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'senha': _adminSenha },
-                body: JSON.stringify({ chave, nome, preco, ativo: true, cores })
+                body: JSON.stringify({ chave, nome, preco, ativo: true, cores, imgs: _npImgs })
             });
-            if (resp.ok) { _npCores = []; fecharModalNovoProduto(); toast('Produto criado!', 'success'); mostrarProdutos(); }
+            if (resp.ok) { _npCores = []; _npImgs = []; fecharModalNovoProduto(); toast('Produto criado!', 'success'); mostrarProdutos(); }
             else { const r = await resp.json(); erro.textContent = r.erro || 'Erro ao criar.'; }
         }
 
