@@ -899,6 +899,8 @@
 
                 const badgeHtml = p.status === 'approved'
                     ? `<span class="status-badge status-approved" id="badge-${p.id}" onclick="handleBadgeClick(${p.id})" title="Clique 2× para cancelar" style="cursor:pointer;">Pago</span>`
+                    : p.status === 'entregue'
+                    ? `<span class="status-badge status-entregue" id="badge-${p.id}" onclick="handleBadgeEntregue(${p.id})" title="Clique 2× para voltar para Pagos" style="cursor:pointer;">Enviado</span>`
                     : `<span class="status-badge status-${p.status}">${getStatusLabel(p.status)}</span>`;
 
                 let acaoHtml = '';
@@ -1079,6 +1081,24 @@
                 _cancelarState[id] = setTimeout(() => {
                     delete _cancelarState[id];
                     if (badge) { badge.textContent = 'Pago'; badge.style.cssText = 'cursor:pointer;'; }
+                }, 3000);
+            }
+        }
+
+        function handleBadgeEntregue(id) {
+            const badge = document.getElementById(`badge-${id}`);
+            if (_cancelarState[id]) {
+                clearTimeout(_cancelarState[id]);
+                delete _cancelarState[id];
+                atualizarStatus(id, 'approved');
+            } else {
+                if (badge) {
+                    badge.textContent = 'Voltar?';
+                    badge.style.cssText += ';background:rgba(201,150,60,0.2)!important;color:var(--gold)!important;border-color:rgba(201,150,60,0.5)!important;';
+                }
+                _cancelarState[id] = setTimeout(() => {
+                    delete _cancelarState[id];
+                    if (badge) { badge.textContent = 'Enviado'; badge.style.cssText = 'cursor:pointer;'; }
                 }, 3000);
             }
         }
