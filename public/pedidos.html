@@ -1226,7 +1226,7 @@
         }
 
         // ── PRODUTOS ─────────────────────────────────────────────────────
-        let _adminSenha = sessionStorage.getItem('admin_senha') || '';
+        let _adminSenha = localStorage.getItem('admin_senha') || '';
 
         async function mostrarProdutos() {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1544,7 +1544,7 @@
 
             if (resp.ok) {
                 localStorage.setItem('admin_auth', Date.now());
-                sessionStorage.setItem('admin_senha', senha);
+                localStorage.setItem('admin_senha', senha);
                 _adminSenha = senha;
                 document.getElementById('login-overlay').style.display = 'none';
                 carregarPedidos();
