@@ -2570,7 +2570,9 @@ function abrirModal(produto) {
       }
       if (!imgPath && info.imgs && info.imgs[0]) imgPath = info.imgs[0];
       if (imgPath) {
+        const videoItem = modalMediaAtual.find(m => m.tipo === 'video');
         modalMediaAtual = [{ tipo: 'imagem', url: imgPath }];
+        if (videoItem) modalMediaAtual.push(videoItem);
         atualizarImgModal(modalMediaAtual, 0);
       }
     });
