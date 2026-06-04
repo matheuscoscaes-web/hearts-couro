@@ -926,6 +926,38 @@ app.post('/api/admin/upload-imagem', upload.single('imagem'), async (req, res) =
   res.json({ url: data.publicUrl });
 });
 
+// ── ROTA: Upload de Vídeo para Supabase Storage ──
+const uploadVideo = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 100 * 1024 * 1024 }, // 100MB
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('video/')) cb(null, true);
+    else cb(new Error('Apenas arquivos de vídeo são aceitos.'));
+  }
+});
+
+app.post('/api/admin/upload-video', uploadVideo.single('video'), async (req, res) => {
+  if (req.headers['senha'] !== process.env.ADMIN_SENHA) return res.status(401).json({ erro: 'Não autorizado.' });
+  if (!req.file) return res.status(400).json({ erro: 'Nenhum vídeo enviado.' });
+
+  const { error: bucketErr } = await supabase.storage.createBucket('produtos-videos', { public: true });
+  if (bucketErr && !bucketErr.message.includes('already exists')) {
+    return res.status(500).json({ erro: 'Erro ao preparar storage: ' + bucketErr.message });
+  }
+
+  const ext  = req.file.originalname.split('.').pop().toLowerCase() || 'mp4';
+  const nome = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+  const { error } = await supabase.storage
+    .from('produtos-videos')
+    .upload(nome, req.file.buffer, { contentType: req.file.mimetype, upsert: false });
+
+  if (error) return res.status(500).json({ erro: error.message });
+
+  const { data } = supabase.storage.from('produtos-videos').getPublicUrl(nome);
+  res.json({ url: data.publicUrl });
+});
+
 // ── ROTA: Remover Imagem do Supabase Storage ──
 app.delete('/api/admin/imagem', async (req, res) => {
   if (req.headers['senha'] !== process.env.ADMIN_SENHA) return res.status(401).json({ erro: 'Não autorizado.' });

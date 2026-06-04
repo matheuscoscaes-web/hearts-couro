@@ -1292,8 +1292,15 @@
                   <p id="upload-status" style="font-size:0.75rem;color:var(--muted);min-height:1.2em;margin:0.4rem 0 0;"></p>
 
                   <p style="font-weight:600;font-size:0.85rem;margin:1.5rem 0 0.4rem;">Vídeo do produto</p>
-                  <p style="font-size:0.72rem;color:var(--muted);margin:0 0 0.4rem;">Cole o link do YouTube ou URL direta do vídeo (ex: .mp4)</p>
-                  <input type="url" id="edit-video" placeholder="https://youtube.com/watch?v=..." style="width:100%;padding:0.5rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.82rem;margin-bottom:1rem;">
+                  <p style="font-size:0.72rem;color:var(--muted);margin:0 0 0.4rem;">Cole o link do YouTube, ou envie um vídeo do celular (clips curtos funcionam melhor)</p>
+                  <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.3rem;">
+                    <input type="url" id="edit-video" placeholder="https://youtube.com/watch?v=..." style="flex:1;padding:0.5rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.82rem;">
+                    <label style="background:rgba(201,150,60,0.12);border:1px solid var(--gold-light);color:var(--gold);border-radius:7px;padding:0.45rem 0.7rem;font-size:0.78rem;cursor:pointer;white-space:nowrap;font-family:'Jost',sans-serif;">
+                      📱 Enviar
+                      <input type="file" id="edit-video-file" accept="video/*,video/mp4,video/quicktime" style="display:none;" onchange="uploadVideoEdicao()">
+                    </label>
+                  </div>
+                  <p id="edit-video-status" style="font-size:0.72rem;color:var(--muted);min-height:1.2em;margin:0 0 1rem;"></p>
 
                   <p style="font-weight:600;font-size:0.85rem;margin:0 0 0.5rem;">Cores do produto</p>
                   <p style="font-size:0.72rem;color:var(--muted);margin:0 0 0.7rem;">Nome da cor + cor hex + URL da imagem do swatch (opcional)</p>
@@ -1346,8 +1353,15 @@
                   <p id="np-upload-status" style="font-size:0.75rem;color:var(--muted);min-height:1.2em;margin:0 0 0.8rem;"></p>
 
                   <p style="font-weight:600;font-size:0.85rem;margin:0 0 0.4rem;">Vídeo do produto</p>
-                  <p style="font-size:0.72rem;color:var(--muted);margin:0 0 0.4rem;">Cole o link do YouTube ou URL direta do vídeo (ex: .mp4)</p>
-                  <input type="url" id="np-video" placeholder="https://youtube.com/watch?v=..." style="width:100%;padding:0.5rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.82rem;margin-bottom:1rem;">
+                  <p style="font-size:0.72rem;color:var(--muted);margin:0 0 0.4rem;">Cole o link do YouTube, ou envie um vídeo do celular (clips curtos funcionam melhor)</p>
+                  <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.3rem;">
+                    <input type="url" id="np-video" placeholder="https://youtube.com/watch?v=..." style="flex:1;padding:0.5rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.82rem;">
+                    <label style="background:rgba(201,150,60,0.12);border:1px solid var(--gold-light);color:var(--gold);border-radius:7px;padding:0.45rem 0.7rem;font-size:0.78rem;cursor:pointer;white-space:nowrap;font-family:'Jost',sans-serif;">
+                      📱 Enviar
+                      <input type="file" id="np-video-file" accept="video/*,video/mp4,video/quicktime" style="display:none;" onchange="uploadVideoNovoProduto()">
+                    </label>
+                  </div>
+                  <p id="np-video-status" style="font-size:0.72rem;color:var(--muted);min-height:1.2em;margin:0 0 1rem;"></p>
 
                   <p style="font-weight:600;font-size:0.85rem;margin:0 0 0.4rem;">Cores disponíveis</p>
                   <p style="font-size:0.72rem;color:var(--muted);margin:0 0 0.6rem;">Nome + cor hex + URL da imagem do swatch (opcional)</p>
@@ -1419,6 +1433,50 @@
         function npAdicionarCor() {
             _npCores.push({ label: '', cor: '#1a1a1a', img: '' });
             renderNpCores();
+        }
+
+        async function uploadVideoEdicao() {
+            const file = document.getElementById('edit-video-file').files[0];
+            if (!file) return;
+            const status = document.getElementById('edit-video-status');
+            status.textContent = 'Enviando vídeo… pode demorar alguns instantes';
+            const form = new FormData();
+            form.append('video', file);
+            const resp = await fetch('/api/admin/upload-video', {
+                method: 'POST',
+                headers: { 'senha': _adminSenha },
+                body: form
+            });
+            if (resp.ok) {
+                const { url } = await resp.json();
+                document.getElementById('edit-video').value = url;
+                status.textContent = '✅ Vídeo enviado!';
+            } else {
+                const errData = await resp.json().catch(() => ({}));
+                status.textContent = 'Erro: ' + (errData.erro || 'falha no servidor (' + resp.status + ')');
+            }
+        }
+
+        async function uploadVideoNovoProduto() {
+            const file = document.getElementById('np-video-file').files[0];
+            if (!file) return;
+            const status = document.getElementById('np-video-status');
+            status.textContent = 'Enviando vídeo… pode demorar alguns instantes';
+            const form = new FormData();
+            form.append('video', file);
+            const resp = await fetch('/api/admin/upload-video', {
+                method: 'POST',
+                headers: { 'senha': _adminSenha },
+                body: form
+            });
+            if (resp.ok) {
+                const { url } = await resp.json();
+                document.getElementById('np-video').value = url;
+                status.textContent = '✅ Vídeo enviado!';
+            } else {
+                const errData = await resp.json().catch(() => ({}));
+                status.textContent = 'Erro: ' + (errData.erro || 'falha no servidor (' + resp.status + ')');
+            }
         }
 
         function renderNpImgs() {
