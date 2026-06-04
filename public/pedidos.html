@@ -640,9 +640,6 @@
 
     </div>
 
-    <!-- Filtro por produto (fora do sticky — rola com a página) -->
-    <div id="filtro-produto" style="display:none; flex-wrap:wrap; gap:0.5rem; justify-content:center; padding:0.6rem 1rem 0.2rem;"></div>
-
     <!-- LOGIN OVERLAY -->
     <div id="login-overlay" style="
         display:none; position:fixed; inset:0; z-index:9999;
@@ -671,6 +668,8 @@
 
     <!-- CONTEÚDO -->
     <div class="main-content">
+        <!-- Filtro por produto — rola com o conteúdo -->
+        <div id="filtro-produto" style="display:none; flex-wrap:wrap; gap:0.5rem; justify-content:center; margin-bottom:0.8rem;"></div>
         <div class="orders-grid" id="grid"></div>
         <div class="resumo-container" id="resumo-view" style="display:none;"></div>
         <div id="produtos-view" style="display:none; padding:1.5rem 1rem; max-width:900px; margin:0 auto;"></div>
