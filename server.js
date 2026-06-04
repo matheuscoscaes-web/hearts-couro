@@ -648,6 +648,15 @@ app.get('/api/verificar-pagamento/:id', async (req, res) => {
       return res.json({ status: 'pending', mensagem: 'Pagamento ainda em processamento no Mercado Pago.' });
     }
 
+    // Cancelado, reembolsado ou estornado → remove o pedido automaticamente
+    const cancelado = pagamentos.find(p =>
+      p.status === 'cancelled' || p.status === 'refunded' || p.status === 'charged_back'
+    );
+    if (cancelado) {
+      await supabase.from('pedidos').delete().eq('id', pedidoId);
+      return res.json({ status: 'removido', mensagem: `Pedido removido (${cancelado.status}).` });
+    }
+
     if (pagamentos.length === 0) {
       return res.json({ status: 'nao_encontrado', mensagem: 'Nenhum pagamento encontrado para este pedido.' });
     }

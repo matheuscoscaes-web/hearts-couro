@@ -1128,6 +1128,9 @@
                 if (result.status === 'approved') {
                     toast('Pagamento confirmado! Pedido movido para "Pagos".', 'success');
                     carregarPedidos();
+                } else if (result.status === 'removido') {
+                    toast('Pedido removido automaticamente (cancelado/reembolsado).', 'warning');
+                    carregarPedidos();
                 } else if (result.status === 'pending' || result.status === 'in_process') {
                     toast(result.mensagem, 'warning');
                     if (btn) { btn.disabled = false; btn.textContent = 'Verificar Pagamento'; }
@@ -1151,19 +1154,24 @@
                 return;
             }
             let atualizados = 0;
+            let removidos = 0;
             for (const p of pendentes) {
                 try {
                     const resp = await fetch(`/api/verificar-pagamento/${p.id}`);
                     const result = await resp.json();
                     if (result.status === 'approved') atualizados++;
+                    if (result.status === 'removido') removidos++;
                 } catch (_) {}
             }
             await carregarPedidos();
             if (btn) { btn.disabled = false; btn.textContent = '🔄 Verificar Todos'; }
-            if (atualizados > 0)
-                toast(`${atualizados} pedido(s) atualizado(s) para "Pago"!`, 'success');
+            const partes = [];
+            if (atualizados > 0) partes.push(`${atualizados} confirmado(s) como Pago`);
+            if (removidos > 0)   partes.push(`${removidos} removido(s) por cancelamento/reembolso`);
+            if (partes.length > 0)
+                toast(partes.join(' · '), 'success');
             else
-                toast(`Nenhum novo pagamento (verificados ${pendentes.length} pedidos).`, 'info');
+                toast(`Nenhuma atualização (verificados ${pendentes.length} pedidos).`, 'info');
         }
 
         // ── GERAR ETIQUETA ────────────────────────────────────────────────
