@@ -2234,16 +2234,20 @@ async function sincronizarProdutos() {
           return key;
         });
 
+        // Fallback: se não tiver foto do produto, usa a imagem da primeira cor
+        const firstCorImg = dbCores.length > 0 && dbCores[0].img ? dbCores[0].img : '';
+        const imgsFinais  = p.imgs && p.imgs.length > 0 ? p.imgs : (firstCorImg ? [firstCorImg] : []);
+
         PRODUTOS_INFO[p.chave] = {
           ativo: true,
           preco: p.preco,
           nome: p.nome,
-          imgs: p.imgs && p.imgs.length > 0 ? p.imgs : [],
+          imgs: imgsFinais,
           cores: coreKeys,
           desc: p.descricao || []
         };
 
-        const imgSrc = p.imgs && p.imgs.length > 0 ? p.imgs[0] : '';
+        const imgSrc = imgsFinais[0] || '';
         const descHtml = p.descricao && p.descricao.length > 0
           ? p.descricao.map(d => `• ${d}`).join('<br>')
           : '';
