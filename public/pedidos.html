@@ -1291,7 +1291,11 @@
                   </label>
                   <p id="upload-status" style="font-size:0.75rem;color:var(--muted);min-height:1.2em;margin:0.4rem 0 0;"></p>
 
-                  <p style="font-weight:600;font-size:0.85rem;margin:1.5rem 0 0.5rem;">Cores do produto</p>
+                  <p style="font-weight:600;font-size:0.85rem;margin:1.5rem 0 0.4rem;">Vídeo do produto</p>
+                  <p style="font-size:0.72rem;color:var(--muted);margin:0 0 0.4rem;">Cole o link do YouTube ou URL direta do vídeo (ex: .mp4)</p>
+                  <input type="url" id="edit-video" placeholder="https://youtube.com/watch?v=..." style="width:100%;padding:0.5rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.82rem;margin-bottom:1rem;">
+
+                  <p style="font-weight:600;font-size:0.85rem;margin:0 0 0.5rem;">Cores do produto</p>
                   <p style="font-size:0.72rem;color:var(--muted);margin:0 0 0.7rem;">Nome da cor + cor hex + URL da imagem do swatch (opcional)</p>
                   <div id="cores-edit-lista" style="display:flex;flex-direction:column;gap:0.4rem;margin-bottom:0.7rem;min-height:1.2rem;"></div>
                   <button type="button" onclick="adicionarCorEdicao()" style="background:rgba(201,150,60,0.08);border:1px dashed var(--gold-light);border-radius:8px;padding:0.55rem 1rem;font-size:0.82rem;color:var(--gold);cursor:pointer;font-family:'Jost',sans-serif;width:100%;">+ Adicionar Cor</button>
@@ -1340,6 +1344,10 @@
                     <input type="file" id="np-input-foto" accept="image/*,image/heic,image/heif" style="display:none;" onchange="uploadNpFoto()">
                   </label>
                   <p id="np-upload-status" style="font-size:0.75rem;color:var(--muted);min-height:1.2em;margin:0 0 0.8rem;"></p>
+
+                  <p style="font-weight:600;font-size:0.85rem;margin:0 0 0.4rem;">Vídeo do produto</p>
+                  <p style="font-size:0.72rem;color:var(--muted);margin:0 0 0.4rem;">Cole o link do YouTube ou URL direta do vídeo (ex: .mp4)</p>
+                  <input type="url" id="np-video" placeholder="https://youtube.com/watch?v=..." style="width:100%;padding:0.5rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.82rem;margin-bottom:1rem;">
 
                   <p style="font-weight:600;font-size:0.85rem;margin:0 0 0.4rem;">Cores disponíveis</p>
                   <p style="font-size:0.72rem;color:var(--muted);margin:0 0 0.6rem;">Nome + cor hex + URL da imagem do swatch (opcional)</p>
@@ -1474,6 +1482,7 @@
             document.getElementById('desc-chave').value = chave;
             document.getElementById('desc-texto').value = desc.join('\n');
             document.getElementById('upload-status').textContent = '';
+            document.getElementById('edit-video').value        = produto.video       || '';
             document.getElementById('edit-altura').value      = produto.altura      || '';
             document.getElementById('edit-largura').value     = produto.largura     || '';
             document.getElementById('edit-comprimento').value = produto.comprimento || '';
@@ -1531,7 +1540,8 @@
             const chave = document.getElementById('desc-chave').value;
             const texto = document.getElementById('desc-texto').value;
             const desc  = texto.split('\n').map(l => l.trim()).filter(Boolean);
-            const cores = _coresEdicao.filter(c => c.label.trim());
+            const cores  = _coresEdicao.filter(c => c.label.trim());
+            const video  = document.getElementById('edit-video').value.trim() || null;
             const altura      = parseFloat(document.getElementById('edit-altura').value)      || null;
             const largura     = parseFloat(document.getElementById('edit-largura').value)     || null;
             const comprimento = parseFloat(document.getElementById('edit-comprimento').value) || null;
@@ -1540,7 +1550,7 @@
             const resp = await fetch('/api/admin/produtos/' + chave, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'senha': _adminSenha },
-                body: JSON.stringify({ desc, imgs: _imgsEdicao, cores, altura, largura, comprimento, peso })
+                body: JSON.stringify({ desc, imgs: _imgsEdicao, cores, video, altura, largura, comprimento, peso })
             });
             if (resp.ok) { fecharModalDesc(); toast('Produto atualizado!', 'success'); mostrarProdutos(); }
             else { const r = await resp.json().catch(() => ({})); toast('Erro ao salvar: ' + (r.erro || resp.status), 'error'); }
@@ -1569,6 +1579,7 @@
             if (/\s/.test(chave)) { erro.textContent = 'Chave não pode ter espaços.'; return; }
 
             const cores       = _npCores.filter(c => c.label.trim());
+            const video       = document.getElementById('np-video').value.trim() || null;
             const altura      = parseFloat(document.getElementById('np-altura').value)      || null;
             const largura     = parseFloat(document.getElementById('np-largura').value)     || null;
             const comprimento = parseFloat(document.getElementById('np-comprimento').value) || null;
@@ -1576,7 +1587,7 @@
             const resp = await fetch('/api/admin/produtos', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'senha': _adminSenha },
-                body: JSON.stringify({ chave, nome, preco, ativo: true, cores, imgs: _npImgs, altura, largura, comprimento, peso })
+                body: JSON.stringify({ chave, nome, preco, ativo: true, cores, imgs: _npImgs, video, altura, largura, comprimento, peso })
             });
             if (resp.ok) { _npCores = []; _npImgs = []; fecharModalNovoProduto(); toast('Produto criado!', 'success'); mostrarProdutos(); }
             else { const r = await resp.json(); erro.textContent = r.erro || 'Erro ao criar.'; }

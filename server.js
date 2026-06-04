@@ -954,7 +954,7 @@ app.put('/api/admin/produtos/:chave', async (req, res) => {
   if (senha !== process.env.ADMIN_SENHA) return res.status(401).json({ erro: 'Não autorizado.' });
 
   const { chave } = req.params;
-  const { nome, preco, ativo, desc, imgs, cores, altura, largura, comprimento, peso } = req.body;
+  const { nome, preco, ativo, desc, imgs, cores, video, altura, largura, comprimento, peso } = req.body;
   try {
     const update = {};
     if (nome        !== undefined) update.nome        = nome;
@@ -963,6 +963,7 @@ app.put('/api/admin/produtos/:chave', async (req, res) => {
     if (desc        !== undefined) update.descricao   = desc;
     if (imgs        !== undefined) update.imgs        = imgs;
     if (cores       !== undefined) update.cores       = cores;
+    if (video       !== undefined) update.video       = video;
     if (altura      !== undefined) update.altura      = altura;
     if (largura     !== undefined) update.largura     = largura;
     if (comprimento !== undefined) update.comprimento = comprimento;
@@ -981,7 +982,7 @@ app.post('/api/admin/produtos', async (req, res) => {
   const { senha } = req.headers;
   if (senha !== process.env.ADMIN_SENHA) return res.status(401).json({ erro: 'Não autorizado.' });
 
-  const { chave, nome, preco, ativo, desc, ordem, cores, altura, largura, comprimento, peso } = req.body;
+  const { chave, nome, preco, ativo, desc, ordem, cores, video, altura, largura, comprimento, peso } = req.body;
   if (!chave || !nome || !preco) return res.status(400).json({ erro: 'chave, nome e preco são obrigatórios.' });
   try {
     const { error } = await supabase.from('produtos').insert([{
@@ -989,6 +990,7 @@ app.post('/api/admin/produtos', async (req, res) => {
       ativo: ativo !== false,
       descricao: desc || [],
       cores: cores || [],
+      video: video || null,
       ordem: ordem || 99,
       altura:      altura      || 11,
       largura:     largura     || 30,

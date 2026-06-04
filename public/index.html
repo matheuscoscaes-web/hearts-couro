@@ -1775,7 +1775,9 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
   <div class="modal-box" style="position:relative;">
     <button class="modal-close" onclick="fecharModal()">✕</button>
     <div class="modal-img-zone">
-      <img id="modal-img" src="" alt="">
+      <img id="modal-img" src="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;">
+      <video id="modal-video" autoplay muted loop playsinline style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"></video>
+      <iframe id="modal-iframe" style="display:none;position:absolute;inset:0;width:100%;height:100%;border:none;" allow="autoplay; fullscreen" allowfullscreen></iframe>
       <button class="modal-img-nav prev" id="modal-prev" onclick="navegarImgModal(-1)" style="display:none;">‹</button>
       <button class="modal-img-nav next" id="modal-next" onclick="navegarImgModal(1)"  style="display:none;">›</button>
       <div class="modal-img-dots" id="modal-dots"></div>
@@ -2206,6 +2208,7 @@ async function sincronizarProdutos() {
         info.preco = p.preco;
         if (p.descricao && p.descricao.length > 0) info.desc = p.descricao;
         if (p.imgs && p.imgs.length > 0) info.imgs = p.imgs;
+        if (p.video) info.video = p.video;
 
         const card = document.getElementById('card-' + p.chave);
         if (!card) return;
@@ -2244,7 +2247,8 @@ async function sincronizarProdutos() {
           nome: p.nome,
           imgs: imgsFinais,
           cores: coreKeys,
-          desc: p.descricao || []
+          desc: p.descricao || [],
+          video: p.video || null
         };
 
         const imgSrc = imgsFinais[0] || '';
@@ -2455,22 +2459,53 @@ function sairContaEFecharForm() {
 let modalProdutoAtual = null;
 let modalQtdAtual = 1;
 let modalImgIdx = 0;
+let modalMediaAtual = []; // [{tipo:'imagem'|'video', url:'...'}]
+let modalImgsAtual  = []; // backward compat (array de strings)
 
-function atualizarImgModal(imgs, idx) {
+function _ytId(url) {
+  const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/);
+  return m ? m[1] : null;
+}
+
+function atualizarImgModal(media, idx) {
   modalImgIdx = idx;
-  document.getElementById('modal-img').src = imgs[idx];
-  const multi = imgs.length > 1;
+  const item   = typeof media[idx] === 'string' ? { tipo: 'imagem', url: media[idx] } : media[idx];
+  const imgEl  = document.getElementById('modal-img');
+  const vidEl  = document.getElementById('modal-video');
+  const ifrEl  = document.getElementById('modal-iframe');
+
+  imgEl.style.display = 'none';
+  vidEl.style.display = 'none'; vidEl.pause && vidEl.pause(); vidEl.src = '';
+  ifrEl.style.display = 'none'; ifrEl.src = '';
+
+  if (item.tipo === 'video') {
+    const ytId = _ytId(item.url);
+    if (ytId) {
+      ifrEl.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&loop=1&playlist=${ytId}`;
+      ifrEl.style.display = 'block';
+    } else {
+      vidEl.src = item.url;
+      vidEl.style.display = 'block';
+      vidEl.play().catch(() => {});
+    }
+  } else {
+    imgEl.src = item.url || '';
+    imgEl.style.display = 'block';
+  }
+
+  const multi = media.length > 1;
   document.getElementById('modal-prev').style.display = multi ? 'block' : 'none';
   document.getElementById('modal-next').style.display = multi ? 'block' : 'none';
   const dots = document.getElementById('modal-dots');
-  dots.innerHTML = multi ? imgs.map((_, i) => `<span class="${i===idx?'ativo':''}" onclick="atualizarImgModal(modalImgsAtual,${i})"></span>`).join('') : '';
+  dots.innerHTML = multi ? media.map((m, i) => {
+    const isVid = (typeof m !== 'string' && m.tipo === 'video');
+    return `<span class="${i===idx?'ativo':''}" style="font-size:${isVid?'0.7rem':''};" onclick="atualizarImgModal(modalMediaAtual,${i})">${isVid?'▶':''}</span>`;
+  }).join('') : '';
 }
 
-let modalImgsAtual = [];
-
 function navegarImgModal(dir) {
-  const total = modalImgsAtual.length;
-  atualizarImgModal(modalImgsAtual, (modalImgIdx + dir + total) % total);
+  const total = modalMediaAtual.length;
+  atualizarImgModal(modalMediaAtual, (modalImgIdx + dir + total) % total);
 }
 
 function abrirModal(produto) {
@@ -2478,10 +2513,14 @@ function abrirModal(produto) {
   if (!info) return;
   modalProdutoAtual = produto;
   modalQtdAtual = 1;
-  modalImgsAtual = info.imgs || [info.img || ''];
   modalImgIdx = 0;
 
-  atualizarImgModal(modalImgsAtual, 0);
+  const _imgs = (info.imgs && info.imgs.length > 0) ? info.imgs : (info.img ? [info.img] : []);
+  modalMediaAtual = _imgs.map(u => ({ tipo: 'imagem', url: u }));
+  if (info.video) modalMediaAtual.push({ tipo: 'video', url: info.video });
+  modalImgsAtual = modalMediaAtual; // backward compat
+
+  atualizarImgModal(modalMediaAtual, 0);
   document.getElementById('modal-nome').textContent  = `Ref: ${info.nome}`;
   document.getElementById('modal-preco').textContent = `R$ ${info.preco},00`;
   document.getElementById('modal-desc').innerHTML    = info.desc ? info.desc.map(d => `• ${d}`).join('<br>') : '';
@@ -2516,8 +2555,8 @@ function abrirModal(produto) {
       }
       if (!imgPath && info.imgs && info.imgs[0]) imgPath = info.imgs[0];
       if (imgPath) {
-        modalImgsAtual = [imgPath];
-        atualizarImgModal(modalImgsAtual, 0);
+        modalMediaAtual = [{ tipo: 'imagem', url: imgPath }];
+        atualizarImgModal(modalMediaAtual, 0);
       }
     });
   });
