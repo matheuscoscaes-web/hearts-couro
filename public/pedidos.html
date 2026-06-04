@@ -1559,7 +1559,7 @@
         function verificarAuth() {
             const auth = localStorage.getItem('admin_auth');
             const oito_horas = 8 * 60 * 60 * 1000;
-            if (auth && Date.now() - parseInt(auth) < oito_horas) {
+            if (auth && Date.now() - parseInt(auth) < oito_horas && _adminSenha) {
                 carregarPedidos();
                 setInterval(carregarPedidos, 30000);
             } else {
