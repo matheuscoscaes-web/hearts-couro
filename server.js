@@ -178,9 +178,22 @@ app.post('/api/calcular-frete', async (req, res) => {
   const qtd = Math.max(1, parseInt(req.body.quantidade) || 1);
   const itens = Array.isArray(req.body.itens) ? req.body.itens : [];
 
+  // Busca dimensões de produtos novos (não hardcoded) no banco
+  const chavesNovos = itens.map(i => i.produto).filter(c => c && !PACOTE_PRODUTO[c]);
+  let dbDimensoes = {};
+  if (chavesNovos.length > 0) {
+    const { data: dbProds } = await supabase
+      .from('produtos').select('chave, altura, largura, comprimento, peso')
+      .in('chave', chavesNovos);
+    (dbProds || []).forEach(p => {
+      if (p.altura && p.largura && p.comprimento && p.peso)
+        dbDimensoes[p.chave] = { height: p.altura, width: p.largura, length: p.comprimento, weight: p.peso };
+    });
+  }
+
   // Usa a maior embalagem entre os produtos do carrinho
   const base = itens.reduce((maior, item) => {
-    const p = PACOTE_PRODUTO[item.produto] || PACOTE;
+    const p = PACOTE_PRODUTO[item.produto] || dbDimensoes[item.produto] || PACOTE;
     return (p.width * p.length > maior.width * maior.length) ? p : maior;
   }, PACOTE);
 
@@ -759,13 +772,22 @@ app.post('/api/gerar-etiqueta/:id', async (req, res) => {
   };
 
   try {
+    // Busca dimensões do produto no banco se não estiver no mapa hardcoded
+    let pacotePedido = PACOTE_PRODUTO[pedido.produto] || PACOTE;
+    if (!PACOTE_PRODUTO[pedido.produto] && pedido.produto) {
+      const { data: prodDb } = await supabase
+        .from('produtos').select('altura, largura, comprimento, peso').eq('chave', pedido.produto).single();
+      if (prodDb && prodDb.altura && prodDb.largura && prodDb.comprimento && prodDb.peso)
+        pacotePedido = { height: prodDb.altura, width: prodDb.largura, length: prodDb.comprimento, weight: prodDb.peso };
+    }
+
     // 1. Descobre o ID do serviço PAC para este CEP
     const calcResp = await fetch('https://melhorenvio.com.br/api/v2/me/shipment/calculate', {
       method: 'POST', headers: meHeaders,
       body: JSON.stringify({
         from: { postal_code: process.env.CEP_ORIGEM },
         to:   { postal_code: pedido.cep.replace(/\D/g, '') },
-        package: PACOTE,
+        package: pacotePedido,
         options: { insurance_value: PRODUTOS[pedido.produto] || PRECO_PRODUTO, receipt: false, own_hand: false }
       })
     });
@@ -817,7 +839,7 @@ app.post('/api/gerar-etiqueta/:id', async (req, res) => {
           quantity: 1,
           unitary_value: pedido.valor_total || PRECO_PRODUTO
         }],
-        volumes: [PACOTE],
+        volumes: [pacotePedido],
         options: {
           insurance_value: pedido.valor_total || PRECO_PRODUTO,
           receipt: false, own_hand: false, collect: false, reverse: false, non_commercial: false
@@ -932,15 +954,19 @@ app.put('/api/admin/produtos/:chave', async (req, res) => {
   if (senha !== process.env.ADMIN_SENHA) return res.status(401).json({ erro: 'Não autorizado.' });
 
   const { chave } = req.params;
-  const { nome, preco, ativo, desc, imgs, cores } = req.body;
+  const { nome, preco, ativo, desc, imgs, cores, altura, largura, comprimento, peso } = req.body;
   try {
     const update = {};
-    if (nome  !== undefined) update.nome  = nome;
-    if (preco !== undefined) update.preco = parseInt(preco);
-    if (ativo !== undefined) update.ativo = ativo;
-    if (desc  !== undefined) update.descricao = desc;
-    if (imgs  !== undefined) update.imgs = imgs;
-    if (cores !== undefined) update.cores = cores;
+    if (nome        !== undefined) update.nome        = nome;
+    if (preco       !== undefined) update.preco       = parseInt(preco);
+    if (ativo       !== undefined) update.ativo       = ativo;
+    if (desc        !== undefined) update.descricao   = desc;
+    if (imgs        !== undefined) update.imgs        = imgs;
+    if (cores       !== undefined) update.cores       = cores;
+    if (altura      !== undefined) update.altura      = altura;
+    if (largura     !== undefined) update.largura     = largura;
+    if (comprimento !== undefined) update.comprimento = comprimento;
+    if (peso        !== undefined) update.peso        = peso;
 
     const { error } = await supabase.from('produtos').update(update).eq('chave', chave);
     if (error) throw error;
@@ -955,7 +981,7 @@ app.post('/api/admin/produtos', async (req, res) => {
   const { senha } = req.headers;
   if (senha !== process.env.ADMIN_SENHA) return res.status(401).json({ erro: 'Não autorizado.' });
 
-  const { chave, nome, preco, ativo, desc, ordem, cores } = req.body;
+  const { chave, nome, preco, ativo, desc, ordem, cores, altura, largura, comprimento, peso } = req.body;
   if (!chave || !nome || !preco) return res.status(400).json({ erro: 'chave, nome e preco são obrigatórios.' });
   try {
     const { error } = await supabase.from('produtos').insert([{
@@ -963,7 +989,11 @@ app.post('/api/admin/produtos', async (req, res) => {
       ativo: ativo !== false,
       descricao: desc || [],
       cores: cores || [],
-      ordem: ordem || 99
+      ordem: ordem || 99,
+      altura:      altura      || 11,
+      largura:     largura     || 30,
+      comprimento: comprimento || 32,
+      peso:        peso        || 1.0
     }]);
     if (error) throw error;
     res.json({ ok: true });
