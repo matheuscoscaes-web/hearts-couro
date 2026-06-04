@@ -2512,10 +2512,9 @@ function atualizarImgModal(media, idx) {
   document.getElementById('modal-prev').style.display = multi ? 'block' : 'none';
   document.getElementById('modal-next').style.display = multi ? 'block' : 'none';
   const dots = document.getElementById('modal-dots');
-  dots.innerHTML = multi ? media.map((m, i) => {
-    const isVid = (typeof m !== 'string' && m.tipo === 'video');
-    return `<span class="${i===idx?'ativo':''}" style="font-size:${isVid?'0.7rem':''};" onclick="atualizarImgModal(modalMediaAtual,${i})">${isVid?'▶':''}</span>`;
-  }).join('') : '';
+  dots.innerHTML = multi ? media.map((_, i) =>
+    `<span class="${i===idx?'ativo':''}" onclick="atualizarImgModal(modalMediaAtual,${i})"></span>`
+  ).join('') : '';
 }
 
 function navegarImgModal(dir) {
