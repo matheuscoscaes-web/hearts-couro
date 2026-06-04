@@ -2501,15 +2501,19 @@ function abrirModal(produto) {
     }).join('');
   }
 
-  // Troca imagem ao selecionar cor (produtos com corImgs)
-  if (info.corImgs) {
-    grid.querySelectorAll('input[type="radio"]').forEach(radio => {
-      radio.addEventListener('change', function () {
-        const imgPath = info.corImgs[this.value] || info.imgs[0];
-        document.getElementById('modal-img').src = imgPath;
-      });
+  // Troca imagem ao selecionar cor
+  grid.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', function () {
+      let imgPath = null;
+      if (info.corImgs) imgPath = info.corImgs[this.value];
+      if (!imgPath) {
+        const corDef = CORES_DEF[this.value];
+        if (corDef && corDef.img) imgPath = corDef.img;
+      }
+      if (!imgPath && info.imgs && info.imgs[0]) imgPath = info.imgs[0];
+      if (imgPath) document.getElementById('modal-img').src = imgPath;
     });
-  }
+  });
 
   document.getElementById('produto-modal').style.display = 'flex';
   document.body.style.overflow = 'hidden';
