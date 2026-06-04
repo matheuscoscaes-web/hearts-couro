@@ -245,7 +245,7 @@
             transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1);
         }
 
-        .order-card.expanded .card-details { max-height: 600px; }
+        .order-card.expanded .card-details { max-height: 2000px; }
 
         .order-info {
             font-size: 0.74rem;
@@ -887,7 +887,12 @@
                 const card = document.createElement('div');
                 card.className = 'order-card';
 
-                const msgZap = encodeURIComponent(`Olá ${p.nome}! Aqui é da Hearts Couro Legítimo. Recebemos seu pedido de uma Bolsa na cor ${p.cor}. Para estar dando prosseguimento na compra da sua linda bolsa ${p.produto}, estarei enviando o link do site da compra!\n\nhttps://hearts-couro.onrender.com/`);
+                const itens = Array.isArray(p.itens) && p.itens.length > 1 ? p.itens : null;
+                const corLabel = itens ? itens.map(i => i.cor).join(', ') : (p.cor || '—');
+                const prodLabel = itens ? itens.map(i => `${i.produto} (${i.cor}) ×${i.quantidade||1}`).join(' + ') : (p.produto || '');
+                const msgZap = itens
+                    ? encodeURIComponent(`Olá ${p.nome}! Aqui é da Hearts Couro Legítimo. Recebemos seu pedido de ${itens.length} bolsas. Para prosseguir com a compra, estarei enviando o link:\n\nhttps://hearts-couro.onrender.com/`)
+                    : encodeURIComponent(`Olá ${p.nome}! Aqui é da Hearts Couro Legítimo. Recebemos seu pedido de uma Bolsa na cor ${p.cor}. Para estar dando prosseguimento na compra da sua linda bolsa ${p.produto}, estarei enviando o link do site da compra!\n\nhttps://hearts-couro.onrender.com/`);
                 const fone = getWhatsAppPhone(p.whatsapp);
                 const linkZap = fone ? `https://wa.me/55${fone}?text=${msgZap}` : '#';
                 const fmtValor = v => v ? 'R$ ' + parseFloat(v).toFixed(2).replace('.', ',') : '—';
@@ -929,7 +934,7 @@
                         <div class="card-left">
                             <span class="customer-name">${p.nome} ${p.sobrenome || ''}</span>
                             <div class="card-meta">
-                                <span>🎨 ${p.cor || '—'}</span>
+                                <span>🎨 ${itens ? itens.length + ' bolsas' : (p.cor || '—')}</span>
                                 <span>💳 ${p.pagamento || '—'}</span>
                                 <span>${fmtValor(p.valor_total)}</span>
                             </div>
@@ -941,7 +946,9 @@
 
                     <div class="card-details">
                         <div class="order-info">
-                            ${p.produto ? `<strong>Produto:</strong> ${p.produto}<br>` : ''}
+                            ${itens
+                                ? itens.map(i => `<strong>${i.produto}</strong> — ${i.cor}${i.quantidade > 1 ? ` ×${i.quantidade}` : ''} &nbsp;<span style="color:var(--gold-light)">${fmtValor(i.preco * (i.quantidade||1))}</span><br>`).join('')
+                                : (p.produto ? `<strong>Produto:</strong> ${p.produto}<br>` : '')}
                             <strong>E-mail:</strong> ${p.email}<br>
                             <strong>WhatsApp:</strong> ${p.whatsapp}<br>
                             <strong>CPF:</strong> ${p.cpf || '—'}<br>
@@ -1210,6 +1217,7 @@
         }
 
         function renderProdutos(produtos) {
+            _produtosData = produtos;
             const view = document.getElementById('produtos-view');
             view.innerHTML = `
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:0.5rem;">
@@ -1231,7 +1239,7 @@
                       <input type="checkbox" ${p.ativo ? 'checked' : ''} id="ativo-${p.chave}" onchange="salvarProduto('${p.chave}')">
                       Ativo
                     </label>
-                    <button onclick="abrirEditProduto('${p.chave}', ${JSON.stringify(JSON.stringify(p.descricao || []))}, ${JSON.stringify(JSON.stringify(p.imgs || []))})"style="background:rgba(201,150,60,0.12);color:var(--gold);border:1px solid var(--gold-light);border-radius:6px;padding:0.35rem 0.8rem;font-size:0.8rem;cursor:pointer;font-family:'Jost',sans-serif;">Descrição</button>
+                    <button onclick="abrirEditProduto('${p.chave}')" style="background:rgba(201,150,60,0.12);color:var(--gold);border:1px solid var(--gold-light);border-radius:6px;padding:0.35rem 0.8rem;font-size:0.8rem;cursor:pointer;font-family:'Jost',sans-serif;">Descrição</button>
                     <button onclick="salvarProduto('${p.chave}')" style="background:var(--gold);color:#fff;border:none;border-radius:6px;padding:0.4rem 1rem;font-size:0.85rem;cursor:pointer;font-family:'Jost',sans-serif;font-weight:600;">Salvar</button>
                   </div>
                 `).join('')}
@@ -1296,12 +1304,14 @@
         }
 
         let _imgsEdicao = [];
+        let _produtosData = [];
 
-        function abrirEditProduto(chave, descJson, imgsJson) {
-            const desc = JSON.parse(descJson);
-            _imgsEdicao = JSON.parse(imgsJson) || [];
+        function abrirEditProduto(chave) {
+            const produto = _produtosData.find(p => p.chave === chave) || {};
+            const desc = produto.descricao || [];
+            _imgsEdicao = [...(produto.imgs || [])];
             document.getElementById('desc-chave').value = chave;
-            document.getElementById('desc-texto').value = Array.isArray(desc) ? desc.join('\n') : '';
+            document.getElementById('desc-texto').value = desc.join('\n');
             document.getElementById('upload-status').textContent = '';
             renderImgsEdicao();
             document.getElementById('modal-desc').style.display = 'flex';
@@ -1342,7 +1352,8 @@
                 status.textContent = 'Foto adicionada!';
                 document.getElementById('input-foto').value = '';
             } else {
-                status.textContent = 'Erro ao enviar foto.';
+                const errData = await resp.json().catch(() => ({}));
+                status.textContent = 'Erro: ' + (errData.erro || 'falha no servidor (' + resp.status + ')');
             }
         }
 
@@ -1361,7 +1372,7 @@
                 body: JSON.stringify({ desc, imgs: _imgsEdicao })
             });
             if (resp.ok) { fecharModalDesc(); toast('Produto atualizado!', 'success'); mostrarProdutos(); }
-            else toast('Erro ao salvar.', 'error');
+            else { const r = await resp.json().catch(() => ({})); toast('Erro ao salvar: ' + (r.erro || resp.status), 'error'); }
         }
 
         function abrirModalNovoProduto() {

@@ -322,7 +322,8 @@ app.post('/api/preparar-pedido', async (req, res) => {
         cor: body.cor, pagamento: 'aguardando', obs: body.obs,
         frete_nome: body.frete_nome || null, frete_valor: freteValor || null,
         frete_prazo: body.frete_prazo || null, valor_total: total,
-        produto: body.produto || null, status: 'aguardando_pagamento'
+        produto: body.produto || null, status: 'aguardando_pagamento',
+        itens: itens.length > 1 ? itens : null
       }])
       .select().single();
 
@@ -496,7 +497,8 @@ app.post('/api/criar-pagamento', async (req, res) => {
         frete_prazo: body.frete_prazo || null,
         valor_total: total,
         produto: body.produto || process.env.NOME_PRODUTO || null,
-        status: 'aguardando_pagamento'
+        status: 'aguardando_pagamento',
+        itens: itens.length > 1 ? itens : null
       }])
       .select()
       .single();
@@ -873,6 +875,12 @@ app.get('/api/conta/pedidos', async (req, res) => {
 app.post('/api/admin/upload-imagem', upload.single('imagem'), async (req, res) => {
   if (req.headers['senha'] !== process.env.ADMIN_SENHA) return res.status(401).json({ erro: 'Não autorizado.' });
   if (!req.file) return res.status(400).json({ erro: 'Nenhuma imagem enviada.' });
+
+  // Cria o bucket se ainda não existir
+  const { error: bucketErr } = await supabase.storage.createBucket('produtos-imgs', { public: true });
+  if (bucketErr && !bucketErr.message.includes('already exists')) {
+    return res.status(500).json({ erro: 'Erro ao preparar storage: ' + bucketErr.message });
+  }
 
   const ext = req.file.originalname.split('.').pop().toLowerCase();
   const nome = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
