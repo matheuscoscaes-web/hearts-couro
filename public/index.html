@@ -2186,6 +2186,90 @@ const PRODUTOS_INFO = {
 };
 
 /* ══════════════════════════════════════════
+   SINCRONIZAÇÃO COM O BANCO
+═══════════════════════════════════════════ */
+async function sincronizarProdutos() {
+  try {
+    const resp = await fetch('/api/produtos', { cache: 'no-store' });
+    if (!resp.ok) return;
+    const produtos = await resp.json();
+    const grid = document.querySelector('.products-grid');
+
+    // Ordena para respeitar o campo `ordem` do banco
+    produtos.sort((a, b) => (a.ordem || 99) - (b.ordem || 99));
+
+    produtos.forEach(p => {
+      const info = PRODUTOS_INFO[p.chave];
+
+      if (info) {
+        // Produto existente — atualiza dados
+        info.preco = p.preco;
+        if (p.descricao && p.descricao.length > 0) info.desc = p.descricao;
+        if (p.imgs && p.imgs.length > 0) info.imgs = p.imgs;
+
+        const card = document.getElementById('card-' + p.chave);
+        if (!card) return;
+
+        card.style.display = p.ativo ? '' : 'none';
+
+        const precoEl = card.querySelector('.prod-price');
+        if (precoEl) precoEl.textContent = 'R$ ' + p.preco + ',00';
+
+        if (p.descricao && p.descricao.length > 0) {
+          const descEl = card.querySelector('.prod-desc');
+          if (descEl) descEl.innerHTML = p.descricao.map(d => `• ${d}`).join('<br>');
+        }
+
+        if (p.imgs && p.imgs.length > 0) {
+          const imgEl = card.querySelector('.img-zone img');
+          if (imgEl) imgEl.src = p.imgs[0];
+        }
+      } else if (p.ativo && grid && !document.getElementById('card-' + p.chave)) {
+        // Produto novo (só no banco) — cria card dinamicamente
+        PRODUTOS_INFO[p.chave] = {
+          ativo: true,
+          preco: p.preco,
+          nome: p.nome,
+          imgs: p.imgs && p.imgs.length > 0 ? p.imgs : [],
+          cores: [],
+          desc: p.descricao || []
+        };
+
+        const imgSrc = p.imgs && p.imgs.length > 0 ? p.imgs[0] : '';
+        const descHtml = p.descricao && p.descricao.length > 0
+          ? p.descricao.map(d => `• ${d}`).join('<br>')
+          : '';
+
+        const card = document.createElement('div');
+        card.className = 'product-card produto-card-sel';
+        card.id = 'card-' + p.chave;
+        card.onclick = () => abrirModal(p.chave);
+        card.innerHTML = `
+          <div class="img-zone">
+            ${imgSrc ? `<img alt="${p.nome}" src="${imgSrc}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;">` : ''}
+          </div>
+          <div class="prod-info">
+            <div class="prod-tag">✦ Hearts Couro Legítimo</div>
+            <div class="prod-name">Ref: ${p.nome}</div>
+            <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
+            <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">${descHtml}</div>
+            <div class="prod-price-block">
+              <div class="price-lbl">Valor</div>
+              <div class="prod-price">R$ ${p.preco},00</div>
+            </div>
+          </div>
+          <div class="prod-select-btn">Ver detalhes</div>
+        `;
+        grid.appendChild(card);
+      }
+    });
+  } catch (e) {
+    console.error('Erro ao sincronizar produtos:', e);
+  }
+}
+document.addEventListener('DOMContentLoaded', sincronizarProdutos);
+
+/* ══════════════════════════════════════════
    CARRINHO
 ═══════════════════════════════════════════ */
 let carrinho = []; // [{produto, cor, corLabel, quantidade, preco, img}]
@@ -2393,16 +2477,21 @@ function abrirModal(produto) {
   document.getElementById('modal-cor-err').style.display = 'none';
 
   const grid = document.getElementById('modal-cor-grid');
-  grid.innerHTML = info.cores.map(corKey => {
-    const c = CORES_DEF[corKey];
-    const esgotado = (estoqueGlobal[corKey] === 0);
-    return `<label class="color-option${esgotado ? ' esgotado' : ''}">
-      <input type="radio" name="modal-cor" value="${corKey}" ${esgotado ? 'disabled' : ''}>
-      <div class="color-swatch" style="background-color:${c.cor||''};background-image:url('${c.img}');background-size:cover;"></div>
-      <span class="color-name">${c.label}</span>
-      ${esgotado ? '<span class="color-stock" style="color:#c0614a">Esgotado</span>' : ''}
-    </label>`;
-  }).join('');
+  if (!info.cores || info.cores.length === 0) {
+    grid.innerHTML = `<p style="font-size:0.8rem;color:var(--muted);grid-column:1/-1;">Entre em contato via WhatsApp para verificar disponibilidade de cores.</p>`;
+  } else {
+    grid.innerHTML = info.cores.map(corKey => {
+      const c = CORES_DEF[corKey];
+      if (!c) return '';
+      const esgotado = (estoqueGlobal[corKey] === 0);
+      return `<label class="color-option${esgotado ? ' esgotado' : ''}">
+        <input type="radio" name="modal-cor" value="${corKey}" ${esgotado ? 'disabled' : ''}>
+        <div class="color-swatch" style="background-color:${c.cor||''};background-image:url('${c.img}');background-size:cover;"></div>
+        <span class="color-name">${c.label}</span>
+        ${esgotado ? '<span class="color-stock" style="color:#c0614a">Esgotado</span>' : ''}
+      </label>`;
+    }).join('');
+  }
 
   // Troca imagem ao selecionar cor (produtos com corImgs)
   if (info.corImgs) {
