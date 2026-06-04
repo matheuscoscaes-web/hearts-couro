@@ -923,7 +923,7 @@ app.put('/api/admin/produtos/:chave', async (req, res) => {
   if (senha !== process.env.ADMIN_SENHA) return res.status(401).json({ erro: 'Não autorizado.' });
 
   const { chave } = req.params;
-  const { nome, preco, ativo, desc, imgs } = req.body;
+  const { nome, preco, ativo, desc, imgs, cores } = req.body;
   try {
     const update = {};
     if (nome  !== undefined) update.nome  = nome;
@@ -931,6 +931,7 @@ app.put('/api/admin/produtos/:chave', async (req, res) => {
     if (ativo !== undefined) update.ativo = ativo;
     if (desc  !== undefined) update.descricao = desc;
     if (imgs  !== undefined) update.imgs = imgs;
+    if (cores !== undefined) update.cores = cores;
 
     const { error } = await supabase.from('produtos').update(update).eq('chave', chave);
     if (error) throw error;
@@ -945,13 +946,14 @@ app.post('/api/admin/produtos', async (req, res) => {
   const { senha } = req.headers;
   if (senha !== process.env.ADMIN_SENHA) return res.status(401).json({ erro: 'Não autorizado.' });
 
-  const { chave, nome, preco, ativo, desc, ordem } = req.body;
+  const { chave, nome, preco, ativo, desc, ordem, cores } = req.body;
   if (!chave || !nome || !preco) return res.status(400).json({ erro: 'chave, nome e preco são obrigatórios.' });
   try {
     const { error } = await supabase.from('produtos').insert([{
       chave, nome, preco: parseInt(preco),
       ativo: ativo !== false,
       descricao: desc || [],
+      cores: cores || [],
       ordem: ordem || 99
     }]);
     if (error) throw error;

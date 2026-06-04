@@ -2226,12 +2226,20 @@ async function sincronizarProdutos() {
         }
       } else if (p.ativo && grid && !document.getElementById('card-' + p.chave)) {
         // Produto novo (só no banco) — cria card dinamicamente
+        // Carrega cores do banco para CORES_DEF e monta array de chaves
+        const dbCores = Array.isArray(p.cores) ? p.cores : [];
+        const coreKeys = dbCores.map((c, i) => {
+          const key = `${p.chave}_${i}`;
+          CORES_DEF[key] = { label: c.label || `Cor ${i+1}`, img: c.img || '', cor: c.cor || '#1a1a1a' };
+          return key;
+        });
+
         PRODUTOS_INFO[p.chave] = {
           ativo: true,
           preco: p.preco,
           nome: p.nome,
           imgs: p.imgs && p.imgs.length > 0 ? p.imgs : [],
-          cores: [],
+          cores: coreKeys,
           desc: p.descricao || []
         };
 

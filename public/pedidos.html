@@ -1263,6 +1263,11 @@
                   </label>
                   <p id="upload-status" style="font-size:0.75rem;color:var(--muted);min-height:1.2em;margin:0.4rem 0 0;"></p>
 
+                  <p style="font-weight:600;font-size:0.85rem;margin:1.5rem 0 0.5rem;">Cores do produto</p>
+                  <p style="font-size:0.72rem;color:var(--muted);margin:0 0 0.7rem;">Nome da cor + cor hex + URL da imagem do swatch (opcional)</p>
+                  <div id="cores-edit-lista" style="display:flex;flex-direction:column;gap:0.4rem;margin-bottom:0.7rem;min-height:1.2rem;"></div>
+                  <button type="button" onclick="adicionarCorEdicao()" style="background:rgba(201,150,60,0.08);border:1px dashed var(--gold-light);border-radius:8px;padding:0.55rem 1rem;font-size:0.82rem;color:var(--gold);cursor:pointer;font-family:'Jost',sans-serif;width:100%;">+ Adicionar Cor</button>
+
                   <div style="display:flex;gap:0.8rem;justify-content:flex-end;margin-top:1.5rem;">
                     <button onclick="fecharModalDesc()" style="background:transparent;border:1px solid var(--border);border-radius:8px;padding:0.5rem 1.2rem;cursor:pointer;font-family:'Jost',sans-serif;">Cancelar</button>
                     <button onclick="salvarDesc()" style="background:var(--gold);color:#fff;border:none;border-radius:8px;padding:0.5rem 1.2rem;cursor:pointer;font-family:'Jost',sans-serif;font-weight:600;">Salvar</button>
@@ -1271,15 +1276,19 @@
               </div>
 
               <!-- Modal novo produto -->
-              <div id="modal-novo-produto" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;">
-                <div style="background:#fff;border-radius:16px;padding:2rem;width:100%;max-width:420px;margin:1rem;">
+              <div id="modal-novo-produto" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;padding:1rem;">
+                <div style="background:#fff;border-radius:16px;padding:2rem;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;">
                   <h3 style="font-family:'Cormorant Garamond',serif;color:var(--gold);margin:0 0 1.2rem;">Novo Produto</h3>
                   <label style="font-size:0.8rem;color:var(--muted);">Chave (sem espaços, ex: Paola)</label>
                   <input id="np-chave" type="text" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:7px;margin:0.3rem 0 0.8rem;font-family:'Jost',sans-serif;">
                   <label style="font-size:0.8rem;color:var(--muted);">Nome de exibição</label>
                   <input id="np-nome" type="text" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:7px;margin:0.3rem 0 0.8rem;font-family:'Jost',sans-serif;">
                   <label style="font-size:0.8rem;color:var(--muted);">Preço (R$)</label>
-                  <input id="np-preco" type="number" min="1" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:7px;margin:0.3rem 0 1.2rem;font-family:'Jost',sans-serif;">
+                  <input id="np-preco" type="number" min="1" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:7px;margin:0.3rem 0 1rem;font-family:'Jost',sans-serif;">
+                  <p style="font-weight:600;font-size:0.85rem;margin:0 0 0.4rem;">Cores disponíveis</p>
+                  <p style="font-size:0.72rem;color:var(--muted);margin:0 0 0.6rem;">Nome + cor hex + URL da imagem do swatch (opcional)</p>
+                  <div id="np-cores-lista" style="display:flex;flex-direction:column;gap:0.4rem;margin-bottom:0.6rem;min-height:1.2rem;"></div>
+                  <button type="button" onclick="npAdicionarCor()" style="background:rgba(201,150,60,0.08);border:1px dashed var(--gold-light);border-radius:8px;padding:0.55rem 1rem;font-size:0.82rem;color:var(--gold);cursor:pointer;font-family:'Jost',sans-serif;width:100%;margin-bottom:1rem;">+ Adicionar Cor</button>
                   <p id="np-erro" style="color:#c0392b;font-size:0.82rem;min-height:1em;margin:0 0 0.8rem;"></p>
                   <div style="display:flex;gap:0.8rem;justify-content:flex-end;">
                     <button onclick="fecharModalNovoProduto()" style="background:transparent;border:1px solid var(--border);border-radius:8px;padding:0.5rem 1.2rem;cursor:pointer;font-family:'Jost',sans-serif;">Cancelar</button>
@@ -1305,15 +1314,55 @@
 
         let _imgsEdicao = [];
         let _produtosData = [];
+        let _npCores = [];
+        let _coresEdicao = [];
+
+        function renderNpCores() {
+            const lista = document.getElementById('np-cores-lista');
+            if (!lista) return;
+            if (!_npCores.length) { lista.innerHTML = '<span style="font-size:0.75rem;color:var(--muted);">Nenhuma cor adicionada.</span>'; return; }
+            lista.innerHTML = _npCores.map((c, i) => `
+              <div style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap;">
+                <input type="text" value="${c.label}" placeholder="Nome da cor (ex: Preto)" oninput="_npCores[${i}].label=this.value" style="flex:1;min-width:90px;padding:0.35rem 0.5rem;border:1px solid var(--border);border-radius:6px;font-size:0.78rem;font-family:'Jost',sans-serif;">
+                <input type="color" value="${c.cor||'#1a1a1a'}" onchange="_npCores[${i}].cor=this.value" title="Cor do swatch" style="width:36px;height:32px;padding:2px;border:1px solid var(--border);border-radius:6px;cursor:pointer;flex-shrink:0;">
+                <input type="text" value="${c.img||''}" placeholder="URL imagem (opcional)" oninput="_npCores[${i}].img=this.value" style="flex:2;min-width:100px;padding:0.35rem 0.5rem;border:1px solid var(--border);border-radius:6px;font-size:0.72rem;font-family:'Jost',sans-serif;">
+                <button type="button" onclick="_npCores.splice(${i},1);renderNpCores()" style="background:#c0392b;color:#fff;border:none;border-radius:6px;width:26px;height:26px;cursor:pointer;font-size:0.8rem;flex-shrink:0;">×</button>
+              </div>`).join('');
+        }
+
+        function npAdicionarCor() {
+            _npCores.push({ label: '', cor: '#1a1a1a', img: '' });
+            renderNpCores();
+        }
+
+        function renderCoresEdicao() {
+            const lista = document.getElementById('cores-edit-lista');
+            if (!lista) return;
+            if (!_coresEdicao.length) { lista.innerHTML = '<span style="font-size:0.75rem;color:var(--muted);">Nenhuma cor adicionada.</span>'; return; }
+            lista.innerHTML = _coresEdicao.map((c, i) => `
+              <div style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap;">
+                <input type="text" value="${c.label}" placeholder="Nome da cor (ex: Preto)" oninput="_coresEdicao[${i}].label=this.value" style="flex:1;min-width:90px;padding:0.35rem 0.5rem;border:1px solid var(--border);border-radius:6px;font-size:0.78rem;font-family:'Jost',sans-serif;">
+                <input type="color" value="${c.cor||'#1a1a1a'}" onchange="_coresEdicao[${i}].cor=this.value" title="Cor do swatch" style="width:36px;height:32px;padding:2px;border:1px solid var(--border);border-radius:6px;cursor:pointer;flex-shrink:0;">
+                <input type="text" value="${c.img||''}" placeholder="URL imagem (opcional)" oninput="_coresEdicao[${i}].img=this.value" style="flex:2;min-width:100px;padding:0.35rem 0.5rem;border:1px solid var(--border);border-radius:6px;font-size:0.72rem;font-family:'Jost',sans-serif;">
+                <button type="button" onclick="_coresEdicao.splice(${i},1);renderCoresEdicao()" style="background:#c0392b;color:#fff;border:none;border-radius:6px;width:26px;height:26px;cursor:pointer;font-size:0.8rem;flex-shrink:0;">×</button>
+              </div>`).join('');
+        }
+
+        function adicionarCorEdicao() {
+            _coresEdicao.push({ label: '', cor: '#1a1a1a', img: '' });
+            renderCoresEdicao();
+        }
 
         function abrirEditProduto(chave) {
             const produto = _produtosData.find(p => p.chave === chave) || {};
             const desc = produto.descricao || [];
-            _imgsEdicao = [...(produto.imgs || [])];
+            _imgsEdicao   = [...(produto.imgs  || [])];
+            _coresEdicao  = [...(produto.cores || [])];
             document.getElementById('desc-chave').value = chave;
             document.getElementById('desc-texto').value = desc.join('\n');
             document.getElementById('upload-status').textContent = '';
             renderImgsEdicao();
+            renderCoresEdicao();
             document.getElementById('modal-desc').style.display = 'flex';
         }
 
@@ -1365,17 +1414,20 @@
             const chave = document.getElementById('desc-chave').value;
             const texto = document.getElementById('desc-texto').value;
             const desc  = texto.split('\n').map(l => l.trim()).filter(Boolean);
+            const cores = _coresEdicao.filter(c => c.label.trim());
 
             const resp = await fetch('/api/admin/produtos/' + chave, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'senha': _adminSenha },
-                body: JSON.stringify({ desc, imgs: _imgsEdicao })
+                body: JSON.stringify({ desc, imgs: _imgsEdicao, cores })
             });
             if (resp.ok) { fecharModalDesc(); toast('Produto atualizado!', 'success'); mostrarProdutos(); }
             else { const r = await resp.json().catch(() => ({})); toast('Erro ao salvar: ' + (r.erro || resp.status), 'error'); }
         }
 
         function abrirModalNovoProduto() {
+            _npCores = [];
+            renderNpCores();
             document.getElementById('modal-novo-produto').style.display = 'flex';
         }
 
@@ -1393,12 +1445,13 @@
             if (!chave || !nome || !preco) { erro.textContent = 'Preencha todos os campos.'; return; }
             if (/\s/.test(chave)) { erro.textContent = 'Chave não pode ter espaços.'; return; }
 
+            const cores = _npCores.filter(c => c.label.trim());
             const resp = await fetch('/api/admin/produtos', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'senha': _adminSenha },
-                body: JSON.stringify({ chave, nome, preco, ativo: true })
+                body: JSON.stringify({ chave, nome, preco, ativo: true, cores })
             });
-            if (resp.ok) { fecharModalNovoProduto(); toast('Produto criado!', 'success'); mostrarProdutos(); }
+            if (resp.ok) { _npCores = []; fecharModalNovoProduto(); toast('Produto criado!', 'success'); mostrarProdutos(); }
             else { const r = await resp.json(); erro.textContent = r.erro || 'Erro ao criar.'; }
         }
 
