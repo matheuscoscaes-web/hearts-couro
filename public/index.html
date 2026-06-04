@@ -2501,7 +2501,7 @@ function abrirModal(produto) {
     }).join('');
   }
 
-  // Troca imagem ao selecionar cor
+  // Troca imagem ao selecionar cor — atualiza modalImgsAtual para 1 imagem (sem setas)
   grid.querySelectorAll('input[type="radio"]').forEach(radio => {
     radio.addEventListener('change', function () {
       let imgPath = null;
@@ -2511,7 +2511,10 @@ function abrirModal(produto) {
         if (corDef && corDef.img) imgPath = corDef.img;
       }
       if (!imgPath && info.imgs && info.imgs[0]) imgPath = info.imgs[0];
-      if (imgPath) document.getElementById('modal-img').src = imgPath;
+      if (imgPath) {
+        modalImgsAtual = [imgPath];
+        atualizarImgModal(modalImgsAtual, 0);
+      }
     });
   });
 
