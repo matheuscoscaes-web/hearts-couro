@@ -902,6 +902,8 @@
                     ? `<span class="status-badge status-approved" id="badge-${p.id}" onclick="handleBadgeClick(${p.id})" title="Clique 2× para cancelar" style="cursor:pointer;">Pago</span>`
                     : p.status === 'entregue'
                     ? `<span class="status-badge status-entregue" id="badge-${p.id}" onclick="handleBadgeEntregue(${p.id})" title="Clique 2× para voltar para Pagos" style="cursor:pointer;">Enviado</span>`
+                    : p.status === 'etiqueta_criada'
+                    ? `<span class="status-badge status-etiqueta_criada" id="badge-${p.id}" onclick="handleBadgeEtiqueta(${p.id})" title="Clique 2× para voltar a Gerar Etiqueta" style="cursor:pointer;">${getStatusLabel(p.status)}</span>`
                     : `<span class="status-badge status-${p.status}">${getStatusLabel(p.status)}</span>`;
 
                 let acaoHtml = '';
@@ -1082,6 +1084,24 @@
                 _cancelarState[id] = setTimeout(() => {
                     delete _cancelarState[id];
                     if (badge) { badge.textContent = 'Pago'; badge.style.cssText = 'cursor:pointer;'; }
+                }, 3000);
+            }
+        }
+
+        function handleBadgeEtiqueta(id) {
+            const badge = document.getElementById(`badge-${id}`);
+            if (_cancelarState[id]) {
+                clearTimeout(_cancelarState[id]);
+                delete _cancelarState[id];
+                atualizarStatus(id, 'approved');
+            } else {
+                if (badge) {
+                    badge.textContent = 'Cancelar?';
+                    badge.style.cssText += ';background:rgba(192,97,74,0.2)!important;color:#c0614a!important;border-color:rgba(192,97,74,0.5)!important;';
+                }
+                _cancelarState[id] = setTimeout(() => {
+                    delete _cancelarState[id];
+                    if (badge) { badge.textContent = getStatusLabel('etiqueta_criada'); badge.style.cssText = 'cursor:pointer;'; }
                 }, 3000);
             }
         }
