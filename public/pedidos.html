@@ -916,13 +916,13 @@
                                <button type="button" class="btn-action" onclick="atualizarStatus(${p.id}, 'enviado')" style="background:rgba(0,188,212,0.15);border:1px solid #00bcd4;color:#00bcd4;flex:0 0 auto;padding:0.65rem 0.9rem;" title="Marcar como contactado">💬</button>
                                <button type="button" class="btn-action" onclick="atualizarStatus(${p.id}, 'retirado')" style="width:100%;background:rgba(255,140,0,0.15);border:1px solid rgba(255,140,0,0.4);color:#ff8c00;">🏪 Retirada na Loja</button>`;
                 } else if (p.status === 'etiqueta_criada') {
-                    acaoHtml = `<input type="text" id="rastreio-${p.id}" placeholder="Código de rastreio…" style="flex:1;min-width:90px;padding:0.5rem 0.7rem;border-radius:7px;border:1px solid var(--border);background:var(--black);color:var(--text);font-size:0.72rem;font-family:inherit;outline:none;">
-                               <button type="button" class="btn-action" onclick="enviarCodigoRastreio(${p.id})" style="background:rgba(80,160,255,0.15);border:1px solid #50a0ff;color:#50a0ff;flex:0 0 auto;" title="Enviar código ao cliente">📨</button>
+                    acaoHtml = `<input type="text" id="rastreio-${p.id}" value="${p.codigo_rastreio || ''}" placeholder="Código de rastreio…" style="flex:1;min-width:90px;padding:0.5rem 0.7rem;border-radius:7px;border:1px solid var(--border);background:var(--black);color:var(--text);font-size:0.72rem;font-family:inherit;outline:none;">
+                               <button type="button" class="btn-action" onclick="enviarCodigoRastreio(${p.id})" style="background:rgba(80,160,255,0.15);border:1px solid #50a0ff;color:#50a0ff;flex:0 0 auto;" title="Reenviar código ao cliente">📨</button>
                                <button type="button" class="btn-action" onclick="atualizarStatus(${p.id}, 'entregue')" style="background:rgba(37,211,102,0.15);border:1px solid #25d366;color:#25d366;flex:0 0 auto;">📬 Enviado</button>
                                <button type="button" class="btn-action" onclick="atualizarStatus(${p.id}, 'enviado')" style="background:rgba(0,188,212,0.15);border:1px solid #00bcd4;color:#00bcd4;flex:0 0 auto;padding:0.65rem 0.9rem;" title="Marcar como contactado">💬</button>
                                <button type="button" class="btn-action" onclick="atualizarStatus(${p.id}, 'retirado')" style="width:100%;background:rgba(255,140,0,0.15);border:1px solid rgba(255,140,0,0.4);color:#ff8c00;">🏪 Retirada na Loja</button>`;
                 } else if (p.status === 'enviado') {
-                    acaoHtml = `<input type="text" id="rastreio-${p.id}" placeholder="Código de rastreio…" style="flex:1;min-width:90px;padding:0.5rem 0.7rem;border-radius:7px;border:1px solid var(--border);background:var(--black);color:var(--text);font-size:0.72rem;font-family:inherit;outline:none;">
+                    acaoHtml = `<input type="text" id="rastreio-${p.id}" value="${p.codigo_rastreio || ''}" placeholder="Código de rastreio…" style="flex:1;min-width:90px;padding:0.5rem 0.7rem;border-radius:7px;border:1px solid var(--border);background:var(--black);color:var(--text);font-size:0.72rem;font-family:inherit;outline:none;">
                                <button type="button" class="btn-action" onclick="enviarCodigoRastreio(${p.id})" style="background:rgba(80,160,255,0.15);border:1px solid #50a0ff;color:#50a0ff;flex:0 0 auto;" title="Enviar código ao cliente">📨</button>
                                <button type="button" class="btn-action" onclick="atualizarStatus(${p.id}, 'entregue')" style="background:rgba(37,211,102,0.15);border:1px solid #25d366;color:#25d366;flex:0 0 auto;">📬 Enviado</button>
                                <button type="button" class="btn-action" onclick="atualizarStatus(${p.id}, 'retirado')" style="width:100%;background:rgba(255,140,0,0.15);border:1px solid rgba(255,140,0,0.4);color:#ff8c00;">🏪 Retirada na Loja</button>`;
@@ -1197,22 +1197,47 @@
 
         // ── GERAR ETIQUETA ────────────────────────────────────────────────
         async function gerarEtiqueta(id) {
-            if (!confirm('Confirmar envio ao carrinho do Melhor Envio?')) return;
+            if (!confirm('Gerar etiqueta e enviar o código de rastreio automaticamente ao cliente?')) return;
             const btn = document.getElementById(`etiqueta-${id}`);
-            if (btn) { btn.disabled = true; btn.textContent = 'Enviando...'; }
+            if (btn) { btn.disabled = true; btn.textContent = 'Gerando...'; }
             try {
                 const resp = await fetch(`/api/gerar-etiqueta/${id}`, { method: 'POST' });
                 const result = await resp.json();
                 if (result.sucesso) {
-                    toast('Envio adicionado ao carrinho do Melhor Envio!', 'success');
+                    if (result.codigo_rastreio) {
+                        toast(`Etiqueta gerada! Código ${result.codigo_rastreio} enviado ao cliente por e-mail.`, 'success');
+                    } else {
+                        toast('Etiqueta gerada! Adicione o código de rastreio manualmente.', 'success');
+                    }
+                    if (result.print_url) {
+                        window.open('/api/imprimir-etiqueta?url=' + encodeURIComponent(result.print_url), '_blank');
+                    }
                     carregarPedidos();
                 } else {
-                    toast('Erro: ' + (result.erro || 'Não foi possível adicionar ao carrinho.'), 'error');
+                    toast('Erro: ' + (result.erro || 'Não foi possível gerar a etiqueta.'), 'error');
                     if (btn) { btn.disabled = false; btn.textContent = '📦 Gerar Etiqueta'; }
                 }
             } catch (e) {
                 toast('Erro ao conectar com o servidor.', 'error');
                 if (btn) { btn.disabled = false; btn.textContent = '📦 Gerar Etiqueta'; }
+            }
+        }
+
+        // ── ENVIAR CÓDIGO DE RASTREIO MANUALMENTE ─────────────────────────
+        async function enviarCodigoRastreio(id) {
+            const input = document.getElementById(`rastreio-${id}`);
+            const codigo_rastreio = input ? input.value.trim() : '';
+            if (!codigo_rastreio) { toast('Informe o código de rastreio.', 'warning'); return; }
+            try {
+                await fetch('/api/enviar-rastreio', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, codigo_rastreio })
+                });
+                toast('Código de rastreio enviado ao cliente por e-mail!', 'success');
+                carregarPedidos();
+            } catch (e) {
+                toast('Erro ao enviar código de rastreio.', 'error');
             }
         }
 
@@ -1324,7 +1349,7 @@
                   <p id="edit-video-status" style="font-size:0.72rem;color:var(--muted);min-height:1.2em;margin:0 0 1rem;"></p>
 
                   <p style="font-weight:600;font-size:0.85rem;margin:0 0 0.5rem;">Cores do produto</p>
-                  <p style="font-size:0.72rem;color:var(--muted);margin:0 0 0.7rem;">Nome da cor + cor hex + URL da imagem do swatch (opcional)</p>
+                  <p style="font-size:0.72rem;color:var(--muted);margin:0 0 0.7rem;">Nome · Cor hex · URL da imagem (opcional) · <strong>Estoque</strong></p>
                   <div id="cores-edit-lista" style="display:flex;flex-direction:column;gap:0.4rem;margin-bottom:0.7rem;min-height:1.2rem;"></div>
                   <button type="button" onclick="adicionarCorEdicao()" style="background:rgba(201,150,60,0.08);border:1px dashed var(--gold-light);border-radius:8px;padding:0.55rem 1rem;font-size:0.82rem;color:var(--gold);cursor:pointer;font-family:'Jost',sans-serif;width:100%;">+ Adicionar Cor</button>
 
@@ -1385,7 +1410,7 @@
                   <p id="np-video-status" style="font-size:0.72rem;color:var(--muted);min-height:1.2em;margin:0 0 1rem;"></p>
 
                   <p style="font-weight:600;font-size:0.85rem;margin:0 0 0.4rem;">Cores disponíveis</p>
-                  <p style="font-size:0.72rem;color:var(--muted);margin:0 0 0.6rem;">Nome + cor hex + URL da imagem do swatch (opcional)</p>
+                  <p style="font-size:0.72rem;color:var(--muted);margin:0 0 0.6rem;">Nome · Cor hex · URL da imagem (opcional) · <strong>Estoque</strong></p>
                   <div id="np-cores-lista" style="display:flex;flex-direction:column;gap:0.4rem;margin-bottom:0.6rem;min-height:1.2rem;"></div>
                   <button type="button" onclick="npAdicionarCor()" style="background:rgba(201,150,60,0.08);border:1px dashed var(--gold-light);border-radius:8px;padding:0.55rem 1rem;font-size:0.82rem;color:var(--gold);cursor:pointer;font-family:'Jost',sans-serif;width:100%;margin-bottom:1rem;">+ Adicionar Cor</button>
 
@@ -1447,12 +1472,13 @@
                 <input type="text" value="${c.label}" placeholder="Nome da cor (ex: Preto)" oninput="_npCores[${i}].label=this.value" style="flex:1;min-width:90px;padding:0.35rem 0.5rem;border:1px solid var(--border);border-radius:6px;font-size:0.78rem;font-family:'Jost',sans-serif;">
                 <input type="color" value="${c.cor||'#1a1a1a'}" onchange="_npCores[${i}].cor=this.value" title="Cor do swatch" style="width:36px;height:32px;padding:2px;border:1px solid var(--border);border-radius:6px;cursor:pointer;flex-shrink:0;">
                 <input type="text" value="${c.img||''}" placeholder="URL imagem (opcional)" oninput="_npCores[${i}].img=this.value" style="flex:2;min-width:100px;padding:0.35rem 0.5rem;border:1px solid var(--border);border-radius:6px;font-size:0.72rem;font-family:'Jost',sans-serif;">
+                <input type="number" value="${c.estoque??0}" min="0" title="Estoque" oninput="_npCores[${i}].estoque=parseInt(this.value)||0" style="width:52px;padding:0.35rem 0.4rem;border:1px solid var(--gold-dim);border-radius:6px;font-size:0.78rem;font-family:'Jost',sans-serif;text-align:center;" placeholder="Qtd">
                 <button type="button" onclick="_npCores.splice(${i},1);renderNpCores()" style="background:#c0392b;color:#fff;border:none;border-radius:6px;width:26px;height:26px;cursor:pointer;font-size:0.8rem;flex-shrink:0;">×</button>
               </div>`).join('');
         }
 
         function npAdicionarCor() {
-            _npCores.push({ label: '', cor: '#1a1a1a', img: '' });
+            _npCores.push({ label: '', cor: '#1a1a1a', img: '', estoque: 0 });
             renderNpCores();
         }
 
@@ -1544,12 +1570,13 @@
                 <input type="text" value="${c.label}" placeholder="Nome da cor (ex: Preto)" oninput="_coresEdicao[${i}].label=this.value" style="flex:1;min-width:90px;padding:0.35rem 0.5rem;border:1px solid var(--border);border-radius:6px;font-size:0.78rem;font-family:'Jost',sans-serif;">
                 <input type="color" value="${c.cor||'#1a1a1a'}" onchange="_coresEdicao[${i}].cor=this.value" title="Cor do swatch" style="width:36px;height:32px;padding:2px;border:1px solid var(--border);border-radius:6px;cursor:pointer;flex-shrink:0;">
                 <input type="text" value="${c.img||''}" placeholder="URL imagem (opcional)" oninput="_coresEdicao[${i}].img=this.value" style="flex:2;min-width:100px;padding:0.35rem 0.5rem;border:1px solid var(--border);border-radius:6px;font-size:0.72rem;font-family:'Jost',sans-serif;">
+                <input type="number" value="${c.estoque??0}" min="0" title="Estoque" oninput="_coresEdicao[${i}].estoque=parseInt(this.value)||0" style="width:52px;padding:0.35rem 0.4rem;border:1px solid var(--gold-dim);border-radius:6px;font-size:0.78rem;font-family:'Jost',sans-serif;text-align:center;" placeholder="Qtd">
                 <button type="button" onclick="_coresEdicao.splice(${i},1);renderCoresEdicao()" style="background:#c0392b;color:#fff;border:none;border-radius:6px;width:26px;height:26px;cursor:pointer;font-size:0.8rem;flex-shrink:0;">×</button>
               </div>`).join('');
         }
 
         function adicionarCorEdicao() {
-            _coresEdicao.push({ label: '', cor: '#1a1a1a', img: '' });
+            _coresEdicao.push({ label: '', cor: '#1a1a1a', img: '', estoque: 0 });
             renderCoresEdicao();
         }
 

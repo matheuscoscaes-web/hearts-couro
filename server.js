@@ -300,14 +300,11 @@ app.post('/api/preparar-pedido', async (req, res) => {
 
     const ocupados = {};
     [...(confirmados || []), ...(pendentes || [])].forEach(p => {
-      if (p.produto && p.cor) {
-        const k = `${p.produto}_${p.cor}`;
-        ocupados[k] = (ocupados[k] || 0) + 1;
-      }
+      if (p.cor) ocupados[p.cor] = (ocupados[p.cor] || 0) + 1;
     });
 
     for (const item of itens) {
-      const key = `${item.produto}_${item.cor}`;
+      const key = item.cor;
       if (key in ESTOQUE_INICIAL) {
         const disponivel = Math.max(0, ESTOQUE_INICIAL[key] - (ocupados[key] || 0));
         if (disponivel < (item.quantidade || 1)) {
@@ -460,14 +457,11 @@ app.post('/api/criar-pagamento', async (req, res) => {
 
     const ocupados = {};
     [...(confirmados || []), ...(pendentes || [])].forEach(p => {
-      if (p.produto && p.cor) {
-        const k = `${p.produto}_${p.cor}`;
-        ocupados[k] = (ocupados[k] || 0) + 1;
-      }
+      if (p.cor) ocupados[p.cor] = (ocupados[p.cor] || 0) + 1;
     });
 
     for (const item of itens) {
-      const key = `${item.produto}_${item.cor}`;
+      const key = item.cor;
       if (key in ESTOQUE_INICIAL) {
         const disponivel = Math.max(0, ESTOQUE_INICIAL[key] - (ocupados[key] || 0));
         const solicitado = item.quantidade || 1;
@@ -687,24 +681,38 @@ const ESTOQUE_RESET_DATA = '2026-06-01';
 // ── ROTA: Estoque por Cor ──
 app.get('/api/estoque', async (req, res) => {
   try {
-    const { data, error } = await supabase
-      .from('pedidos')
-      .select('produto, cor, status')
-      .in('status', ['approved', 'etiqueta_criada', 'enviado', 'entregue', 'retirado'])
-      .gte('created_at', ESTOQUE_RESET_DATA);
+    const [{ data: pedidosData, error }, { data: produtosData }] = await Promise.all([
+      supabase.from('pedidos').select('cor')
+        .in('status', ['approved', 'etiqueta_criada', 'enviado', 'entregue', 'retirado'])
+        .gte('created_at', ESTOQUE_RESET_DATA),
+      supabase.from('produtos').select('chave, cores')
+    ]);
 
     if (error) throw error;
 
-    const vendidos = {};
-    (data || []).forEach(p => {
-      if (p.produto && p.cor) {
-        const key = `${p.produto}_${p.cor}`;
-        vendidos[key] = (vendidos[key] || 0) + 1;
+    // Estoque do banco: cada cor do produto tem campo estoque, chave = ${chave}_${i}
+    const dbEstoque = {};
+    (produtosData || []).forEach(p => {
+      if (Array.isArray(p.cores)) {
+        p.cores.forEach((c, i) => {
+          if (typeof c.estoque === 'number') {
+            dbEstoque[`${p.chave}_${i}`] = c.estoque;
+          }
+        });
       }
     });
 
+    // DB sobrescreve ESTOQUE_INICIAL (compatibilidade retroativa)
+    const estoqueInicial = { ...ESTOQUE_INICIAL, ...dbEstoque };
+
+    // Vendidos: p.cor já é a chave completa (ex: 'Paola_White', 'Miranda_0')
+    const vendidos = {};
+    (pedidosData || []).forEach(p => {
+      if (p.cor) vendidos[p.cor] = (vendidos[p.cor] || 0) + 1;
+    });
+
     const estoque = {};
-    for (const [key, inicial] of Object.entries(ESTOQUE_INICIAL)) {
+    for (const [key, inicial] of Object.entries(estoqueInicial)) {
       estoque[key] = Math.max(0, inicial - (vendidos[key] || 0));
     }
 
@@ -852,11 +860,112 @@ app.post('/api/gerar-etiqueta/:id', async (req, res) => {
 
     const orderId = cartData.id;
 
-    return res.json({ sucesso: true, orderId });
+    // 3. Checkout — paga a etiqueta usando o saldo do Melhor Envio
+    const checkoutResp = await fetch('https://melhorenvio.com.br/api/v2/me/shipment/checkout', {
+      method: 'POST', headers: meHeaders,
+      body: JSON.stringify({ orders: [orderId] })
+    });
+    const checkoutData = await checkoutResp.json();
+    console.log('[ETIQUETA CHECKOUT]', JSON.stringify(checkoutData));
+
+    const erroCheckout = checkoutData?.message || checkoutData?.error ||
+      (checkoutData?.errors ? JSON.stringify(checkoutData.errors) : null);
+    if (erroCheckout) {
+      return res.status(502).json({
+        erro: `Checkout falhou: ${erroCheckout}. Verifique o saldo no Melhor Envio.`,
+        orderId
+      });
+    }
+
+    // 4. Gera a etiqueta PDF (atribui o código de rastreio)
+    const generateResp = await fetch('https://melhorenvio.com.br/api/v2/me/shipment/generate', {
+      method: 'POST', headers: meHeaders,
+      body: JSON.stringify({ orders: [orderId] })
+    });
+    const generateData = await generateResp.json();
+    console.log('[ETIQUETA GENERATE]', JSON.stringify(generateData));
+
+    // 5. Extrai código de rastreio — ME processa de forma assíncrona,
+    //    então tenta até 5 vezes com intervalo de 3s buscando o order gerado
+    let codigoRastreio = '';
+    if (generateData && typeof generateData === 'object') {
+      const orderInfo = generateData[orderId];
+      if (orderInfo?.tracking) codigoRastreio = orderInfo.tracking;
+    }
+    if (!codigoRastreio) {
+      for (let tentativa = 0; tentativa < 5; tentativa++) {
+        await new Promise(r => setTimeout(r, 3000));
+        try {
+          const orderResp = await fetch(`https://melhorenvio.com.br/api/v2/me/orders/${orderId}`, {
+            headers: meHeaders
+          });
+          if (orderResp.ok) {
+            const orderData = await orderResp.json();
+            console.log(`[ETIQUETA ORDER tentativa ${tentativa + 1}]`, JSON.stringify(orderData).slice(0, 300));
+            if (orderData?.tracking) { codigoRastreio = orderData.tracking; break; }
+          }
+        } catch (_) {}
+      }
+    }
+
+    // 6. Atualiza status e rastreio no banco
+    const updatePayload = { status: 'etiqueta_criada' };
+    if (codigoRastreio) updatePayload.codigo_rastreio = codigoRastreio;
+    await supabase.from('pedidos').update(updatePayload).eq('id', pedidoId);
+
+    // 7. Envia e-mail automático com código de rastreio ao cliente
+    if (codigoRastreio) {
+      enviarEmailRastreio(pedido, codigoRastreio);
+    }
+
+    // 8. Busca URL de impressão da etiqueta
+    let printUrl = null;
+    try {
+      const printResp = await fetch('https://melhorenvio.com.br/api/v2/me/shipment/print', {
+        method: 'POST', headers: meHeaders,
+        body: JSON.stringify({ orders: [orderId] })
+      });
+      const printData = await printResp.json();
+      printUrl = printData?.url || null;
+      console.log('[ETIQUETA PRINT]', printUrl);
+    } catch (_) {}
+
+    return res.json({ sucesso: true, orderId, codigo_rastreio: codigoRastreio, print_url: printUrl });
 
   } catch (err) {
     console.error('Erro ao gerar etiqueta:', err);
     return res.status(500).json({ erro: 'Erro ao gerar etiqueta.' });
+  }
+});
+
+// ── ROTA: Proxy de impressão de etiqueta (contorna restrição cross-origin) ──
+app.get('/api/imprimir-etiqueta', async (req, res) => {
+  const { url } = req.query;
+  if (!url) return res.status(400).send('URL não informada');
+  try {
+    const meHeaders = {
+      'Authorization': `Bearer ${process.env.ME_TOKEN}`,
+      'Accept': 'text/html,application/pdf,*/*',
+      'User-Agent': `Hearts Couro (${process.env.EMAIL_USER})`
+    };
+    const resp = await fetch(url, { headers: meHeaders });
+    const contentType = resp.headers.get('content-type') || 'text/html';
+
+    if (contentType.includes('pdf')) {
+      res.set('Content-Type', 'application/pdf');
+      const buf = await resp.arrayBuffer();
+      return res.send(Buffer.from(buf));
+    }
+
+    let html = await resp.text();
+    // Injeta script de impressão automática
+    const printScript = '<script>window.onload=function(){setTimeout(function(){window.print();},800);}</script>';
+    html = html.includes('</body>') ? html.replace('</body>', printScript + '</body>') : html + printScript;
+    res.set('Content-Type', 'text/html; charset=utf-8');
+    res.send(html);
+  } catch (err) {
+    console.error('Erro ao buscar etiqueta:', err);
+    res.status(500).send('Erro ao buscar etiqueta');
   }
 });
 
