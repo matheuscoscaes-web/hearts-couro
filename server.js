@@ -370,6 +370,7 @@ app.post('/api/processar-pagamento', async (req, res) => {
       description: `Bolsa Hearts Couro — ${pedido.produto || 'Bolsa'} (${pedido.cor || ''})`,
       payment_method_id: formData.payment_method_id,
       external_reference: String(pedidoId),
+      notification_url: process.env.BASE_URL ? `${process.env.BASE_URL}/api/webhook/mercadopago` : undefined,
       payer: {
         email: pedido.email,
         first_name: pedido.nome,
@@ -539,7 +540,8 @@ app.post('/api/criar-pagamento', async (req, res) => {
             : `Hearts Couro - ${itens.length} bolsas`,
           payment_method_id: 'pix',
           payer: pixPayer,
-          external_reference: String(pedidoId)
+          external_reference: String(pedidoId),
+          notification_url: process.env.BASE_URL ? `${process.env.BASE_URL}/api/webhook/mercadopago` : undefined
         },
         requestOptions: { idempotencyKey: uuidv4() }
       });
