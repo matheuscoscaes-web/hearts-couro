@@ -2287,6 +2287,11 @@ async function sincronizarProdutos() {
         grid.appendChild(card);
       }
     });
+
+    const paramP = new URLSearchParams(window.location.search).get('p');
+    if (paramP && PRODUTOS_INFO[paramP] && PRODUTOS_INFO[paramP].ativo !== false) {
+      setTimeout(() => abrirModal(paramP), 100);
+    }
   } catch (e) {
     console.error('Erro ao sincronizar produtos:', e);
   }

@@ -1313,6 +1313,7 @@
                       <input type="checkbox" ${p.ativo ? 'checked' : ''} id="ativo-${p.chave}" onchange="salvarProduto('${p.chave}')">
                       Ativo
                     </label>
+                    <button onclick="copiarLinkProduto('${p.chave}', this)" style="background:rgba(201,150,60,0.08);color:var(--gold);border:1px solid var(--gold-light);border-radius:6px;padding:0.35rem 0.8rem;font-size:0.8rem;cursor:pointer;font-family:'Jost',sans-serif;" title="Copiar link do produto">🔗 Link</button>
                     <button onclick="abrirEditProduto('${p.chave}')" style="background:rgba(201,150,60,0.12);color:var(--gold);border:1px solid var(--gold-light);border-radius:6px;padding:0.35rem 0.8rem;font-size:0.8rem;cursor:pointer;font-family:'Jost',sans-serif;">Editar</button>
                     <button onclick="salvarProduto('${p.chave}')" style="background:var(--gold);color:#fff;border:none;border-radius:6px;padding:0.4rem 1rem;font-size:0.85rem;cursor:pointer;font-family:'Jost',sans-serif;font-weight:600;">Salvar</button>
                   </div>
@@ -1442,6 +1443,25 @@
                 </div>
               </div>
             `;
+        }
+
+        function copiarLinkProduto(chave, btn) {
+            const link = window.location.origin + '/?p=' + encodeURIComponent(chave);
+            navigator.clipboard.writeText(link).then(() => {
+                const orig = btn.innerHTML;
+                btn.innerHTML = '✓ Copiado!';
+                btn.style.background = 'rgba(60,180,100,0.15)';
+                btn.style.color = '#2a9d5c';
+                btn.style.borderColor = '#2a9d5c';
+                setTimeout(() => {
+                    btn.innerHTML = orig;
+                    btn.style.background = '';
+                    btn.style.color = '';
+                    btn.style.borderColor = '';
+                }, 2000);
+            }).catch(() => {
+                prompt('Copie o link abaixo:', link);
+            });
         }
 
         async function salvarProduto(chave) {
