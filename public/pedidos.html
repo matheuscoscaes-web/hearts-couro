@@ -1465,7 +1465,8 @@
                   <textarea id="desc-texto" rows="5" style="width:100%;padding:0.75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:0.9rem;resize:vertical;" placeholder="Uma característica por linha"></textarea>
                   <p style="font-size:0.72rem;color:var(--muted);margin:0.3rem 0 1.5rem;">Uma característica por linha (ex: Bolso Interno)</p>
 
-                  <p style="font-weight:600;font-size:0.85rem;margin:0 0 0.8rem;">Fotos do produto</p>
+                  <p style="font-weight:600;font-size:0.85rem;margin:0 0 0.2rem;">Fotos do produto</p>
+                  <p style="font-size:0.72rem;color:var(--muted);margin:0 0 0.8rem;">A primeira foto é a <strong>capa</strong> (aparece no card e no topo do modal). Clique em "Tornar capa" para promover outra.</p>
                   <div id="imgs-lista" style="display:flex;flex-wrap:wrap;gap:0.6rem;margin-bottom:1rem;"></div>
                   <label style="display:flex;align-items:center;gap:0.6rem;cursor:pointer;background:rgba(201,150,60,0.08);border:1px dashed var(--gold-light);border-radius:8px;padding:0.7rem 1rem;font-size:0.85rem;color:var(--gold);">
                     <span>+ Adicionar foto</span>
@@ -1757,15 +1758,29 @@
             const lista = document.getElementById('imgs-lista');
             if (!_imgsEdicao.length) { lista.innerHTML = '<span style="font-size:0.8rem;color:var(--muted);">Nenhuma foto adicionada</span>'; return; }
             lista.innerHTML = _imgsEdicao.map((url, i) => `
-              <div style="position:relative;width:80px;">
-                <img src="${url}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid var(--border);">
-                <button onclick="removerFoto(${i})" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:#c0392b;color:#fff;border:none;cursor:pointer;font-size:0.7rem;line-height:1;display:flex;align-items:center;justify-content:center;">✕</button>
+              <div style="position:relative;width:80px;display:flex;flex-direction:column;align-items:center;gap:0.3rem;">
+                <div style="position:relative;width:80px;">
+                  <img src="${url}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:${i === 0 ? '2px solid var(--gold)' : '1px solid var(--border)'};">
+                  ${i === 0
+                    ? `<span style="position:absolute;bottom:4px;left:50%;transform:translateX(-50%);background:var(--gold);color:#fff;font-size:0.58rem;font-weight:700;padding:1px 6px;border-radius:20px;letter-spacing:0.05em;white-space:nowrap;">⭐ CAPA</span>`
+                    : ''}
+                  <button onclick="removerFoto(${i})" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:#c0392b;color:#fff;border:none;cursor:pointer;font-size:0.7rem;line-height:1;display:flex;align-items:center;justify-content:center;">✕</button>
+                </div>
+                ${i !== 0
+                  ? `<button onclick="definirComoCapa(${i})" style="font-size:0.62rem;background:rgba(201,150,60,0.1);border:1px solid var(--gold-light);color:var(--gold);border-radius:5px;padding:2px 6px;cursor:pointer;font-family:'Jost',sans-serif;white-space:nowrap;">Tornar capa</button>`
+                  : `<span style="font-size:0.62rem;color:var(--gold);font-weight:600;">Principal</span>`}
               </div>
             `).join('');
         }
 
         function removerFoto(idx) {
             _imgsEdicao.splice(idx, 1);
+            renderImgsEdicao();
+        }
+
+        function definirComoCapa(idx) {
+            const [foto] = _imgsEdicao.splice(idx, 1);
+            _imgsEdicao.unshift(foto);
             renderImgsEdicao();
         }
 
