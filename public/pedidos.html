@@ -600,6 +600,10 @@
             <span class="sidebar-item-icon">🔄</span>
             <span>Verificar Todos</span>
         </button>
+        <button class="sidebar-item" onclick="fecharMenu(); abrirModalVenda()" style="color:#1a9e4a;border-top:1px solid var(--border);margin-top:0.4rem;">
+            <span class="sidebar-item-icon">➕</span>
+            <span class="sidebar-item-label">Venda Manual</span>
+        </button>
     </div>
 
     <!-- STICKY HEADER -->
@@ -626,6 +630,7 @@
             <button class="tab-btn" data-status="resumo" onclick="mostrarResumo()">Resumo de Vendas</button>
             <button id="btn-verificar-todos" class="tab-btn" onclick="verificarTodos()" style="background:rgba(80,160,255,0.15);border-color:#50a0ff;color:#50a0ff;">🔄 Verificar Todos</button>
             <button class="tab-btn" onclick="mostrarProdutos()" id="tab-produtos" style="background:rgba(201,150,60,0.15);border-color:var(--gold-light);color:var(--gold);">🛍 Produtos</button>
+            <button class="tab-btn" onclick="abrirModalVenda()" style="background:rgba(37,211,102,0.12);border-color:#25d366;color:#1a9e4a;">➕ Venda Manual</button>
         </div>
 
         <!-- Busca rápida -->
@@ -665,6 +670,135 @@
                 font-weight:600; cursor:pointer; letter-spacing:0.05em;
             ">Entrar</button>
         </div>
+    </div>
+
+    <!-- MODAL VENDA MANUAL -->
+    <div id="modal-venda-manual" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;padding:1rem;">
+      <div style="background:#fff;border-radius:16px;padding:2rem;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;">
+        <h3 style="font-family:'Cormorant Garamond',serif;color:var(--gold);margin:0 0 1.5rem;font-size:1.5rem;">Cadastrar Venda Manual</h3>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;">
+          <div>
+            <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:0.25rem;">Nome *</label>
+            <input id="vm-nome" type="text" placeholder="Nome" style="width:100%;padding:0.55rem 0.7rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.88rem;outline:none;">
+          </div>
+          <div>
+            <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:0.25rem;">Sobrenome</label>
+            <input id="vm-sobrenome" type="text" placeholder="Sobrenome" style="width:100%;padding:0.55rem 0.7rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.88rem;outline:none;">
+          </div>
+          <div>
+            <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:0.25rem;">WhatsApp</label>
+            <input id="vm-whatsapp" type="tel" placeholder="(11) 99999-9999" style="width:100%;padding:0.55rem 0.7rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.88rem;outline:none;">
+          </div>
+          <div>
+            <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:0.25rem;">E-mail</label>
+            <input id="vm-email" type="email" placeholder="email@exemplo.com" style="width:100%;padding:0.55rem 0.7rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.88rem;outline:none;">
+          </div>
+          <div>
+            <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:0.25rem;">CPF</label>
+            <input id="vm-cpf" type="text" placeholder="000.000.000-00" style="width:100%;padding:0.55rem 0.7rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.88rem;outline:none;">
+          </div>
+          <div>
+            <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:0.25rem;">Produto *</label>
+            <select id="vm-produto" onchange="vmAtualizarCores()" style="width:100%;padding:0.55rem 0.7rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.88rem;background:#fff;outline:none;">
+              <option value="">Selecione…</option>
+              <option value="Paola">Paola</option>
+              <option value="Carol">Carol</option>
+              <option value="Modelo4">Celina</option>
+              <option value="Lara">Lara</option>
+              <option value="Adriana">Adriana</option>
+              <option value="Miranda">Miranda</option>
+              <option value="Manuela">Manuela</option>
+              <option value="Maria">Maria</option>
+              <option value="Modelo3">Denise</option>
+              <option value="Julia">Julia</option>
+              <option value="Renata">Renata</option>
+              <option value="Megan">Megan</option>
+              <option value="Michele">Michele</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:0.25rem;">Cor *</label>
+            <select id="vm-cor" style="width:100%;padding:0.55rem 0.7rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.88rem;background:#fff;outline:none;">
+              <option value="">Selecione um produto primeiro</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:0.25rem;">Quantidade</label>
+            <input id="vm-quantidade" type="number" value="1" min="1" max="99" style="width:100%;padding:0.55rem 0.7rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.88rem;outline:none;">
+          </div>
+          <div>
+            <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:0.25rem;">Valor Total (R$) *</label>
+            <input id="vm-valor" type="number" min="0" step="0.01" placeholder="0,00" style="width:100%;padding:0.55rem 0.7rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.88rem;outline:none;">
+          </div>
+          <div>
+            <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:0.25rem;">Forma de Pagamento *</label>
+            <select id="vm-pagamento" style="width:100%;padding:0.55rem 0.7rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.88rem;background:#fff;outline:none;">
+              <option value="">Selecione…</option>
+              <option value="Pix">Pix</option>
+              <option value="Cartão">Cartão</option>
+              <option value="Dinheiro">Dinheiro</option>
+              <option value="Transferência">Transferência</option>
+              <option value="Outro">Outro</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:0.25rem;">Frete (nome)</label>
+            <input id="vm-frete-nome" type="text" placeholder="Ex: PAC, SEDEX, Retirada…" style="width:100%;padding:0.55rem 0.7rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.88rem;outline:none;">
+          </div>
+          <div>
+            <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:0.25rem;">Frete (valor R$)</label>
+            <input id="vm-frete-valor" type="number" min="0" step="0.01" placeholder="0,00" style="width:100%;padding:0.55rem 0.7rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.88rem;outline:none;">
+          </div>
+        </div>
+
+        <!-- Endereço (colapsável) -->
+        <button type="button" onclick="vmToggleEndereco()" id="vm-end-toggle" style="background:none;border:none;color:var(--gold);font-family:'Jost',sans-serif;font-size:0.82rem;cursor:pointer;padding:0.8rem 0 0.4rem;text-decoration:underline;text-underline-offset:3px;">
+          + Preencher endereço de entrega
+        </button>
+        <div id="vm-endereco" style="display:none;grid-template-columns:1fr 1fr;gap:0.7rem;">
+          <div style="grid-column:1/-1">
+            <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:0.25rem;">CEP</label>
+            <input id="vm-cep" type="text" placeholder="00000-000" maxlength="9" style="width:100%;padding:0.55rem 0.7rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.88rem;outline:none;">
+          </div>
+          <div style="grid-column:1/-1">
+            <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:0.25rem;">Logradouro</label>
+            <input id="vm-logradouro" type="text" placeholder="Rua, Av…" style="width:100%;padding:0.55rem 0.7rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.88rem;outline:none;">
+          </div>
+          <div>
+            <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:0.25rem;">Número</label>
+            <input id="vm-numero" type="text" placeholder="Nº" style="width:100%;padding:0.55rem 0.7rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.88rem;outline:none;">
+          </div>
+          <div>
+            <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:0.25rem;">Complemento</label>
+            <input id="vm-complemento" type="text" placeholder="Apto, Bloco…" style="width:100%;padding:0.55rem 0.7rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.88rem;outline:none;">
+          </div>
+          <div>
+            <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:0.25rem;">Bairro</label>
+            <input id="vm-bairro" type="text" placeholder="Bairro" style="width:100%;padding:0.55rem 0.7rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.88rem;outline:none;">
+          </div>
+          <div>
+            <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:0.25rem;">Cidade</label>
+            <input id="vm-cidade" type="text" placeholder="Cidade" style="width:100%;padding:0.55rem 0.7rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.88rem;outline:none;">
+          </div>
+          <div>
+            <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:0.25rem;">Estado (UF)</label>
+            <input id="vm-estado" type="text" placeholder="SP" maxlength="2" style="width:100%;padding:0.55rem 0.7rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.88rem;outline:none;text-transform:uppercase;">
+          </div>
+        </div>
+
+        <div style="margin-top:0.8rem;">
+          <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:0.25rem;">Observação</label>
+          <textarea id="vm-obs" rows="2" placeholder="Informações adicionais…" style="width:100%;padding:0.55rem 0.7rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.88rem;resize:vertical;outline:none;"></textarea>
+        </div>
+
+        <p id="vm-erro" style="color:#c0392b;font-size:0.82rem;min-height:1.2em;margin:0.6rem 0 0;"></p>
+
+        <div style="display:flex;gap:0.8rem;justify-content:flex-end;margin-top:1.2rem;">
+          <button onclick="fecharModalVenda()" style="background:transparent;border:1px solid var(--border);border-radius:8px;padding:0.6rem 1.4rem;cursor:pointer;font-family:'Jost',sans-serif;font-size:0.9rem;">Cancelar</button>
+          <button onclick="cadastrarVendaManual()" id="vm-btn-salvar" style="background:var(--gold);color:#fff;border:none;border-radius:8px;padding:0.6rem 1.6rem;cursor:pointer;font-family:'Jost',sans-serif;font-size:0.9rem;font-weight:600;">Cadastrar</button>
+        </div>
+      </div>
     </div>
 
     <!-- CONTEÚDO -->
@@ -1717,6 +1851,130 @@
             });
             if (resp.ok) { _npCores = []; _npImgs = []; fecharModalNovoProduto(); toast('Produto criado!', 'success'); mostrarProdutos(); }
             else { const r = await resp.json(); erro.textContent = r.erro || 'Erro ao criar.'; }
+        }
+
+        // ── VENDA MANUAL ─────────────────────────────────────────────────
+        const VM_CORES = {
+            Paola:   ['White','Preto','Cafe','Argila','Azul','Whiskey','Caramelo','Pink'],
+            Carol:   ['Preto','Caramelo','Rubi','Whiskey','Azul','Cafe'],
+            Modelo4: ['Preto','Caramelo','Rubi','Whiskey','Azul','Cafe'],
+            Lara:    ['Preto','Caramelo'],
+            Adriana: ['Caramelo','Azul Marinho','Marrom Claro','Off White'],
+            Miranda: ['Preto','Caramelo','Rubi','Whiskey','Azul','Cafe'],
+            Manuela: ['Preto','Grafite','Telha'],
+            Maria:   ['Preto','Caramelo'],
+            Modelo3: ['Preto','Whiskey'],
+            Julia:   ['Preto','Caramelo'],
+            Renata:  ['Preto','Caramelo','Rubi','Whiskey','Azul','Cafe'],
+            Megan:   ['Preto','Caramelo','Whiskey'],
+            Michele: ['Preto','Caramelo','Rubi','Whiskey','Azul','Cafe'],
+        };
+
+        function vmAtualizarCores() {
+            const produto = document.getElementById('vm-produto').value;
+            const sel = document.getElementById('vm-cor');
+            sel.innerHTML = '<option value="">Selecione a cor…</option>';
+            (VM_CORES[produto] || []).forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c;
+                opt.textContent = c;
+                sel.appendChild(opt);
+            });
+        }
+
+        function vmToggleEndereco() {
+            const div = document.getElementById('vm-endereco');
+            const btn = document.getElementById('vm-end-toggle');
+            const aberto = div.style.display === 'grid';
+            div.style.display = aberto ? 'none' : 'grid';
+            btn.textContent = aberto ? '+ Preencher endereço de entrega' : '− Ocultar endereço';
+        }
+
+        function abrirModalVenda() {
+            // Limpa todos os campos
+            ['vm-nome','vm-sobrenome','vm-whatsapp','vm-email','vm-cpf',
+             'vm-frete-nome','vm-frete-valor','vm-obs',
+             'vm-cep','vm-logradouro','vm-numero','vm-complemento','vm-bairro','vm-cidade','vm-estado'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            document.getElementById('vm-produto').value    = '';
+            document.getElementById('vm-pagamento').value  = '';
+            document.getElementById('vm-quantidade').value = '1';
+            document.getElementById('vm-valor').value      = '';
+            document.getElementById('vm-cor').innerHTML    = '<option value="">Selecione um produto primeiro</option>';
+            document.getElementById('vm-erro').textContent = '';
+            document.getElementById('vm-endereco').style.display = 'none';
+            document.getElementById('vm-end-toggle').textContent = '+ Preencher endereço de entrega';
+            document.getElementById('vm-btn-salvar').disabled = false;
+            document.getElementById('vm-btn-salvar').textContent = 'Cadastrar';
+            document.getElementById('modal-venda-manual').style.display = 'flex';
+        }
+
+        function fecharModalVenda() {
+            document.getElementById('modal-venda-manual').style.display = 'none';
+        }
+
+        async function cadastrarVendaManual() {
+            const err = document.getElementById('vm-erro');
+            const btn = document.getElementById('vm-btn-salvar');
+            err.textContent = '';
+
+            const nome      = document.getElementById('vm-nome').value.trim();
+            const produto   = document.getElementById('vm-produto').value;
+            const cor       = document.getElementById('vm-cor').value.trim();
+            const valor     = document.getElementById('vm-valor').value;
+            const pagamento = document.getElementById('vm-pagamento').value;
+
+            if (!nome)      { err.textContent = 'Preencha o nome do cliente.'; return; }
+            if (!produto)   { err.textContent = 'Selecione o produto.'; return; }
+            if (!cor)       { err.textContent = 'Selecione a cor.'; return; }
+            if (!valor)     { err.textContent = 'Informe o valor total.'; return; }
+            if (!pagamento) { err.textContent = 'Selecione a forma de pagamento.'; return; }
+
+            btn.disabled = true;
+            btn.textContent = 'Salvando…';
+
+            const body = {
+                nome,
+                sobrenome:   document.getElementById('vm-sobrenome').value.trim()   || null,
+                whatsapp:    document.getElementById('vm-whatsapp').value.trim()    || null,
+                email:       document.getElementById('vm-email').value.trim()       || null,
+                cpf:         document.getElementById('vm-cpf').value.trim()         || null,
+                produto,
+                cor,
+                quantidade:  parseInt(document.getElementById('vm-quantidade').value) || 1,
+                valor_total: parseFloat(valor),
+                pagamento,
+                frete_nome:  document.getElementById('vm-frete-nome').value.trim()  || null,
+                frete_valor: document.getElementById('vm-frete-valor').value        || null,
+                obs:         document.getElementById('vm-obs').value.trim()         || null,
+                cep:         document.getElementById('vm-cep').value.trim()         || null,
+                logradouro:  document.getElementById('vm-logradouro').value.trim()  || null,
+                numero:      document.getElementById('vm-numero').value.trim()      || null,
+                complemento: document.getElementById('vm-complemento').value.trim() || null,
+                bairro:      document.getElementById('vm-bairro').value.trim()      || null,
+                cidade:      document.getElementById('vm-cidade').value.trim()      || null,
+                estado:      document.getElementById('vm-estado').value.trim().toUpperCase() || null,
+            };
+
+            try {
+                const resp = await fetch('/api/admin/cadastrar-venda', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'senha': _adminSenha },
+                    body: JSON.stringify(body)
+                });
+                const result = await resp.json();
+                if (!resp.ok) throw new Error(result.erro || 'Erro ao cadastrar.');
+                fecharModalVenda();
+                toast('Venda cadastrada com sucesso!', 'success');
+                await carregarPedidos();
+                filtrar('pagos');
+            } catch (e) {
+                err.textContent = e.message || 'Erro ao cadastrar venda.';
+                btn.disabled = false;
+                btn.textContent = 'Cadastrar';
+            }
         }
 
         // ── LOGIN ────────────────────────────────────────────────────────

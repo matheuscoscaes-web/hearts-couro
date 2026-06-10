@@ -1158,6 +1158,48 @@ app.post('/api/admin/produtos', async (req, res) => {
   }
 });
 
+// ── ROTA: Cadastrar Venda Manual (admin) ──
+app.post('/api/admin/cadastrar-venda', async (req, res) => {
+  if (req.headers['senha'] !== process.env.ADMIN_SENHA) return res.status(401).json({ erro: 'Não autorizado.' });
+
+  const b = req.body;
+  if (!b.nome || !b.produto || !b.cor || !b.valor_total || !b.pagamento) {
+    return res.status(400).json({ erro: 'Campos obrigatórios: nome, produto, cor, valor_total, pagamento.' });
+  }
+
+  try {
+    const { data, error } = await supabase.from('pedidos').insert([{
+      nome:        b.nome,
+      sobrenome:   b.sobrenome   || null,
+      whatsapp:    b.whatsapp    || null,
+      email:       b.email       || null,
+      cpf:         b.cpf         || null,
+      cep:         b.cep         || null,
+      logradouro:  b.logradouro  || null,
+      numero:      b.numero      || null,
+      complemento: b.complemento || null,
+      bairro:      b.bairro      || null,
+      cidade:      b.cidade      || null,
+      estado:      b.estado      || null,
+      produto:     b.produto,
+      cor:         b.cor,
+      pagamento:   b.pagamento,
+      frete_nome:  b.frete_nome  || null,
+      frete_valor: b.frete_valor ? parseFloat(b.frete_valor) : null,
+      valor_total: parseFloat(b.valor_total),
+      obs:         b.obs         || null,
+      status:      'approved',
+    }]).select().single();
+
+    if (error) throw error;
+    enviarBackupPorEmail(data);
+    return res.json({ ok: true, pedido: data });
+  } catch (err) {
+    console.error('Erro ao cadastrar venda manual:', err);
+    return res.status(500).json({ erro: 'Erro ao cadastrar venda.', detalhe: String(err?.message || err) });
+  }
+});
+
 // ── ROTA: Login Gestão ──
 app.post('/api/admin/login', (req, res) => {
   const { senha } = req.body;
