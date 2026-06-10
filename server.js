@@ -271,6 +271,15 @@ app.get('/api/mp-public-key', (req, res) => {
   res.json({ publicKey: process.env.MP_PUBLIC_KEY });
 });
 
+async function precosDB(chaves) {
+  try {
+    const { data } = await supabase.from('produtos').select('chave, preco').in('chave', chaves);
+    const mapa = {};
+    (data || []).forEach(p => { mapa[p.chave] = p.preco; });
+    return mapa;
+  } catch { return {}; }
+}
+
 // ── ROTA: Preparar Pedido (Step 1 — Bricks) ──
 app.post('/api/preparar-pedido', async (req, res) => {
   const body = req.body;
@@ -280,7 +289,8 @@ app.post('/api/preparar-pedido', async (req, res) => {
     : [{ produto: body.produto, cor: body.cor, quantidade: 1, preco: PRODUTOS[body.produto] || PRECO_PRODUTO }];
 
   const freteValor = parseFloat(body.frete_valor) || 0;
-  const subtotal = itens.reduce((s, i) => s + (PRODUTOS[i.produto] || i.preco || PRECO_PRODUTO) * (i.quantidade || 1), 0);
+  const dbPrecos = await precosDB(itens.map(i => i.produto));
+  const subtotal = itens.reduce((s, i) => s + (dbPrecos[i.produto] || PRODUTOS[i.produto] || i.preco || PRECO_PRODUTO) * (i.quantidade || 1), 0);
   const total = Math.round((subtotal + freteValor) * 100) / 100;
 
   body.produto = itens[0].produto;
@@ -434,11 +444,12 @@ app.post('/api/criar-pagamento', async (req, res) => {
     : [{ produto: body.produto, cor: body.cor, quantidade: 1, preco: PRODUTOS[body.produto] || PRECO_PRODUTO }];
 
   const freteValor = parseFloat(body.frete_valor) || 0;
-  const subtotal = itens.reduce((s, i) => s + (PRODUTOS[i.produto] || i.preco || PRECO_PRODUTO) * (i.quantidade || 1), 0);
+  const dbPrecos = await precosDB(itens.map(i => i.produto));
+  const subtotal = itens.reduce((s, i) => s + (dbPrecos[i.produto] || PRODUTOS[i.produto] || i.preco || PRECO_PRODUTO) * (i.quantidade || 1), 0);
   const total = Math.round((subtotal + freteValor) * 100) / 100;
 
   // Campos legado para compatibilidade com Supabase
-  const precoProduto = PRODUTOS[itens[0].produto] || PRECO_PRODUTO;
+  const precoProduto = dbPrecos[itens[0].produto] || PRODUTOS[itens[0].produto] || PRECO_PRODUTO;
   body.produto = itens[0].produto;
   body.cor     = itens[0].cor;
 
@@ -565,7 +576,7 @@ app.post('/api/criar-pagamento', async (req, res) => {
               id: `hearts-${(it.produto||'bolsa').toLowerCase()}-${pedidoId}-${idx}`,
               title: `Bolsa Hearts Couro - Ref: ${it.produto} (${it.cor})`,
               quantity: it.quantidade || 1,
-              unit_price: PRODUTOS[it.produto] || it.preco || PRECO_PRODUTO,
+              unit_price: dbPrecos[it.produto] || PRODUTOS[it.produto] || it.preco || PRECO_PRODUTO,
               currency_id: 'BRL'
             })),
             ...(freteValor > 0 ? [{
