@@ -303,13 +303,14 @@ app.post('/api/preparar-pedido', async (req, res) => {
   // Verifica estoque
   try {
     const reservaDesde = new Date(Date.now() - 20 * 60 * 1000).toISOString();
-    const [{ data: confirmados }, { data: pendentes }] = await Promise.all([
+    const [{ data: confirmados }, { data: pendentes }, estoqueMap] = await Promise.all([
       supabase.from('pedidos').select('produto, cor')
         .in('status', ['approved', 'etiqueta_criada', 'enviado', 'entregue', 'retirado'])
         .gte('created_at', ESTOQUE_RESET_DATA),
       supabase.from('pedidos').select('produto, cor')
         .eq('status', 'aguardando_pagamento')
-        .gte('created_at', reservaDesde)
+        .gte('created_at', reservaDesde),
+      carregarEstoqueMap()
     ]);
 
     const ocupados = {};
@@ -319,8 +320,8 @@ app.post('/api/preparar-pedido', async (req, res) => {
 
     for (const item of itens) {
       const key = item.cor;
-      if (key in ESTOQUE_INICIAL) {
-        const disponivel = Math.max(0, ESTOQUE_INICIAL[key] - (ocupados[key] || 0));
+      if (key in estoqueMap) {
+        const disponivel = Math.max(0, estoqueMap[key] - (ocupados[key] || 0));
         if (disponivel < (item.quantidade || 1)) {
           return res.status(409).json({
             erro: `Essa bolsa (${item.produto} — ${item.cor}) não está mais disponível no momento.`
@@ -462,13 +463,14 @@ app.post('/api/criar-pagamento', async (req, res) => {
   try {
     const reservaDesde = new Date(Date.now() - 20 * 60 * 1000).toISOString();
 
-    const [{ data: confirmados }, { data: pendentes }] = await Promise.all([
+    const [{ data: confirmados }, { data: pendentes }, estoqueMap] = await Promise.all([
       supabase.from('pedidos').select('produto, cor')
         .in('status', ['approved', 'etiqueta_criada', 'enviado', 'entregue', 'retirado'])
         .gte('created_at', ESTOQUE_RESET_DATA),
       supabase.from('pedidos').select('produto, cor')
         .eq('status', 'aguardando_pagamento')
-        .gte('created_at', reservaDesde)
+        .gte('created_at', reservaDesde),
+      carregarEstoqueMap()
     ]);
 
     const ocupados = {};
@@ -478,8 +480,8 @@ app.post('/api/criar-pagamento', async (req, res) => {
 
     for (const item of itens) {
       const key = item.cor;
-      if (key in ESTOQUE_INICIAL) {
-        const disponivel = Math.max(0, ESTOQUE_INICIAL[key] - (ocupados[key] || 0));
+      if (key in estoqueMap) {
+        const disponivel = Math.max(0, estoqueMap[key] - (ocupados[key] || 0));
         const solicitado = item.quantidade || 1;
         if (disponivel < solicitado) {
           return res.status(409).json({
@@ -695,34 +697,40 @@ app.get('/api/verificar-pagamento/:id', async (req, res) => {
 // Data em que o estoque foi zerado/reiniciado — só pedidos a partir daqui são descontados
 const ESTOQUE_RESET_DATA = '2026-06-01';
 
+// Constrói mapa de estoque inicial mesclando hardcoded + banco (banco tem prioridade)
+// Chave derivada: c.key explícito > "${chave}_${label_sem_espaços}" > "${chave}_${i}"
+async function carregarEstoqueMap() {
+  try {
+    const { data: produtosData } = await supabase.from('produtos').select('chave, cores');
+    const dbEstoque = {};
+    (produtosData || []).forEach(p => {
+      if (!Array.isArray(p.cores)) return;
+      p.cores.forEach((c, i) => {
+        if (typeof c.estoque !== 'number') return;
+        const key = c.key
+          || (c.label ? `${p.chave}_${c.label.trim().replace(/\s+/g, '')}` : null)
+          || `${p.chave}_${i}`;
+        dbEstoque[key] = c.estoque;
+      });
+    });
+    return { ...ESTOQUE_INICIAL, ...dbEstoque };
+  } catch {
+    return { ...ESTOQUE_INICIAL };
+  }
+}
+
 // ── ROTA: Estoque por Cor ──
 app.get('/api/estoque', async (req, res) => {
   try {
-    const [{ data: pedidosData, error }, { data: produtosData }] = await Promise.all([
+    const [{ data: pedidosData, error }, estoqueInicial] = await Promise.all([
       supabase.from('pedidos').select('cor')
         .in('status', ['approved', 'etiqueta_criada', 'enviado', 'entregue', 'retirado'])
         .gte('created_at', ESTOQUE_RESET_DATA),
-      supabase.from('produtos').select('chave, cores')
+      carregarEstoqueMap()
     ]);
 
     if (error) throw error;
 
-    // Estoque do banco: cada cor do produto tem campo estoque, chave = ${chave}_${i}
-    const dbEstoque = {};
-    (produtosData || []).forEach(p => {
-      if (Array.isArray(p.cores)) {
-        p.cores.forEach((c, i) => {
-          if (typeof c.estoque === 'number') {
-            dbEstoque[`${p.chave}_${i}`] = c.estoque;
-          }
-        });
-      }
-    });
-
-    // DB sobrescreve ESTOQUE_INICIAL (compatibilidade retroativa)
-    const estoqueInicial = { ...ESTOQUE_INICIAL, ...dbEstoque };
-
-    // Vendidos: p.cor já é a chave completa (ex: 'Paola_White', 'Miranda_0')
     const vendidos = {};
     (pedidosData || []).forEach(p => {
       if (p.cor) vendidos[p.cor] = (vendidos[p.cor] || 0) + 1;
