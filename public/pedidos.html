@@ -1022,11 +1022,12 @@
                 const card = document.createElement('div');
                 card.className = 'order-card';
 
-                const itens = Array.isArray(p.itens) && p.itens.length > 1 ? p.itens : null;
+                const itens = Array.isArray(p.itens) && p.itens.length > 0 ? p.itens : null;
+                const totalBolsas = itens ? itens.reduce((s, i) => s + (i.quantidade || 1), 0) : 1;
                 const corLabel = itens ? itens.map(i => i.cor).join(', ') : (p.cor || '—');
-                const prodLabel = itens ? itens.map(i => `${i.produto} (${i.cor}) ×${i.quantidade||1}`).join(' + ') : (p.produto || '');
+                const prodLabel = itens ? itens.map(i => `${i.produto} (${i.cor})${(i.quantidade||1) > 1 ? ` ×${i.quantidade}` : ''}`).join(' + ') : (p.produto || '');
                 const msgZap = itens
-                    ? encodeURIComponent(`Olá ${p.nome}! Aqui é da Hearts Couro Legítimo. Recebemos seu pedido de ${itens.length} bolsas. Para prosseguir com a compra, estarei enviando o link:\n\nhttps://hearts-couro.onrender.com/`)
+                    ? encodeURIComponent(`Olá ${p.nome}! Aqui é da Hearts Couro Legítimo. Recebemos seu pedido de ${totalBolsas} bolsa${totalBolsas > 1 ? 's' : ''}. Para prosseguir com a compra, estarei enviando o link:\n\nhttps://hearts-couro.onrender.com/`)
                     : encodeURIComponent(`Olá ${p.nome}! Aqui é da Hearts Couro Legítimo. Recebemos seu pedido de uma Bolsa na cor ${p.cor}. Para estar dando prosseguimento na compra da sua linda bolsa ${p.produto}, estarei enviando o link do site da compra!\n\nhttps://hearts-couro.onrender.com/`);
                 const fone = getWhatsAppPhone(p.whatsapp);
                 const linkZap = fone ? `https://wa.me/55${fone}?text=${msgZap}` : '#';
@@ -1073,7 +1074,7 @@
                         <div class="card-left">
                             <span class="customer-name">${p.nome} ${p.sobrenome || ''}</span>
                             <div class="card-meta">
-                                <span>🎨 ${itens ? itens.length + ' bolsas' : (p.cor || '—')}</span>
+                                <span>🎨 ${itens ? totalBolsas + ' bolsa' + (totalBolsas > 1 ? 's' : '') : (p.cor || '—')}</span>
                                 <span>💳 ${p.pagamento || '—'}</span>
                                 <span>${fmtValor(p.valor_total)}</span>
                             </div>
@@ -1086,8 +1087,8 @@
                     <div class="card-details">
                         <div class="order-info">
                             ${itens
-                                ? itens.map(i => `<strong>${i.produto}</strong> — ${i.cor}${i.quantidade > 1 ? ` ×${i.quantidade}` : ''} &nbsp;<span style="color:var(--gold-light)">${fmtValor(i.preco * (i.quantidade||1))}</span><br>`).join('')
-                                : (p.produto ? `<strong>Produto:</strong> ${p.produto}<br>` : '')}
+                                ? itens.map(i => `<strong>${i.produto}</strong> — ${i.cor}${(i.quantidade||1) > 1 ? ` ×${i.quantidade}` : ''}${i.preco ? ` &nbsp;<span style="color:var(--gold-light)">${fmtValor(i.preco * (i.quantidade||1))}</span>` : ''}<br>`).join('')
+                                : (p.produto ? `<strong>Produto:</strong> ${p.produto}${p.cor ? ` — ${p.cor}` : ''}<br>` : '')}
                             <strong>E-mail:</strong> ${p.email}<br>
                             <strong>WhatsApp:</strong> ${p.whatsapp}<br>
                             <strong>CPF:</strong> ${p.cpf || '—'}<br>

@@ -139,7 +139,11 @@ function enviarEmailConfirmacaoPagamento(pedido) {
       <p>Olá, <strong>${pedido.nome}</strong>!</p>
       <p>Seu pagamento foi confirmado. Estamos preparando sua bolsa com muito carinho.</p>
       <table style="width:100%;border-collapse:collapse;margin:1rem 0;font-size:0.9rem;">
-        <tr><td style="padding:5px 0;color:#888;">Produto</td><td style="padding:5px 0;"><strong>${pedido.produto || 'Bolsa'} — ${pedido.cor || ''}</strong></td></tr>
+        <tr><td style="padding:5px 0;color:#888;vertical-align:top;">Produto</td><td style="padding:5px 0;"><strong>${
+          Array.isArray(pedido.itens) && pedido.itens.length > 0
+            ? pedido.itens.map(i => `${i.produto} — ${i.cor}${(i.quantidade||1) > 1 ? ` ×${i.quantidade}` : ''}`).join('<br>')
+            : `${pedido.produto || 'Bolsa'} — ${pedido.cor || ''}`
+        }</strong></td></tr>
         <tr><td style="padding:5px 0;color:#888;">Total</td><td style="padding:5px 0;"><strong>${fmtValor(pedido.valor_total)}</strong></td></tr>
         <tr><td style="padding:5px 0;color:#888;">Envio</td><td style="padding:5px 0;">${pedido.frete_nome || 'A confirmar'}</td></tr>
       </table>
@@ -343,7 +347,7 @@ app.post('/api/preparar-pedido', async (req, res) => {
         frete_nome: body.frete_nome || null, frete_valor: freteValor || null,
         frete_prazo: body.frete_prazo || null, valor_total: total,
         produto: body.produto || null, status: 'aguardando_pagamento',
-        itens: itens.length > 1 ? itens : null
+        itens: (itens.length > 1 || itens.some(i => (i.quantidade || 1) > 1)) ? itens : null
       }])
       .select().single();
 
@@ -517,7 +521,7 @@ app.post('/api/criar-pagamento', async (req, res) => {
         valor_total: total,
         produto: body.produto || process.env.NOME_PRODUTO || null,
         status: 'aguardando_pagamento',
-        itens: itens.length > 1 ? itens : null
+        itens: (itens.length > 1 || itens.some(i => (i.quantidade || 1) > 1)) ? itens : null
       }])
       .select()
       .single();
