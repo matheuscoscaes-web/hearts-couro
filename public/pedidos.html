@@ -1619,22 +1619,36 @@
         let _coresEdicao = [];
         let _npImgs = [];
 
+        function npCoreFotoAdd(i) { if(!_npCores[i].imgs)_npCores[i].imgs=[]; _npCores[i].imgs.push(''); renderNpCores(); }
+        function npCoreFotoRemove(i,j) { _npCores[i].imgs.splice(j,1); renderNpCores(); }
+        function npCoreFotoChange(i,j,v) { _npCores[i].imgs[j]=v; }
+
         function renderNpCores() {
             const lista = document.getElementById('np-cores-lista');
             if (!lista) return;
             if (!_npCores.length) { lista.innerHTML = '<span style="font-size:0.75rem;color:var(--muted);">Nenhuma cor adicionada.</span>'; return; }
-            lista.innerHTML = _npCores.map((c, i) => `
-              <div style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap;">
-                <input type="text" value="${c.label}" placeholder="Nome da cor (ex: Preto)" oninput="_npCores[${i}].label=this.value" style="flex:1;min-width:90px;padding:0.35rem 0.5rem;border:1px solid var(--border);border-radius:6px;font-size:0.78rem;font-family:'Jost',sans-serif;">
-                <input type="color" value="${c.cor||'#1a1a1a'}" onchange="_npCores[${i}].cor=this.value" title="Cor do swatch" style="width:36px;height:32px;padding:2px;border:1px solid var(--border);border-radius:6px;cursor:pointer;flex-shrink:0;">
-                <input type="text" value="${c.img||''}" placeholder="URL imagem (opcional)" oninput="_npCores[${i}].img=this.value" style="flex:2;min-width:100px;padding:0.35rem 0.5rem;border:1px solid var(--border);border-radius:6px;font-size:0.72rem;font-family:'Jost',sans-serif;">
-                <input type="number" value="${c.estoque??0}" min="0" title="Estoque" oninput="_npCores[${i}].estoque=parseInt(this.value)||0" style="width:52px;padding:0.35rem 0.4rem;border:1px solid var(--gold-dim);border-radius:6px;font-size:0.78rem;font-family:'Jost',sans-serif;text-align:center;" placeholder="Qtd">
-                <button type="button" onclick="_npCores.splice(${i},1);renderNpCores()" style="background:#c0392b;color:#fff;border:none;border-radius:6px;width:26px;height:26px;cursor:pointer;font-size:0.8rem;flex-shrink:0;">×</button>
-              </div>`).join('');
+            lista.innerHTML = _npCores.map((c, i) => {
+              const imgs = c.imgs || [];
+              return `<div style="border:1px solid var(--border);border-radius:8px;padding:0.5rem 0.6rem;margin-bottom:0.5rem;">
+                <div style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap;margin-bottom:0.4rem;">
+                  <input type="text" value="${c.label}" placeholder="Nome da cor (ex: Preto)" oninput="_npCores[${i}].label=this.value" style="flex:1;min-width:90px;padding:0.35rem 0.5rem;border:1px solid var(--border);border-radius:6px;font-size:0.78rem;font-family:'Jost',sans-serif;">
+                  <input type="color" value="${c.cor||'#1a1a1a'}" onchange="_npCores[${i}].cor=this.value" title="Cor do swatch" style="width:36px;height:32px;padding:2px;border:1px solid var(--border);border-radius:6px;cursor:pointer;flex-shrink:0;">
+                  <input type="number" value="${c.estoque??0}" min="0" title="Estoque" oninput="_npCores[${i}].estoque=parseInt(this.value)||0" style="width:52px;padding:0.35rem 0.4rem;border:1px solid var(--gold-dim);border-radius:6px;font-size:0.78rem;font-family:'Jost',sans-serif;text-align:center;" placeholder="Qtd">
+                  <button type="button" onclick="_npCores.splice(${i},1);renderNpCores()" style="background:#c0392b;color:#fff;border:none;border-radius:6px;width:26px;height:26px;cursor:pointer;font-size:0.8rem;flex-shrink:0;">×</button>
+                </div>
+                <div style="font-size:0.7rem;color:var(--muted);margin-bottom:0.25rem;">Fotos da cor (1ª = capa)</div>
+                ${imgs.map((img, j) => `<div style="display:flex;gap:0.4rem;margin-bottom:0.25rem;align-items:center;">
+                  <span style="font-size:0.68rem;color:var(--gold);min-width:14px;">${j===0?'★':j+1}</span>
+                  <input type="text" value="${img}" placeholder="URL da foto" oninput="npCoreFotoChange(${i},${j},this.value)" style="flex:1;padding:0.28rem 0.45rem;border:1px solid var(--border);border-radius:6px;font-size:0.71rem;font-family:'Jost',sans-serif;">
+                  <button type="button" onclick="npCoreFotoRemove(${i},${j})" style="background:#c0392b;color:#fff;border:none;border-radius:6px;width:22px;height:22px;cursor:pointer;font-size:0.75rem;flex-shrink:0;">×</button>
+                </div>`).join('')}
+                <button type="button" onclick="npCoreFotoAdd(${i})" style="font-size:0.71rem;padding:0.2rem 0.6rem;border:1px dashed var(--border);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;margin-top:0.1rem;">+ foto</button>
+              </div>`;
+            }).join('');
         }
 
         function npAdicionarCor() {
-            _npCores.push({ label: '', cor: '#1a1a1a', img: '', estoque: 0 });
+            _npCores.push({ label: '', cor: '#1a1a1a', imgs: [], estoque: 0 });
             renderNpCores();
         }
 
@@ -1717,22 +1731,36 @@
             }
         }
 
+        function editCoreFotoAdd(i) { if(!_coresEdicao[i].imgs)_coresEdicao[i].imgs=[]; _coresEdicao[i].imgs.push(''); renderCoresEdicao(); }
+        function editCoreFotoRemove(i,j) { _coresEdicao[i].imgs.splice(j,1); renderCoresEdicao(); }
+        function editCoreFotoChange(i,j,v) { _coresEdicao[i].imgs[j]=v; }
+
         function renderCoresEdicao() {
             const lista = document.getElementById('cores-edit-lista');
             if (!lista) return;
             if (!_coresEdicao.length) { lista.innerHTML = '<span style="font-size:0.75rem;color:var(--muted);">Nenhuma cor adicionada.</span>'; return; }
-            lista.innerHTML = _coresEdicao.map((c, i) => `
-              <div style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap;">
-                <input type="text" value="${c.label}" placeholder="Nome da cor (ex: Preto)" oninput="_coresEdicao[${i}].label=this.value" style="flex:1;min-width:90px;padding:0.35rem 0.5rem;border:1px solid var(--border);border-radius:6px;font-size:0.78rem;font-family:'Jost',sans-serif;">
-                <input type="color" value="${c.cor||'#1a1a1a'}" onchange="_coresEdicao[${i}].cor=this.value" title="Cor do swatch" style="width:36px;height:32px;padding:2px;border:1px solid var(--border);border-radius:6px;cursor:pointer;flex-shrink:0;">
-                <input type="text" value="${c.img||''}" placeholder="URL imagem (opcional)" oninput="_coresEdicao[${i}].img=this.value" style="flex:2;min-width:100px;padding:0.35rem 0.5rem;border:1px solid var(--border);border-radius:6px;font-size:0.72rem;font-family:'Jost',sans-serif;">
-                <input type="number" value="${c.estoque??0}" min="0" title="Estoque" oninput="_coresEdicao[${i}].estoque=parseInt(this.value)||0" style="width:52px;padding:0.35rem 0.4rem;border:1px solid var(--gold-dim);border-radius:6px;font-size:0.78rem;font-family:'Jost',sans-serif;text-align:center;" placeholder="Qtd">
-                <button type="button" onclick="_coresEdicao.splice(${i},1);renderCoresEdicao()" style="background:#c0392b;color:#fff;border:none;border-radius:6px;width:26px;height:26px;cursor:pointer;font-size:0.8rem;flex-shrink:0;">×</button>
-              </div>`).join('');
+            lista.innerHTML = _coresEdicao.map((c, i) => {
+              const imgs = c.imgs || [];
+              return `<div style="border:1px solid var(--border);border-radius:8px;padding:0.5rem 0.6rem;margin-bottom:0.5rem;">
+                <div style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap;margin-bottom:0.4rem;">
+                  <input type="text" value="${c.label}" placeholder="Nome da cor (ex: Preto)" oninput="_coresEdicao[${i}].label=this.value" style="flex:1;min-width:90px;padding:0.35rem 0.5rem;border:1px solid var(--border);border-radius:6px;font-size:0.78rem;font-family:'Jost',sans-serif;">
+                  <input type="color" value="${c.cor||'#1a1a1a'}" onchange="_coresEdicao[${i}].cor=this.value" title="Cor do swatch" style="width:36px;height:32px;padding:2px;border:1px solid var(--border);border-radius:6px;cursor:pointer;flex-shrink:0;">
+                  <input type="number" value="${c.estoque??0}" min="0" title="Estoque" oninput="_coresEdicao[${i}].estoque=parseInt(this.value)||0" style="width:52px;padding:0.35rem 0.4rem;border:1px solid var(--gold-dim);border-radius:6px;font-size:0.78rem;font-family:'Jost',sans-serif;text-align:center;" placeholder="Qtd">
+                  <button type="button" onclick="_coresEdicao.splice(${i},1);renderCoresEdicao()" style="background:#c0392b;color:#fff;border:none;border-radius:6px;width:26px;height:26px;cursor:pointer;font-size:0.8rem;flex-shrink:0;">×</button>
+                </div>
+                <div style="font-size:0.7rem;color:var(--muted);margin-bottom:0.25rem;">Fotos da cor (1ª = capa)</div>
+                ${imgs.map((img, j) => `<div style="display:flex;gap:0.4rem;margin-bottom:0.25rem;align-items:center;">
+                  <span style="font-size:0.68rem;color:var(--gold);min-width:14px;">${j===0?'★':j+1}</span>
+                  <input type="text" value="${img}" placeholder="URL da foto" oninput="editCoreFotoChange(${i},${j},this.value)" style="flex:1;padding:0.28rem 0.45rem;border:1px solid var(--border);border-radius:6px;font-size:0.71rem;font-family:'Jost',sans-serif;">
+                  <button type="button" onclick="editCoreFotoRemove(${i},${j})" style="background:#c0392b;color:#fff;border:none;border-radius:6px;width:22px;height:22px;cursor:pointer;font-size:0.75rem;flex-shrink:0;">×</button>
+                </div>`).join('')}
+                <button type="button" onclick="editCoreFotoAdd(${i})" style="font-size:0.71rem;padding:0.2rem 0.6rem;border:1px dashed var(--border);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;margin-top:0.1rem;">+ foto</button>
+              </div>`;
+            }).join('');
         }
 
         function adicionarCorEdicao() {
-            _coresEdicao.push({ label: '', cor: '#1a1a1a', img: '', estoque: 0 });
+            _coresEdicao.push({ label: '', cor: '#1a1a1a', imgs: [], estoque: 0 });
             renderCoresEdicao();
         }
 
@@ -1740,7 +1768,10 @@
             const produto = _produtosData.find(p => p.chave === chave) || {};
             const desc = produto.descricao || [];
             _imgsEdicao   = [...(produto.imgs  || [])];
-            _coresEdicao  = [...(produto.cores || [])];
+            _coresEdicao  = (produto.cores || []).map(c => ({
+                ...c,
+                imgs: c.imgs && c.imgs.length > 0 ? [...c.imgs] : (c.img ? [c.img] : [])
+            }));
             document.getElementById('desc-chave').value = chave;
             document.getElementById('desc-texto').value = desc.join('\n');
             document.getElementById('upload-status').textContent = '';

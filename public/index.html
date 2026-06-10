@@ -2217,6 +2217,15 @@ async function sincronizarProdutos() {
         if (p.descricao && p.descricao.length > 0) info.desc = p.descricao;
         if (p.imgs && p.imgs.length > 0) info.imgs = p.imgs;
         if (p.video) info.video = p.video;
+        if (Array.isArray(p.cores) && p.cores.length > 0) {
+          if (!info.corImgs) info.corImgs = {};
+          p.cores.forEach(c => {
+            if (!c.label) return;
+            const key = c.key || `${p.chave}_${c.label.trim().replace(/\s+/g, '')}`;
+            if (c.imgs && c.imgs.length > 0) info.corImgs[key] = c.imgs;
+            else if (c.img) info.corImgs[key] = c.img;
+          });
+        }
 
         const card = document.getElementById('card-' + p.chave);
         if (!card) return;
@@ -2239,14 +2248,18 @@ async function sincronizarProdutos() {
         // Produto novo (só no banco) — cria card dinamicamente
         // Carrega cores do banco para CORES_DEF e monta array de chaves
         const dbCores = Array.isArray(p.cores) ? p.cores : [];
+        const corImgsNovo = {};
         const coreKeys = dbCores.map((c, i) => {
-          const key = `${p.chave}_${i}`;
-          CORES_DEF[key] = { label: c.label || `Cor ${i+1}`, img: c.img || '', cor: c.cor || '#1a1a1a' };
+          const key = c.key || `${p.chave}_${(c.label || '').trim().replace(/\s+/g, '') || i}`;
+          const imgPrincipal = (c.imgs && c.imgs[0]) || c.img || '';
+          CORES_DEF[key] = { label: c.label || `Cor ${i+1}`, img: imgPrincipal, cor: c.cor || '#1a1a1a' };
+          if (c.imgs && c.imgs.length > 0) corImgsNovo[key] = c.imgs;
+          else if (c.img) corImgsNovo[key] = c.img;
           return key;
         });
 
         // Fallback: se não tiver foto do produto, usa a imagem da primeira cor
-        const firstCorImg = dbCores.length > 0 && dbCores[0].img ? dbCores[0].img : '';
+        const firstCorImg = dbCores.length > 0 ? ((dbCores[0].imgs && dbCores[0].imgs[0]) || dbCores[0].img || '') : '';
         const imgsFinais  = p.imgs && p.imgs.length > 0 ? p.imgs : (firstCorImg ? [firstCorImg] : []);
 
         PRODUTOS_INFO[p.chave] = {
@@ -2255,6 +2268,7 @@ async function sincronizarProdutos() {
           nome: p.nome,
           imgs: imgsFinais,
           cores: coreKeys,
+          corImgs: corImgsNovo,
           desc: p.descricao || [],
           video: p.video || null
         };
@@ -2564,19 +2578,20 @@ function abrirModal(produto) {
     }).join('');
   }
 
-  // Troca imagem ao selecionar cor — atualiza modalImgsAtual para 1 imagem (sem setas)
+  // Troca imagem ao selecionar cor — suporta múltiplas fotos por cor (aberta/fechada)
   grid.querySelectorAll('input[type="radio"]').forEach(radio => {
     radio.addEventListener('change', function () {
-      let imgPath = null;
-      if (info.corImgs) imgPath = info.corImgs[this.value];
-      if (!imgPath) {
+      let corImgVal = null;
+      if (info.corImgs) corImgVal = info.corImgs[this.value];
+      if (!corImgVal) {
         const corDef = CORES_DEF[this.value];
-        if (corDef && corDef.img) imgPath = corDef.img;
+        if (corDef) corImgVal = corDef.imgs || corDef.img || null;
       }
-      if (!imgPath && info.imgs && info.imgs[0]) imgPath = info.imgs[0];
-      if (imgPath) {
+      if (!corImgVal && info.imgs && info.imgs[0]) corImgVal = info.imgs[0];
+      if (corImgVal) {
+        const urls = Array.isArray(corImgVal) ? corImgVal : [corImgVal];
         const videoItem = modalMediaAtual.find(m => m.tipo === 'video');
-        modalMediaAtual = [{ tipo: 'imagem', url: imgPath }];
+        modalMediaAtual = urls.map(u => ({ tipo: 'imagem', url: u }));
         if (videoItem) modalMediaAtual.push(videoItem);
         atualizarImgModal(modalMediaAtual, 0);
       }
