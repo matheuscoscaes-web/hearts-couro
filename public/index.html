@@ -2219,12 +2219,19 @@ async function sincronizarProdutos() {
         if (p.video) info.video = p.video;
         if (Array.isArray(p.cores) && p.cores.length > 0) {
           if (!info.corImgs) info.corImgs = {};
-          p.cores.forEach(c => {
+          const newCoreKeys = [];
+          p.cores.forEach((c, i) => {
             if (!c.label) return;
             const key = c.key || `${p.chave}_${c.label.trim().replace(/\s+/g, '')}`;
+            // registra/atualiza no CORES_DEF para que o modal consiga renderizar
+            const imgPrincipal = (c.imgs && c.imgs[0]) || c.img || (CORES_DEF[key] && CORES_DEF[key].img) || '';
+            CORES_DEF[key] = { label: c.label, img: imgPrincipal, cor: c.cor || (CORES_DEF[key] && CORES_DEF[key].cor) || '#1a1a1a' };
             if (c.imgs && c.imgs.length > 0) info.corImgs[key] = c.imgs;
             else if (c.img) info.corImgs[key] = c.img;
+            newCoreKeys.push(key);
           });
+          // substitui o array de cores pelo que está no banco (inclui novas cores adicionadas)
+          info.cores = newCoreKeys;
         }
 
         const card = document.getElementById('card-' + p.chave);
