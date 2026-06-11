@@ -3456,9 +3456,9 @@ async function inicializarBrick(pedidoId, total, dados) {
   const cpfLimpo = (dados.cpf || '').replace(/\D/g, '');
 
   const metodosConfig = pagamentoPreferido === 'pix'
-    ? { bankTransfer: ['pix'], creditCard: 'none', debitCard: 'none' }
+    ? { bankTransfer: ['pix'] }
     : pagamentoPreferido === 'cartao'
-    ? { creditCard: 'all', debitCard: 'all', bankTransfer: 'none' }
+    ? { creditCard: 'all', debitCard: 'all' }
     : { creditCard: 'all', debitCard: 'all', bankTransfer: ['pix'] };
 
   window.paymentBrickController = await bricksBuilder.create('payment', 'paymentBrick_container', {
@@ -3492,7 +3492,11 @@ async function inicializarBrick(pedidoId, total, dados) {
     },
     callbacks: {
       onReady: () => {},
-      onError: (err) => console.error('Brick error:', err),
+      onError: (err) => {
+        console.error('Brick error:', err);
+        if (err?.cause === 'ALREADY_INITIALIZED') return;
+        alert('Erro ao carregar o formulário de pagamento. Tente recarregar a página.');
+      },
       onSubmit: ({ formData }) => {
         return new Promise(async (resolve, reject) => {
           try {
