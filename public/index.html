@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Hearts Couro Legítimo</title>
 <link rel="icon" type="image/png" href="logo2.0.png">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -35,6 +35,10 @@ body {
   padding: 2.5rem 1rem 4rem;
   position: relative;
   overflow-x: hidden;
+}
+
+@media (max-width: 619px) {
+  body { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)); }
 }
 
 /* Subtle radial glow */
@@ -97,23 +101,126 @@ body::before {
   margin: 1rem auto;
 }
 
-/* ── PRODUCT CARD ── */
-.promo-banner {
-  background-color: rgba(26, 26, 26, 0.98);
-  color: var(--gold);
-  text-align: center;
-  padding: 16px 14px;
-  font-size: 0.82rem;
-  letter-spacing: 0.9px;
-  text-transform: uppercase;
-  font-weight: 600;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 18px;
-  box-shadow: 0 18px 28px rgba(0, 0, 0, 0.22);
-  margin-bottom: 1rem;
-  position: relative;
-  z-index: 1;
+/* ── SHOP TOOLBAR ── */
+.shop-toolbar {
+  margin-bottom: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
 }
+.search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.search-wrap .search-ico {
+  position: absolute;
+  left: 0.9rem;
+  width: 16px; height: 16px;
+  color: var(--muted);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+.search-input {
+  width: 100%;
+  padding: 0.78rem 1rem 0.78rem 2.6rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.88rem;
+  color: var(--text);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  -webkit-appearance: none;
+}
+.search-input:focus {
+  border-color: var(--gold-light);
+  box-shadow: 0 0 0 3px rgba(201,150,60,0.12);
+}
+.search-input::placeholder { color: var(--muted); }
+.search-input::-webkit-search-cancel-button { -webkit-appearance: none; }
+
+.filter-row {
+  display: flex;
+  gap: 0.45rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+.filter-row::-webkit-scrollbar { display: none; }
+
+.f-chip {
+  flex-shrink: 0;
+  padding: 0.42rem 0.9rem;
+  border-radius: 50px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--muted);
+  font-family: 'Jost', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+.f-chip:hover { border-color: var(--gold-light); color: var(--gold); }
+.f-chip.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #1a1510;
+  font-weight: 600;
+}
+.f-chip.promo-chip.active {
+  background: linear-gradient(135deg, #e63946 0%, #c1121f 100%);
+  border-color: #c1121f;
+  color: #fff;
+}
+
+/* Promo badge no card */
+.promo-badge {
+  position: absolute;
+  top: 8px; left: 8px;
+  background: linear-gradient(135deg, #e63946 0%, #c1121f 100%);
+  color: #fff;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 0.22rem 0.55rem;
+  border-radius: 4px;
+  z-index: 3;
+  text-transform: uppercase;
+  box-shadow: 0 2px 8px rgba(198,18,31,0.4);
+}
+
+/* Preço riscado */
+.preco-original {
+  font-size: 0.68rem;
+  color: var(--muted);
+  text-decoration: line-through;
+  display: block;
+  line-height: 1.2;
+  margin-bottom: 0.05rem;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem 4rem;
+  color: var(--muted);
+  display: none;
+}
+.empty-state-icon { font-size: 2.2rem; margin-bottom: 0.7rem; }
+.empty-state h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.25rem; color: var(--text);
+  margin-bottom: 0.35rem;
+}
+.empty-state p { font-size: 0.8rem; }
 
 .product-card {
   background: var(--card-bg);
@@ -763,6 +870,44 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
   .products-grid .img-zone { height: 270px; }
 }
 
+/* No mobile, carrinho e wpp ficam no bottom nav */
+@media (max-width: 619px) {
+  .cart-icon-btn { display: none !important; }
+  .header-wpp-link { display: none !important; }
+}
+
+/* Header actions (desktop) */
+.header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 0.8rem;
+}
+.cart-icon-btn { margin-top: 0 !important; }
+
+.header-wpp-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1rem;
+  border-radius: 50px;
+  background: rgba(37,211,102,0.1);
+  border: 1px solid rgba(37,211,102,0.4);
+  color: #1a7a3c;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: background 0.2s, border-color 0.2s;
+}
+.header-wpp-link:hover {
+  background: rgba(37,211,102,0.2);
+  border-color: rgba(37,211,102,0.7);
+}
+
 /* ── Cart icon ── */
 .cart-icon-btn {
   position: relative;
@@ -1214,17 +1359,43 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
     <div class="clover"><img src="logo2.0.png" alt="Hearts Couro"></div>
     <div class="brand-sub">Couro Legítimo</div>
     <div class="gold-line"></div>
-    <button class="cart-icon-btn" id="btn-abrir-carrinho" onclick="abrirCarrinho()">
-      🛒 Carrinho
-      <span class="cart-badge" id="cart-badge" style="display:none">0</span>
-    </button>
+    <div class="header-actions">
+      <a class="header-wpp-link" href="https://wa.me/5521966668724?text=Ol%C3%A1%2C%20vim%20pelo%20site%20e%20preciso%20de%20ajuda!" target="_blank" rel="noopener">
+        <svg width="14" height="14" viewBox="0 0 32 32" fill="none"><path d="M16 2C8.268 2 2 8.268 2 16c0 2.47.664 4.786 1.822 6.782L2 30l7.418-1.794A13.934 13.934 0 0 0 16 30c7.732 0 14-6.268 14-14S23.732 2 16 2Z" fill="#25D366"/><path d="M22.003 19.394c-.303-.152-1.795-.885-2.073-.986-.278-.1-.48-.152-.683.152-.202.303-.783.986-.96 1.189-.177.202-.354.227-.657.076-.303-.152-1.28-.472-2.438-1.504-.9-.803-1.508-1.794-1.685-2.097-.177-.303-.019-.467.133-.618.136-.135.303-.354.455-.53.151-.177.202-.303.303-.505.1-.202.05-.379-.025-.53-.076-.152-.683-1.644-.936-2.25-.247-.59-.497-.51-.683-.52l-.581-.01c-.202 0-.53.076-.808.379-.278.303-1.06 1.035-1.06 2.525 0 1.49 1.085 2.929 1.236 3.132.152.202 2.136 3.26 5.178 4.572.724.312 1.288.499 1.728.639.727.231 1.388.199 1.911.12.583-.086 1.795-.734 2.049-1.443.253-.71.253-1.318.177-1.444-.075-.127-.278-.202-.58-.354Z" fill="#fff"/></svg>
+        Falar no WhatsApp
+      </a>
+      <button class="cart-icon-btn" id="btn-abrir-carrinho" onclick="abrirCarrinho()">
+        🛒 Carrinho
+        <span class="cart-badge" id="cart-badge" style="display:none">0</span>
+      </button>
+    </div>
   </div>
 
-  <!-- ══ PRODUCT CARD ══ -->
-   <div class="promo-banner">
-  Nosso Portfólio!
-</div>
+  <!-- ══ SHOP TOOLBAR ══ -->
+  <div class="shop-toolbar">
+    <div class="search-wrap">
+      <svg class="search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" id="search-input" class="search-input" placeholder="Buscar bolsa por nome..." autocomplete="off" inputmode="search">
+    </div>
+    <div class="filter-row" id="filter-chips">
+      <button class="f-chip active" data-filter="todas">Todas</button>
+      <button class="f-chip promo-chip" data-filter="promo">🏷 Em Promoção</button>
+      <button class="f-chip" data-filter="menor-preco">↑ Menor preço</button>
+      <button class="f-chip" data-filter="maior-preco">↓ Maior preço</button>
+    </div>
+    <div class="filter-row" id="price-chips">
+      <button class="f-chip active" data-price="0">Todos os valores</button>
+      <button class="f-chip" data-price="200">Até R$200</button>
+      <button class="f-chip" data-price="250">Até R$250</button>
+      <button class="f-chip" data-price="300">Até R$300</button>
+    </div>
+  </div>
 
+  <div class="empty-state" id="empty-state">
+    <div class="empty-state-icon">🔍</div>
+    <h3>Nenhuma bolsa encontrada</h3>
+    <p>Tente outro nome ou ajuste os filtros.</p>
+  </div>
 
   <!-- ══ GRID DE PRODUTOS ══ -->
   <div class="products-grid">
@@ -2196,6 +2367,79 @@ const PRODUTOS_INFO = {
 };
 
 /* ══════════════════════════════════════════
+   FILTROS E BUSCA
+═══════════════════════════════════════════ */
+let TODOS_PRODUTOS_LISTA = [];
+let FILTRO_ATUAL    = 'todas';
+let PRECO_MAX_ATUAL = 0;
+
+function aplicarFiltros() {
+  const busca    = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
+  const filtro   = FILTRO_ATUAL;
+  const precoMax = PRECO_MAX_ATUAL;
+  const grid     = document.querySelector('.products-grid');
+  const empty    = document.getElementById('empty-state');
+
+  let lista = [...TODOS_PRODUTOS_LISTA];
+
+  if (busca) {
+    lista = lista.filter(p => (p.nome || '').toLowerCase().includes(busca));
+  }
+  if (filtro === 'promo') {
+    lista = lista.filter(p => p.preco_original && p.preco_original > p.preco);
+  }
+  if (precoMax > 0) {
+    lista = lista.filter(p => p.preco <= precoMax);
+  }
+
+  if (filtro === 'menor-preco') {
+    lista.sort((a, b) => a.preco - b.preco);
+  } else if (filtro === 'maior-preco') {
+    lista.sort((a, b) => b.preco - a.preco);
+  } else if (filtro === 'promo') {
+    lista.sort((a, b) => {
+      const dA = a.preco_original ? (a.preco_original - a.preco) : 0;
+      const dB = b.preco_original ? (b.preco_original - b.preco) : 0;
+      return dB - dA;
+    });
+  }
+
+  TODOS_PRODUTOS_LISTA.forEach(p => {
+    const el = document.getElementById('card-' + p.chave);
+    if (el) el.style.display = 'none';
+  });
+
+  lista.forEach(p => {
+    const el = document.getElementById('card-' + p.chave);
+    if (el) { el.style.display = ''; grid.appendChild(el); }
+  });
+
+  if (empty) empty.style.display = lista.length === 0 ? 'block' : 'none';
+}
+
+function initFiltros() {
+  document.getElementById('search-input')?.addEventListener('input', aplicarFiltros);
+
+  document.getElementById('filter-chips')?.addEventListener('click', e => {
+    const btn = e.target.closest('.f-chip');
+    if (!btn) return;
+    document.querySelectorAll('#filter-chips .f-chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    FILTRO_ATUAL = btn.dataset.filter;
+    aplicarFiltros();
+  });
+
+  document.getElementById('price-chips')?.addEventListener('click', e => {
+    const btn = e.target.closest('.f-chip');
+    if (!btn) return;
+    document.querySelectorAll('#price-chips .f-chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    PRECO_MAX_ATUAL = parseInt(btn.dataset.price) || 0;
+    aplicarFiltros();
+  });
+}
+
+/* ══════════════════════════════════════════
    SINCRONIZAÇÃO COM O BANCO
 ═══════════════════════════════════════════ */
 async function sincronizarProdutos() {
@@ -2207,6 +2451,8 @@ async function sincronizarProdutos() {
 
     // Ordena para respeitar o campo `ordem` do banco
     produtos.sort((a, b) => (a.ordem || 99) - (b.ordem || 99));
+
+    TODOS_PRODUTOS_LISTA = [];
 
     produtos.forEach(p => {
       const info = PRODUTOS_INFO[p.chave];
@@ -2239,6 +2485,15 @@ async function sincronizarProdutos() {
 
         card.style.display = p.ativo ? '' : 'none';
 
+        if (p.ativo) {
+          TODOS_PRODUTOS_LISTA.push({
+            chave: p.chave,
+            nome: p.nome || (info && info.nome) || p.chave,
+            preco: p.preco,
+            preco_original: p.preco_original || null
+          });
+        }
+
         const precoEl = card.querySelector('.prod-price');
         if (precoEl) precoEl.textContent = 'R$ ' + p.preco + ',00';
 
@@ -2250,6 +2505,23 @@ async function sincronizarProdutos() {
         if (p.imgs && p.imgs.length > 0) {
           const imgEl = card.querySelector('.img-zone img');
           if (imgEl) imgEl.src = p.imgs[0];
+        }
+
+        if (p.ativo && p.preco_original && p.preco_original > p.preco) {
+          const imgZone = card.querySelector('.img-zone');
+          if (imgZone && !imgZone.querySelector('.promo-badge')) {
+            const badge = document.createElement('div');
+            badge.className = 'promo-badge';
+            badge.textContent = 'OFERTA';
+            imgZone.appendChild(badge);
+          }
+          const precoBl = card.querySelector('.prod-price-block');
+          if (precoBl && !precoBl.querySelector('.preco-original')) {
+            const riscado = document.createElement('span');
+            riscado.className = 'preco-original';
+            riscado.textContent = 'De: R$ ' + p.preco_original + ',00';
+            precoBl.insertBefore(riscado, precoBl.firstChild);
+          }
         }
       } else if (p.ativo && grid && !document.getElementById('card-' + p.chave)) {
         // Produto novo (só no banco) — cria card dinamicamente
@@ -2289,9 +2561,11 @@ async function sincronizarProdutos() {
         card.className = 'product-card produto-card-sel';
         card.id = 'card-' + p.chave;
         card.onclick = () => abrirModal(p.chave);
+        const isPromo = p.preco_original && p.preco_original > p.preco;
         card.innerHTML = `
           <div class="img-zone">
             ${imgSrc ? `<img alt="${p.nome}" src="${imgSrc}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;">` : ''}
+            ${isPromo ? '<div class="promo-badge">OFERTA</div>' : ''}
           </div>
           <div class="prod-info">
             <div class="prod-tag">✦ Hearts Couro Legítimo</div>
@@ -2299,6 +2573,7 @@ async function sincronizarProdutos() {
             <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
             <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">${descHtml}</div>
             <div class="prod-price-block">
+              ${isPromo ? `<span class="preco-original">De: R$ ${p.preco_original},00</span>` : ''}
               <div class="price-lbl">Valor</div>
               <div class="prod-price">R$ ${p.preco},00</div>
             </div>
@@ -2306,8 +2581,16 @@ async function sincronizarProdutos() {
           <div class="prod-select-btn">Ver detalhes</div>
         `;
         grid.appendChild(card);
+        TODOS_PRODUTOS_LISTA.push({
+          chave: p.chave,
+          nome: p.nome,
+          preco: p.preco,
+          preco_original: p.preco_original || null
+        });
       }
     });
+
+    aplicarFiltros();
 
     const paramP = new URLSearchParams(window.location.search).get('p');
     if (paramP && PRODUTOS_INFO[paramP] && PRODUTOS_INFO[paramP].ativo !== false) {
@@ -2317,7 +2600,10 @@ async function sincronizarProdutos() {
     console.error('Erro ao sincronizar produtos:', e);
   }
 }
-document.addEventListener('DOMContentLoaded', sincronizarProdutos);
+document.addEventListener('DOMContentLoaded', () => {
+  sincronizarProdutos();
+  initFiltros();
+});
 
 /* ══════════════════════════════════════════
    CARRINHO
@@ -2335,6 +2621,7 @@ function atualizarCartBadge() {
   const badge = document.getElementById('cart-badge');
   badge.textContent = total;
   badge.style.display = total > 0 ? 'inline-flex' : 'none';
+  atualizarBottomNav();
 }
 
 function renderCarrinhoDrawer() {
@@ -3160,6 +3447,7 @@ function carregarSessao() {
 }
 
 function atualizarEstadoConta() {
+  atualizarBottomNav();
   const guest = document.getElementById('conta-guest');
   const user  = document.getElementById('conta-user');
   const nome  = document.getElementById('conta-user-nome');
@@ -3606,36 +3894,143 @@ async function carregarMeusPedidos() {
     lista.innerHTML = '<div style="text-align:center;color:#c0614a;padding:2rem 0;font-size:0.85rem;">Erro ao carregar pedidos.</div>';
   }
 }
+
+/* ══════════════════════════════════════════
+   BOTTOM NAVIGATION
+═══════════════════════════════════════════ */
+function bnBuscar() {
+  const input = document.getElementById('search-input');
+  if (!input) return;
+  input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  setTimeout(() => input.focus(), 350);
+  bnSetActive('bn-buscar');
+}
+
+function bnSetActive(id) {
+  document.querySelectorAll('.bn-tab').forEach(t => t.classList.remove('bn-active'));
+  document.getElementById(id)?.classList.add('bn-active');
+}
+
+function atualizarBottomNav() {
+  const badge = document.getElementById('bn-cart-badge');
+  const total = carrinho.reduce((s, i) => s + i.quantidade, 0);
+  if (badge) {
+    badge.textContent = total;
+    badge.style.display = total > 0 ? 'inline-flex' : 'none';
+  }
+}
+
+// Scroll para definir aba ativa
+window.addEventListener('scroll', () => {
+  const toolbar = document.querySelector('.shop-toolbar');
+  if (!toolbar) return;
+  const rect = toolbar.getBoundingClientRect();
+  if (rect.top < 80) {
+    bnSetActive('bn-buscar');
+  } else {
+    bnSetActive('bn-inicio');
+  }
+}, { passive: true });
 </script>
 
-<!-- Botão flutuante WhatsApp -->
-<a href="https://wa.me/5521966668724?text=Ol%C3%A1%2C%20vim%20pelo%20site%20e%20preciso%20de%20ajuda%20com%20um%20pedido%20Hearts%20Couro!" target="_blank" rel="noopener" id="wpp-btn" aria-label="Falar no WhatsApp" title="Falar no WhatsApp">
-  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" width="30" height="30">
-    <path d="M16 2C8.268 2 2 8.268 2 16c0 2.47.664 4.786 1.822 6.782L2 30l7.418-1.794A13.934 13.934 0 0 0 16 30c7.732 0 14-6.268 14-14S23.732 2 16 2Z" fill="#25D366"/>
-    <path d="M22.003 19.394c-.303-.152-1.795-.885-2.073-.986-.278-.1-.48-.152-.683.152-.202.303-.783.986-.96 1.189-.177.202-.354.227-.657.076-.303-.152-1.28-.472-2.438-1.504-.9-.803-1.508-1.794-1.685-2.097-.177-.303-.019-.467.133-.618.136-.135.303-.354.455-.53.151-.177.202-.303.303-.505.1-.202.05-.379-.025-.53-.076-.152-.683-1.644-.936-2.25-.247-.59-.497-.51-.683-.52l-.581-.01c-.202 0-.53.076-.808.379-.278.303-1.06 1.035-1.06 2.525 0 1.49 1.085 2.929 1.236 3.132.152.202 2.136 3.26 5.178 4.572.724.312 1.288.499 1.728.639.727.231 1.388.199 1.911.12.583-.086 1.795-.734 2.049-1.443.253-.71.253-1.318.177-1.444-.075-.127-.278-.202-.58-.354Z" fill="#fff"/>
-  </svg>
-</a>
+<!-- ══ BOTTOM NAVIGATION (mobile) ══ -->
+<nav class="bottom-nav" id="bottom-nav">
+  <button class="bn-tab bn-active" id="bn-inicio" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"/><polyline points="9 21 9 13 15 13 15 21"/>
+    </svg>
+    Início
+  </button>
+  <button class="bn-tab" id="bn-buscar" onclick="bnBuscar()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    Buscar
+  </button>
+  <button class="bn-tab" id="bn-carrinho" onclick="abrirCarrinho()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+    </svg>
+    <span class="bn-badge" id="bn-cart-badge">0</span>
+    Carrinho
+  </button>
+  <a class="bn-tab" id="bn-falar" href="https://wa.me/5521966668724?text=Ol%C3%A1%2C%20vim%20pelo%20site%20e%20preciso%20de%20ajuda!" target="_blank" rel="noopener">
+    <svg viewBox="0 0 32 32" fill="none" width="22" height="22">
+      <path d="M16 2C8.268 2 2 8.268 2 16c0 2.47.664 4.786 1.822 6.782L2 30l7.418-1.794A13.934 13.934 0 0 0 16 30c7.732 0 14-6.268 14-14S23.732 2 16 2Z" fill="#25D366"/>
+      <path d="M22.003 19.394c-.303-.152-1.795-.885-2.073-.986-.278-.1-.48-.152-.683.152-.202.303-.783.986-.96 1.189-.177.202-.354.227-.657.076-.303-.152-1.28-.472-2.438-1.504-.9-.803-1.508-1.794-1.685-2.097-.177-.303-.019-.467.133-.618.136-.135.303-.354.455-.53.151-.177.202-.303.303-.505.1-.202.05-.379-.025-.53-.076-.152-.683-1.644-.936-2.25-.247-.59-.497-.51-.683-.52l-.581-.01c-.202 0-.53.076-.808.379-.278.303-1.06 1.035-1.06 2.525 0 1.49 1.085 2.929 1.236 3.132.152.202 2.136 3.26 5.178 4.572.724.312 1.288.499 1.728.639.727.231 1.388.199 1.911.12.583-.086 1.795-.734 2.049-1.443.253-.71.253-1.318.177-1.444-.075-.127-.278-.202-.58-.354Z" fill="#fff"/>
+    </svg>
+    Falar
+  </a>
+</nav>
+
 <style>
-#wpp-btn {
-  position: fixed;
-  bottom: 1.5rem;
-  right: 1.5rem;
-  z-index: 9999;
-  background: #25D366;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
+/* ── Bottom Navigation ── */
+.bottom-nav {
+  display: none;
+}
+@media (max-width: 619px) {
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 500;
+    background: #ffffff;
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+    height: calc(62px + env(safe-area-inset-bottom, 0px));
+    align-items: stretch;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+.bn-tab {
+  flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 16px rgba(37,211,102,0.45);
-  transition: transform 0.2s, box-shadow 0.2s;
+  gap: 3px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #9a8a75;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.15s;
+}
+.bn-tab:active { color: var(--gold); }
+.bn-tab.bn-active { color: var(--gold); }
+.bn-tab svg { width: 22px; height: 22px; flex-shrink: 0; }
+
+/* Badge no ícone do carrinho */
+.bn-badge {
+  position: absolute;
+  top: 6px; right: calc(50% - 18px);
+  background: var(--gold);
+  color: #fff;
+  font-size: 0.52rem;
+  font-weight: 700;
+  border-radius: 50%;
+  width: 15px; height: 15px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* Aba Falar (WhatsApp) no bottom nav */
+.bn-tab.bn-falar, a.bn-tab#bn-falar {
+  color: #9a8a75;
   text-decoration: none;
 }
-#wpp-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 22px rgba(37,211,102,0.6);
-}
+a.bn-tab#bn-falar:active { color: #1a7a3c; }
 </style>
 
 </body>
