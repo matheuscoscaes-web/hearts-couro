@@ -1110,20 +1110,21 @@ app.put('/api/admin/produtos/:chave', async (req, res) => {
   if (senha !== process.env.ADMIN_SENHA) return res.status(401).json({ erro: 'Não autorizado.' });
 
   const { chave } = req.params;
-  const { nome, preco, ativo, desc, imgs, cores, video, altura, largura, comprimento, peso } = req.body;
+  const { nome, preco, preco_original, ativo, desc, imgs, cores, video, altura, largura, comprimento, peso } = req.body;
   try {
     const update = {};
-    if (nome        !== undefined) update.nome        = nome;
-    if (preco       !== undefined) update.preco       = parseInt(preco);
-    if (ativo       !== undefined) update.ativo       = ativo;
-    if (desc        !== undefined) update.descricao   = desc;
-    if (imgs        !== undefined) update.imgs        = imgs;
-    if (cores       !== undefined) update.cores       = cores;
-    if (video       !== undefined) update.video       = video;
-    if (altura      !== undefined) update.altura      = altura;
-    if (largura     !== undefined) update.largura     = largura;
-    if (comprimento !== undefined) update.comprimento = comprimento;
-    if (peso        !== undefined) update.peso        = peso;
+    if (nome           !== undefined) update.nome           = nome;
+    if (preco          !== undefined) update.preco          = parseInt(preco);
+    if (preco_original !== undefined) update.preco_original = preco_original === null ? null : parseFloat(preco_original);
+    if (ativo          !== undefined) update.ativo          = ativo;
+    if (desc           !== undefined) update.descricao      = desc;
+    if (imgs           !== undefined) update.imgs           = imgs;
+    if (cores          !== undefined) update.cores          = cores;
+    if (video          !== undefined) update.video          = video;
+    if (altura         !== undefined) update.altura         = altura;
+    if (largura        !== undefined) update.largura        = largura;
+    if (comprimento    !== undefined) update.comprimento    = comprimento;
+    if (peso           !== undefined) update.peso           = peso;
 
     const { error } = await supabase.from('produtos').update(update).eq('chave', chave);
     if (error) throw error;

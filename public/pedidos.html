@@ -1440,9 +1440,13 @@
                       <div style="font-weight:600;font-size:1rem;color:var(--text);">${p.nome}</div>
                       <div style="font-size:0.75rem;color:var(--muted);">chave: ${p.chave}</div>
                     </div>
-                    <div style="display:flex;align-items:center;gap:0.4rem;">
+                    <div style="display:flex;align-items:center;gap:0.4rem;" title="Preço atual">
                       <span style="font-size:0.75rem;color:var(--muted);">R$</span>
                       <input type="number" value="${p.preco}" min="1" style="width:80px;padding:0.4rem 0.5rem;border:1px solid var(--border);border-radius:6px;font-size:0.95rem;font-family:'Jost',sans-serif;" id="preco-${p.chave}">
+                    </div>
+                    <div style="display:flex;align-items:center;gap:0.4rem;" title="Preço original (deixe vazio para remover promoção)">
+                      <span style="font-size:0.7rem;color:#e63946;white-space:nowrap;">De R$</span>
+                      <input type="number" value="${p.preco_original || ''}" min="1" placeholder="—" style="width:72px;padding:0.4rem 0.5rem;border:1px solid #e6394640;border-radius:6px;font-size:0.95rem;font-family:'Jost',sans-serif;color:#e63946;" id="preco-original-${p.chave}">
                     </div>
                     <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.85rem;color:var(--text);">
                       <input type="checkbox" ${p.ativo ? 'checked' : ''} id="ativo-${p.chave}" onchange="salvarProduto('${p.chave}')">
@@ -1603,11 +1607,13 @@
         async function salvarProduto(chave) {
             const preco = parseInt(document.getElementById('preco-' + chave).value);
             const ativo = document.getElementById('ativo-' + chave).checked;
+            const precoOriginalRaw = document.getElementById('preco-original-' + chave)?.value;
+            const preco_original = precoOriginalRaw ? parseFloat(precoOriginalRaw) : null;
 
             const resp = await fetch('/api/admin/produtos/' + chave, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'senha': _adminSenha },
-                body: JSON.stringify({ preco, ativo })
+                body: JSON.stringify({ preco, ativo, preco_original })
             });
             if (resp.ok) toast('Produto atualizado!', 'success');
             else toast('Erro ao salvar.', 'error');
