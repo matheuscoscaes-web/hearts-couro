@@ -776,17 +776,65 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
   padding: 0.18rem 0.55rem; border-radius: 4px;
 }
 
-/* Parcelas dropdown — aparece quando link é selecionado */
-.parcelas-wrap {
-  margin-top: 0.8rem;
+/* ── Simulador de pagamento ── */
+.pay-preview {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
   overflow: hidden;
-  max-height: 0;
-  opacity: 0;
-  transition: max-height 0.35s ease, opacity 0.3s ease, margin 0.3s ease;
+  margin-top: 0.2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
-.parcelas-wrap.visible {
-  max-height: 80px;
-  opacity: 1;
+.pay-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+}
+.pay-pix {
+  background: rgba(37,211,102,0.05);
+  border-bottom: 1px solid var(--border);
+}
+.pay-card-header {
+  border-bottom: 1px solid var(--border);
+}
+.pay-icon { font-size: 1.2rem; width: 26px; text-align: center; flex-shrink: 0; }
+.pay-info { flex: 1; }
+.pay-method-name {
+  font-size: 0.82rem; font-weight: 600; color: var(--text);
+}
+.pay-method-sub {
+  font-size: 0.67rem; color: var(--muted); margin-top: 1px;
+}
+.pay-pix-val {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.15rem; font-weight: 600; color: var(--text);
+  flex-shrink: 0;
+}
+.pay-parcelas-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+.pay-parcela {
+  padding: 0.55rem 0.75rem;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.pay-parcela:nth-child(3n) { border-right: none; }
+.pay-parcela:nth-last-child(-n+3) { border-bottom: none; }
+.pay-parcela-num { font-size: 0.6rem; color: var(--muted); line-height: 1.4; }
+.pay-parcela-val {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.92rem; font-weight: 600; color: var(--text); line-height: 1.3;
+}
+.pay-parcela-tag {
+  font-size: 0.56rem; color: #2d9e5e; font-weight: 500; line-height: 1.4;
+}
+.pay-note {
+  font-size: 0.63rem; color: var(--muted);
+  text-align: center; padding: 0.5rem 1rem;
+  border-top: 1px solid var(--border);
+  line-height: 1.5;
 }
 
 @media (max-width: 520px) {
@@ -1853,8 +1901,30 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
         <!-- Forma de pagamento -->
         <div class="section-label">Forma de pagamento <span style="color:var(--gold);font-size:0.7rem">*</span></div>
 
-        <div style="background:rgba(201,150,60,0.07);border:1px solid rgba(201,150,60,0.25);border-radius:10px;padding:0.8rem 1rem;font-size:0.82rem;color:var(--muted);line-height:1.6;">
-          💳 &nbsp;Você escolhe a forma de pagamento na próxima etapa — <strong style="color:var(--gold-light);">Pix ou cartão de crédito</strong>, tudo dentro do site.
+        <div class="pay-preview" id="pay-preview">
+          <!-- Pix -->
+          <div class="pay-row pay-pix">
+            <div class="pay-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#25D366" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="pay-info">
+              <div class="pay-method-name">Pix</div>
+              <div class="pay-method-sub">Pagamento instantâneo · aprovação na hora</div>
+            </div>
+            <div class="pay-pix-val" id="pix-preview-val">—</div>
+          </div>
+          <!-- Cartão -->
+          <div class="pay-row pay-card-header">
+            <div class="pay-icon">💳</div>
+            <div class="pay-info">
+              <div class="pay-method-name">Cartão de crédito</div>
+              <div class="pay-method-sub">Parcele em até 6x sem juros</div>
+            </div>
+          </div>
+          <div class="pay-parcelas-grid" id="parcelas-preview">
+            <div class="pay-parcela"><div class="pay-parcela-num">Calculando…</div></div>
+          </div>
+          <div class="pay-note">7x ou mais disponível com juros · você escolhe na próxima etapa</div>
         </div>
 
         <!-- Observações -->
@@ -2700,6 +2770,7 @@ function renderCarrinhoForm() {
 
   const freteRadio = document.querySelector('input[name="frete"]:checked');
   if (freteRadio) atualizarTotal(freteRadio);
+  else atualizarParcelas(totalCarrinho());
 }
 
 function recalcularFreteSeNecessario() {
@@ -3074,6 +3145,26 @@ function renderizarFrete(opcoes) {
   container.style.display = 'flex';
 }
 
+function atualizarParcelas(total) {
+  const pixEl  = document.getElementById('pix-preview-val');
+  const grid   = document.getElementById('parcelas-preview');
+  if (!pixEl || !grid) return;
+  if (!total || total <= 0) { pixEl.textContent = '—'; grid.innerHTML = ''; return; }
+
+  pixEl.textContent = fmt(total);
+
+  let html = '';
+  for (let i = 1; i <= 6; i++) {
+    const val = (total / i).toFixed(2).replace('.', ',');
+    html += `<div class="pay-parcela">
+      <div class="pay-parcela-num">${i}x de</div>
+      <div class="pay-parcela-val">R$ ${val}</div>
+      <div class="pay-parcela-tag">sem juros</div>
+    </div>`;
+  }
+  grid.innerHTML = html;
+}
+
 function atualizarTotal(radio) {
   const frete = parseFloat(radio.dataset.preco);
   const nome  = radio.dataset.nome;
@@ -3082,6 +3173,7 @@ function atualizarTotal(radio) {
   document.getElementById('total-frete-valor').textContent = fmt(frete);
   document.getElementById('total-geral').textContent       = fmt(total);
   if (totalCarrinho() > 0) document.getElementById('total-box').style.display = 'block';
+  atualizarParcelas(total);
 }
 
 async function calcularFrete(cep) {
