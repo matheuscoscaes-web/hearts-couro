@@ -794,6 +794,13 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
 .pay-pix {
   background: rgba(37,211,102,0.05);
   border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.pay-pix:hover { background: rgba(37,211,102,0.1); }
+.pay-pix.pay-selected {
+  background: rgba(37,211,102,0.13);
+  border-left: 3px solid #25D366;
 }
 .pay-card-header {
   border-bottom: 1px solid var(--border);
@@ -819,6 +826,15 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
   padding: 0.55rem 0.75rem;
   border-right: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.pay-parcela:hover { background: rgba(201,150,60,0.06); }
+.pay-parcela.pay-selected {
+  background: rgba(201,150,60,0.12);
+  outline: 2px solid var(--gold-light);
+  outline-offset: -2px;
 }
 .pay-parcela:nth-child(3n) { border-right: none; }
 .pay-parcela:nth-last-child(-n+3) { border-bottom: none; }
@@ -1903,7 +1919,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
 
         <div class="pay-preview" id="pay-preview">
           <!-- Pix -->
-          <div class="pay-row pay-pix">
+          <div class="pay-row pay-pix" onclick="selecionarPagamentoPrev('pix', null)">
             <div class="pay-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#25D366" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
@@ -3145,6 +3161,22 @@ function renderizarFrete(opcoes) {
   container.style.display = 'flex';
 }
 
+let pagamentoPreferido = null; // null | 'pix' | 'cartao'
+let parcelasPreferidas = null; // null | 1-6
+
+function selecionarPagamentoPrev(metodo, parcelas) {
+  pagamentoPreferido = metodo;
+  parcelasPreferidas = parcelas || null;
+
+  // Visual: pix
+  document.querySelector('.pay-pix')?.classList.toggle('pay-selected', metodo === 'pix');
+
+  // Visual: parcelas
+  document.querySelectorAll('.pay-parcela').forEach(el => {
+    el.classList.toggle('pay-selected', metodo === 'cartao' && parseInt(el.dataset.parcela) === parcelas);
+  });
+}
+
 function atualizarParcelas(total) {
   const pixEl  = document.getElementById('pix-preview-val');
   const grid   = document.getElementById('parcelas-preview');
@@ -3156,13 +3188,20 @@ function atualizarParcelas(total) {
   let html = '';
   for (let i = 1; i <= 6; i++) {
     const val = (total / i).toFixed(2).replace('.', ',');
-    html += `<div class="pay-parcela">
+    html += `<div class="pay-parcela" data-parcela="${i}" onclick="selecionarPagamentoPrev('cartao',${i})">
       <div class="pay-parcela-num">${i}x de</div>
       <div class="pay-parcela-val">R$ ${val}</div>
       <div class="pay-parcela-tag">sem juros</div>
     </div>`;
   }
   grid.innerHTML = html;
+
+  // Restaura seleção visual após re-render
+  if (pagamentoPreferido === 'pix') {
+    document.querySelector('.pay-pix')?.classList.add('pay-selected');
+  } else if (pagamentoPreferido === 'cartao' && parcelasPreferidas) {
+    document.querySelector(`.pay-parcela[data-parcela="${parcelasPreferidas}"]`)?.classList.add('pay-selected');
+  }
 }
 
 function atualizarTotal(radio) {
@@ -3414,9 +3453,16 @@ async function inicializarBrick(pedidoId, total, dados) {
 
   const cpfLimpo = (dados.cpf || '').replace(/\D/g, '');
 
+  const metodosConfig = pagamentoPreferido === 'pix'
+    ? { bankTransfer: ['pix'], creditCard: 'none', debitCard: 'none' }
+    : pagamentoPreferido === 'cartao'
+    ? { creditCard: 'all', debitCard: 'all', bankTransfer: 'none' }
+    : { creditCard: 'all', debitCard: 'all', bankTransfer: ['pix'] };
+
   window.paymentBrickController = await bricksBuilder.create('payment', 'paymentBrick_container', {
     initialization: {
       amount: total,
+      ...(pagamentoPreferido === 'cartao' && parcelasPreferidas && { installments: parcelasPreferidas }),
       payer: {
         entityType:  'individual',
         firstName:   dados.nome,
@@ -3428,11 +3474,7 @@ async function inicializarBrick(pedidoId, total, dados) {
       }
     },
     customization: {
-      paymentMethods: {
-        creditCard: 'all',
-        debitCard:  'all',
-        bankTransfer: ['pix'],
-      },
+      paymentMethods: metodosConfig,
       visual: {
         style: {
           theme: 'default',
@@ -3991,6 +4033,7 @@ async function carregarMeusPedidos() {
    BOTTOM NAVIGATION
 ═══════════════════════════════════════════ */
 function bnBuscar() {
+  fecharCarrinho();
   const input = document.getElementById('search-input');
   if (!input) return;
   input.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -4027,7 +4070,7 @@ window.addEventListener('scroll', () => {
 
 <!-- ══ BOTTOM NAVIGATION (mobile) ══ -->
 <nav class="bottom-nav" id="bottom-nav">
-  <button class="bn-tab bn-active" id="bn-inicio" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <button class="bn-tab bn-active" id="bn-inicio" onclick="fecharCarrinho();window.scrollTo({top:0,behavior:'smooth'})">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
       <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"/><polyline points="9 21 9 13 15 13 15 21"/>
     </svg>
