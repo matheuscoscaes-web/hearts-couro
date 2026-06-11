@@ -300,21 +300,17 @@ app.post('/api/preparar-pedido', async (req, res) => {
   body.produto = itens[0].produto;
   body.cor     = itens[0].cor;
 
-  // Verifica estoque
+  // Verifica estoque — só pagamentos confirmados descontam estoque
   try {
-    const reservaDesde = new Date(Date.now() - 20 * 60 * 1000).toISOString();
-    const [{ data: confirmados }, { data: pendentes }, estoqueMap] = await Promise.all([
+    const [{ data: confirmados }, estoqueMap] = await Promise.all([
       supabase.from('pedidos').select('produto, cor')
         .in('status', ['approved', 'etiqueta_criada', 'enviado', 'entregue', 'retirado'])
         .gte('created_at', ESTOQUE_RESET_DATA),
-      supabase.from('pedidos').select('produto, cor')
-        .eq('status', 'aguardando_pagamento')
-        .gte('created_at', reservaDesde),
       carregarEstoqueMap()
     ]);
 
     const ocupados = {};
-    [...(confirmados || []), ...(pendentes || [])].forEach(p => {
+    (confirmados || []).forEach(p => {
       if (p.cor) ocupados[p.cor] = (ocupados[p.cor] || 0) + 1;
     });
 
@@ -458,23 +454,17 @@ app.post('/api/criar-pagamento', async (req, res) => {
   body.produto = itens[0].produto;
   body.cor     = itens[0].cor;
 
-  // 0. Verifica estoque antes de criar o pedido
-  // Conta confirmados + aguardando dos últimos 20 min (reserva contra compra simultânea)
+  // 0. Verifica estoque — só pagamentos confirmados descontam estoque
   try {
-    const reservaDesde = new Date(Date.now() - 20 * 60 * 1000).toISOString();
-
-    const [{ data: confirmados }, { data: pendentes }, estoqueMap] = await Promise.all([
+    const [{ data: confirmados }, estoqueMap] = await Promise.all([
       supabase.from('pedidos').select('produto, cor')
         .in('status', ['approved', 'etiqueta_criada', 'enviado', 'entregue', 'retirado'])
         .gte('created_at', ESTOQUE_RESET_DATA),
-      supabase.from('pedidos').select('produto, cor')
-        .eq('status', 'aguardando_pagamento')
-        .gte('created_at', reservaDesde),
       carregarEstoqueMap()
     ]);
 
     const ocupados = {};
-    [...(confirmados || []), ...(pendentes || [])].forEach(p => {
+    (confirmados || []).forEach(p => {
       if (p.cor) ocupados[p.cor] = (ocupados[p.cor] || 0) + 1;
     });
 

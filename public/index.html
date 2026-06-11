@@ -2981,11 +2981,13 @@ function abrirModal(produto) {
 
   document.getElementById('produto-modal').style.display = 'flex';
   document.body.style.overflow = 'hidden';
+  document.getElementById('bottom-nav')?.style.setProperty('display', 'none', 'important');
 }
 
 function fecharModal() {
   document.getElementById('produto-modal').style.display = 'none';
   document.body.style.overflow = '';
+  document.getElementById('bottom-nav')?.style.removeProperty('display');
 }
 
 function fecharModalFora(e) {
