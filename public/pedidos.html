@@ -588,6 +588,10 @@
             <span class="sidebar-item-icon">🛍</span>
             <span class="sidebar-item-label">Produtos</span>
         </button>
+        <button class="sidebar-item" id="side-sessoes" onclick="fecharMenu(); mostrarSessoes()">
+            <span class="sidebar-item-icon">🗂</span>
+            <span class="sidebar-item-label">Sessões</span>
+        </button>
 
         <div class="sidebar-divider"></div>
 
@@ -630,6 +634,7 @@
             <button class="tab-btn" data-status="resumo" onclick="mostrarResumo()">Resumo de Vendas</button>
             <button id="btn-verificar-todos" class="tab-btn" onclick="verificarTodos()" style="background:rgba(80,160,255,0.15);border-color:#50a0ff;color:#50a0ff;">🔄 Verificar Todos</button>
             <button class="tab-btn" onclick="mostrarProdutos()" id="tab-produtos" style="background:rgba(201,150,60,0.15);border-color:var(--gold-light);color:var(--gold);">🛍 Produtos</button>
+            <button class="tab-btn" onclick="mostrarSessoes()" id="tab-sessoes" style="background:rgba(130,80,200,0.12);border-color:#9060c0;color:#7040a0;">🗂 Sessões</button>
             <button class="tab-btn" onclick="abrirModalVenda()" style="background:rgba(37,211,102,0.12);border-color:#25d366;color:#1a9e4a;">➕ Venda Manual</button>
         </div>
 
@@ -808,6 +813,7 @@
         <div class="orders-grid" id="grid"></div>
         <div class="resumo-container" id="resumo-view" style="display:none;"></div>
         <div id="produtos-view" style="display:none; padding:1.5rem 1rem; max-width:900px; margin:0 auto;"></div>
+        <div id="sessoes-view" style="display:none; padding:1.5rem 1rem; max-width:1100px; margin:0 auto;"></div>
     </div>
 
     <script>
@@ -995,6 +1001,8 @@
         // ── RENDER CARDS ──────────────────────────────────────────────────
         function filtrar(status) {
             document.getElementById('resumo-view').style.display = 'none';
+            document.getElementById('produtos-view').style.display = 'none';
+            document.getElementById('sessoes-view').style.display = 'none';
             const grid = document.getElementById('grid');
             grid.style.display = 'grid';
             grid.innerHTML = '';
@@ -1124,6 +1132,8 @@
         // ── RESUMO ────────────────────────────────────────────────────────
         function mostrarResumo() {
             document.getElementById('grid').style.display = 'none';
+            document.getElementById('produtos-view').style.display = 'none';
+            document.getElementById('sessoes-view').style.display = 'none';
             document.getElementById('search-wrap').style.display = 'none';
 
             document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -1414,6 +1424,7 @@
             document.getElementById('tab-produtos').classList.add('active');
             document.getElementById('grid').style.display = 'none';
             document.getElementById('resumo-view').style.display = 'none';
+            document.getElementById('sessoes-view').style.display = 'none';
             document.getElementById('search-wrap').style.display = 'none';
             document.getElementById('filtro-produto').style.display = 'none';
             const view = document.getElementById('produtos-view');
@@ -1423,6 +1434,131 @@
             const resp = await fetch('/api/produtos');
             const produtos = await resp.json();
             renderProdutos(produtos);
+        }
+
+        const CATEGORIAS_DEF = [
+            { slug: 'mochila-masculina', label: 'Mochila Masculina', icon: '🎒' },
+            { slug: 'mochila-feminina',  label: 'Mochila Feminina',  icon: '🎒' },
+            { slug: 'mala',              label: 'Mala',              icon: '🧳' },
+            { slug: 'bolsa-transversal', label: 'Bolsa Transversal', icon: '👜' },
+            { slug: 'bolsa-ombro',       label: 'Bolsa de Ombro',   icon: '👜' },
+            { slug: 'carteira',          label: 'Carteira',          icon: '👛' },
+            { slug: 'bolsa-2em1',        label: 'Bolsa 2 em 1',     icon: '🛍' },
+            { slug: 'maleta',            label: 'Maleta',            icon: '💼' },
+            { slug: '2-alcas',           label: '2 tipos de alça',  icon: '🔗' },
+        ];
+
+        async function mostrarSessoes() {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-sessoes').classList.add('active');
+            document.getElementById('grid').style.display = 'none';
+            document.getElementById('resumo-view').style.display = 'none';
+            document.getElementById('produtos-view').style.display = 'none';
+            document.getElementById('search-wrap').style.display = 'none';
+            document.getElementById('filtro-produto').style.display = 'none';
+            const view = document.getElementById('sessoes-view');
+            view.style.display = 'block';
+            view.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem;">Carregando…</p>';
+
+            const resp = await fetch('/api/produtos');
+            const produtos = await resp.json();
+            renderSessoes(produtos);
+        }
+
+        function renderSessoes(produtos) {
+            const view = document.getElementById('sessoes-view');
+            const semSessao = produtos.filter(p => !p.categoria);
+
+            const selectOpts = produtos.map(p =>
+                `<option value="${p.chave}">${p.nome}</option>`
+            ).join('');
+
+            const catCards = CATEGORIAS_DEF.map(cat => {
+                const prods = produtos.filter(p => p.categoria === cat.slug);
+                const rows = prods.map(p => {
+                    const img = (p.imgs && p.imgs[0]) ? `<img src="${p.imgs[0]}" style="width:44px;height:44px;object-fit:cover;border-radius:7px;flex-shrink:0;">` : `<div style="width:44px;height:44px;border-radius:7px;background:#f0ebe1;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.2rem;">📷</div>`;
+                    return `<div style="display:flex;align-items:center;gap:0.7rem;padding:0.5rem 0;border-bottom:1px solid var(--border);">
+                        ${img}
+                        <span style="flex:1;font-size:0.85rem;font-weight:500;color:var(--text);">${p.nome}</span>
+                        <button onclick="moverParaSessao('${p.chave}', '', this)" title="Remover desta sessão" style="background:transparent;border:none;color:#aaa;font-size:1rem;cursor:pointer;padding:0.2rem 0.4rem;border-radius:5px;transition:color .15s;" onmouseover="this.style.color='#c0392b'" onmouseout="this.style.color='#aaa'">✕</button>
+                    </div>`;
+                }).join('');
+
+                const emptyMsg = prods.length === 0
+                    ? `<div style="padding:1rem 0;text-align:center;color:var(--muted);font-size:0.78rem;font-style:italic;">Nenhum produto nesta sessão</div>`
+                    : '';
+
+                return `
+                <div style="background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;">
+                    <div style="padding:1rem 1.2rem 0.8rem;border-bottom:1px solid var(--border);background:rgba(130,80,200,0.04);">
+                        <div style="font-size:1.15rem;margin-bottom:0.2rem;">${cat.icon} <strong style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--text);">${cat.label}</strong></div>
+                        <div style="font-size:0.7rem;color:var(--muted);">${prods.length} produto${prods.length!==1?'s':''}</div>
+                    </div>
+                    <div style="padding:0 1.2rem;flex:1;">
+                        ${rows}${emptyMsg}
+                    </div>
+                    <div style="padding:0.8rem 1.2rem;border-top:1px solid var(--border);background:#fafafa;">
+                        <div style="display:flex;gap:0.5rem;align-items:center;">
+                            <select id="add-sel-${cat.slug}" style="flex:1;padding:0.38rem 0.5rem;border:1px solid var(--border);border-radius:7px;font-size:0.8rem;font-family:'Jost',sans-serif;background:#fff;">
+                                <option value="">Adicionar produto…</option>
+                                ${produtos.filter(p => p.categoria !== cat.slug).map(p => `<option value="${p.chave}">${p.nome}${p.categoria ? ' ('+CATEGORIAS_DEF.find(c=>c.slug===p.categoria)?.label+')' : ''}</option>`).join('')}
+                            </select>
+                            <button onclick="adicionarNaSessao('${cat.slug}', 'add-sel-${cat.slug}')" style="background:rgba(130,80,200,0.15);border:1px solid #9060c0;color:#7040a0;border-radius:7px;padding:0.38rem 0.8rem;font-size:0.8rem;cursor:pointer;font-family:'Jost',sans-serif;white-space:nowrap;">+ Adicionar</button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+
+            const semSessaoRows = semSessao.map(p => {
+                const img = (p.imgs && p.imgs[0]) ? `<img src="${p.imgs[0]}" style="width:40px;height:40px;object-fit:cover;border-radius:7px;flex-shrink:0;">` : `<div style="width:40px;height:40px;border-radius:7px;background:#f0ebe1;flex-shrink:0;"></div>`;
+                const optsCat = CATEGORIAS_DEF.map(c => `<option value="${c.slug}">${c.label}</option>`).join('');
+                return `<div style="display:flex;align-items:center;gap:0.7rem;padding:0.5rem 0;border-bottom:1px solid var(--border);">
+                    ${img}
+                    <span style="flex:1;font-size:0.85rem;font-weight:500;color:var(--text);">${p.nome}</span>
+                    <select onchange="moverParaSessao('${p.chave}', this.value, null)" style="padding:0.3rem 0.5rem;border:1px solid var(--border);border-radius:6px;font-size:0.75rem;font-family:'Jost',sans-serif;background:#fff;max-width:130px;">
+                        <option value="">Mover para…</option>
+                        ${optsCat}
+                    </select>
+                </div>`;
+            }).join('');
+
+            view.innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:0.5rem;">
+                    <h2 style="font-family:'Cormorant Garamond',serif;color:#7040a0;font-size:1.6rem;margin:0;">🗂 Sessões de Produtos</h2>
+                    <span style="font-size:0.78rem;color:var(--muted);">Clique em Salvar em cada produto ou use os botões abaixo</span>
+                </div>
+
+                ${semSessao.length > 0 ? `
+                <div style="background:rgba(255,190,60,0.08);border:1px solid rgba(255,190,60,0.35);border-radius:14px;padding:1.2rem;margin-bottom:1.5rem;">
+                    <div style="font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:#a07020;font-weight:600;margin-bottom:0.8rem;">⚠ Sem sessão definida (${semSessao.length})</div>
+                    ${semSessaoRows}
+                </div>` : ''}
+
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;">
+                    ${catCards}
+                </div>
+            `;
+        }
+
+        async function moverParaSessao(chave, novaCategoria, btnEl) {
+            const resp = await fetch('/api/admin/produtos/' + chave, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'senha': _adminSenha },
+                body: JSON.stringify({ categoria: novaCategoria || null })
+            });
+            if (resp.ok) {
+                toast('Sessão atualizada!', 'success');
+                mostrarSessoes();
+            } else {
+                toast('Erro ao mover produto.', 'error');
+            }
+        }
+
+        async function adicionarNaSessao(slug, selectId) {
+            const sel = document.getElementById(selectId);
+            const chave = sel?.value;
+            if (!chave) return;
+            await moverParaSessao(chave, slug, null);
         }
 
         function renderProdutos(produtos) {
@@ -1452,6 +1588,18 @@
                       <input type="checkbox" ${p.ativo ? 'checked' : ''} id="ativo-${p.chave}" onchange="salvarProduto('${p.chave}')">
                       Ativo
                     </label>
+                    <select id="cat-${p.chave}" title="Sessão / Categoria" style="padding:0.38rem 0.5rem;border:1px solid #9060c040;border-radius:6px;font-size:0.78rem;font-family:'Jost',sans-serif;color:#7040a0;background:#f9f4ff;cursor:pointer;max-width:140px;">
+                      <option value="">Sem sessão</option>
+                      <option value="mochila-masculina" ${p.categoria==='mochila-masculina'?'selected':''}>Mochila Masculina</option>
+                      <option value="mochila-feminina"  ${p.categoria==='mochila-feminina' ?'selected':''}>Mochila Feminina</option>
+                      <option value="mala"              ${p.categoria==='mala'             ?'selected':''}>Mala</option>
+                      <option value="bolsa-transversal" ${p.categoria==='bolsa-transversal'?'selected':''}>Bolsa Transversal</option>
+                      <option value="bolsa-ombro"       ${p.categoria==='bolsa-ombro'      ?'selected':''}>Bolsa de Ombro</option>
+                      <option value="carteira"          ${p.categoria==='carteira'         ?'selected':''}>Carteira</option>
+                      <option value="bolsa-2em1"        ${p.categoria==='bolsa-2em1'       ?'selected':''}>Bolsa 2 em 1</option>
+                      <option value="maleta"            ${p.categoria==='maleta'           ?'selected':''}>Maleta</option>
+                      <option value="2-alcas"           ${p.categoria==='2-alcas'          ?'selected':''}>2 tipos de alça</option>
+                    </select>
                     <button onclick="copiarLinkProduto('${p.chave}', this)" style="background:rgba(201,150,60,0.08);color:var(--gold);border:1px solid var(--gold-light);border-radius:6px;padding:0.35rem 0.8rem;font-size:0.8rem;cursor:pointer;font-family:'Jost',sans-serif;" title="Copiar link do produto">🔗 Link</button>
                     <button onclick="abrirEditProduto('${p.chave}')" style="background:rgba(201,150,60,0.12);color:var(--gold);border:1px solid var(--gold-light);border-radius:6px;padding:0.35rem 0.8rem;font-size:0.8rem;cursor:pointer;font-family:'Jost',sans-serif;">Editar</button>
                     <button onclick="salvarProduto('${p.chave}')" style="background:var(--gold);color:#fff;border:none;border-radius:6px;padding:0.4rem 1rem;font-size:0.85rem;cursor:pointer;font-family:'Jost',sans-serif;font-weight:600;">Salvar</button>
@@ -1609,11 +1757,12 @@
             const ativo = document.getElementById('ativo-' + chave).checked;
             const precoOriginalRaw = document.getElementById('preco-original-' + chave)?.value;
             const preco_original = precoOriginalRaw ? parseFloat(precoOriginalRaw) : null;
+            const categoria = document.getElementById('cat-' + chave)?.value || null;
 
             const resp = await fetch('/api/admin/produtos/' + chave, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'senha': _adminSenha },
-                body: JSON.stringify({ preco, ativo, preco_original })
+                body: JSON.stringify({ preco, ativo, preco_original, categoria })
             });
             if (resp.ok) toast('Produto atualizado!', 'success');
             else toast('Erro ao salvar.', 'error');
