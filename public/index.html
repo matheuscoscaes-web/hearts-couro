@@ -1447,6 +1447,18 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
       <button class="f-chip" data-filter="menor-preco">↑ Menor preço</button>
       <button class="f-chip" data-filter="maior-preco">↓ Maior preço</button>
     </div>
+    <div class="filter-row" id="category-chips">
+      <button class="f-chip active" data-category="">Todas</button>
+      <button class="f-chip" data-category="mochila-masculina">Mochila Masculina</button>
+      <button class="f-chip" data-category="mochila-feminina">Mochila Feminina</button>
+      <button class="f-chip" data-category="mala">Mala</button>
+      <button class="f-chip" data-category="bolsa-transversal">Bolsa Transversal</button>
+      <button class="f-chip" data-category="bolsa-ombro">Bolsa de Ombro</button>
+      <button class="f-chip" data-category="carteira">Carteira</button>
+      <button class="f-chip" data-category="bolsa-2em1">Bolsa 2 em 1</button>
+      <button class="f-chip" data-category="maleta">Maleta</button>
+      <button class="f-chip" data-category="2-alcas">2 tipos de alça</button>
+    </div>
     <div class="filter-row" id="price-chips">
       <button class="f-chip active" data-price="0">Todos os valores</button>
       <button class="f-chip" data-price="200">Até R$200</button>
@@ -2437,19 +2449,19 @@ const CORES_MIRANDA  = ['Miranda_PretoLiso','Miranda_PretoGranulado','Miranda_Pr
 const CORES_ADRIANA  = ['Adriana_Preto','Adriana_Caramelo','Adriana_AzulMarinho','Adriana_MarromClaro','Adriana_OffWhite'];
 
 const PRODUTOS_INFO = {
-  Paola:   { ativo: true,  preco: 229, imgs: ['paola-img/paola01.jpg'], nome: 'Paola',   cores: CORES_PAOLA,   corImgs: { Paola_White: 'paola-img/offwhite01.jpg', Paola_Preto: 'paola-img/paola01.jpg', Paola_Cafe: 'paola-img/cafe01.jpg', Paola_Argila: 'paola-img/argila01.jpg', Paola_Azul: 'paola-img/azul01.jpg', Paola_Whiskey: 'paola-img/whiskey01.jpg', Paola_Caramelo: 'paola-img/caramelo01.jpg', Paola_Pink: 'paola-img/paolapink.jpg' }, desc: ['Bolsão c/ Abertura p/ o Braço','Super Chique!','Bolso Interno','Fechamento em Ímã','Carregue tudo que precisa!'] },
-  Carol:   { ativo: true,  preco: 289, imgs: ['carol-img/carol.jpg'],    nome: 'Carol',   cores: CORES_CAROL,   corImgs: { Carol_Preto: 'carol-img/carol.jpg', Carol_Caramelo: 'carol-img/carolcaramelo.jpg', Carol_Rubi: 'carol-img/carolrubi.jpg', Carol_Whiskey: 'carol-img/carolwhiskey.jpg', Carol_Azul: 'carol-img/carolazulcerto.jpg', Carol_Cafe: 'carol-img/carolcafecerto.jpg' }, desc: ['Duas formas: braço e transversal','Campeã de vendas','Fechamento em Zíper','Bolso Externo','Bolso Interno'] },
-  Modelo4: { ativo: true,  preco: 199, imgs: ['celina-img/pretocelina.jpg'], nome: 'Celina',  cores: CORES_CELINA,  corImgs: { Celina_Preto: 'celina-img/pretocelina.jpg', Celina_Caramelo: 'celina-img/caramelocelina.jpg', Celina_Rubi: 'celina-img/rubicelina.jpg', Celina_Whiskey: 'celina-img/whiskeycelina.jpg', Celina_Azul: 'celina-img/azulcelina.jpg', Celina_Cafe: 'celina-img/cafecelina.jpg' }, desc: ['Bolsa média com bolso frontal','Fechamento em Zíper','Alça regulável'] },
-  Miranda: { ativo: true,  preco: 259, imgs: ['miranda-img/pretoliso01.jpg'], nome: 'Miranda', cores: CORES_MIRANDA, corImgs: { Miranda_PretoLiso: 'miranda-img/pretoliso01.jpg', Miranda_PretoGranulado: 'miranda-img/prenogranulado01.jpg', Miranda_PretoCroco: 'miranda-img/crocopreta.jpg', Miranda_CarameloGranulado: 'miranda-img/caramelogranulado01.jpg', Miranda_MarromMamute: 'miranda-img/marrommamute.jpg', Miranda_Mostarda: 'miranda-img/Mostarda.jpg', Miranda_VerdePetroleo: 'miranda-img/carolverdepetróleo.jpg', Miranda_OffWhite: 'miranda-img/mirandaoffwhite.jpg' }, desc: ['Possui bolso frontal','Modelo grande e super espaçoso','Design exclusivo e sofisticado','Alça confortável integrada ao modelo','Medidas: Altura 51cm x Largura 33cm x Espessura 2cm'] },
-  Lara:    { ativo: false, preco: 209, imgs: ['Lara.jpg','lara02.jpg'], nome: 'Lara',    cores: CORES_BASE,   desc: ['Abertura principal nas costas','Bolso frontal','Fechamento nas costas, pega ladrão'] },
-  Adriana: { ativo: true, preco: 189, imgs: ['adriana-img/bolsaadrianapreta.jpg','adriana-img/imagemadrianamedidas.jpg'], nome: 'Adriana', cores: CORES_ADRIANA, corImgs: { Adriana_Preto: 'adriana-img/bolsaadrianapreta.jpg', Adriana_Caramelo: 'adriana-img/caramelorenata.jpg', Adriana_AzulMarinho: 'adriana-img/adrianaazul.jpg', Adriana_MarromClaro: 'adriana-img/adrianamarromclaro.jpg', Adriana_OffWhite: 'adriana-img/adrianabranca.jpg' }, desc: ['Bolsa lateral estruturada','Pode ser usada como bolsa de mão','Fechamento em zíper'] },
-  Modelo3: { ativo: true,  preco: 189, imgs: ['denise-img/denisepreta.jpg'], nome: 'Denise', cores: CORES_DENISE, corImgs: { Denise_Preto: 'denise-img/denisepreta.jpg', Denise_Whiskey: 'denise-img/denisewhiskey.jpg' }, desc: ['Pega ladrão mini','25x28cm','2 Bolsos externos','Abertura principal nas costas'] },
-  Julia:   { ativo: false, preco: 299, imgs: ['julia.jpg'], nome: 'Júlia', cores: CORES_BASE, desc: ['Duas opções de alça: mão e transversal','Vários bolsos externos','Fechamento em zíper'] },
-  Renata:  { ativo: true,  preco: 279, imgs: ['renata-img/pretarenata.jpg'], nome: 'Renata',  cores: CORES_RENATA,  corImgs: { Renata_Preto: 'renata-img/pretarenata.jpg', Renata_Caramelo: 'renata-img/caramelorenata.jpg', Renata_Rubi: 'renata-img/rubirenata.jpg', Renata_Whiskey: 'renata-img/whiskeyrenata.jpg', Renata_Azul: 'renata-img/azulrenata.jpg', Renata_Cafe: 'renata-img/caferenata.jpg' }, desc: ['Simplesmente maravilhosa!','Modelo elegante, sofisticado e super confortável de usar no dia a dia','Possui bolso lateral','Alça de ombro confortável','Modelo grande e bem espaçoso','Acompanha tag charmosa na lateral','Medidas: Altura 32cm x Alça 28cm x Largura 34cm'] },
-  Megan:    { ativo: true,  preco: 289, imgs: ['megan-img/meganpreta.jpg'],    nome: 'Megan',    cores: CORES_MEGAN,    corImgs: { Megan_Preto: 'megan-img/meganpreta.jpg', Megan_Caramelo: 'megan-img/megancaramelo.jpg', Megan_Whiskey: 'megan-img/whiskeymegan.jpg' }, desc: ['Couro Legítimo','Qualidade Hearts'] },
-  Maria:    { ativo: true,  preco: 269, imgs: ['maria-img/mariabolsapreta.jpg','maria-img/mariapretamochila.jpg','maria-img/mariabolsacaramelo.jpg','maria-img/mariamochilacaramelo.jpg'], nome: 'Maria', cores: CORES_MARIA, corImgs: { Maria_Preto: 'maria-img/mariabolsapreta.jpg', Maria_Caramelo: 'maria-img/mariabolsacaramelo.jpg' }, desc: ['Nossa maior bolsa executiva!','Duas opções de alça: mão e transversal','Vários bolsos externos','Fechamento em zíper'] },
-  Manuela:  { ativo: true,  preco: 259, imgs: ['manuela-img/manuelapreta.jpg'], nome: 'Manuela',  cores: CORES_MANUELA,  corImgs: { Manuela_Preto: 'manuela-img/manuelapreta.jpg', Manuela_Grafite: 'manuela-img/manuelagrafite.jpg', Manuela_Telha: 'manuela-img/manuelatelha.jpg' }, desc: ['Couro Legítimo','Qualidade Hearts'] },
-  Michele: { ativo: true,  preco: 259, imgs: ['michele-img/michele.jpg'], nome: 'Michele', cores: CORES_MICHELE, corImgs: { Michele_Preto: 'michele-img/michele.jpg', Michele_Caramelo: 'michele-img/michelecaramelo.jpg', Michele_Rubi: 'michele-img/michelerubi.jpg', Michele_Whiskey: 'michele-img/michelewhiskey.jpg', Michele_Azul: 'michele-img/micheleazul.jpg', Michele_Cafe: 'michele-img/michelecafe.jpg' }, desc: ['Muito charmosa!','Tamanho médio mas bem espaçosa','Possui 3 aberturas','2 opções de alça: mão e transversal','UMA DE NOSSAS CAMPEÃS DE VENDAS!','Medidas: Altura 24cm x Alça 16cm x Largura 24cm'] },
+  Paola:   { ativo: true,  preco: 229, categoria: 'bolsa-ombro',       imgs: ['paola-img/paola01.jpg'], nome: 'Paola',   cores: CORES_PAOLA,   corImgs: { Paola_White: 'paola-img/offwhite01.jpg', Paola_Preto: 'paola-img/paola01.jpg', Paola_Cafe: 'paola-img/cafe01.jpg', Paola_Argila: 'paola-img/argila01.jpg', Paola_Azul: 'paola-img/azul01.jpg', Paola_Whiskey: 'paola-img/whiskey01.jpg', Paola_Caramelo: 'paola-img/caramelo01.jpg', Paola_Pink: 'paola-img/paolapink.jpg' }, desc: ['Bolsão c/ Abertura p/ o Braço','Super Chique!','Bolso Interno','Fechamento em Ímã','Carregue tudo que precisa!'] },
+  Carol:   { ativo: true,  preco: 289, categoria: '2-alcas',           imgs: ['carol-img/carol.jpg'],    nome: 'Carol',   cores: CORES_CAROL,   corImgs: { Carol_Preto: 'carol-img/carol.jpg', Carol_Caramelo: 'carol-img/carolcaramelo.jpg', Carol_Rubi: 'carol-img/carolrubi.jpg', Carol_Whiskey: 'carol-img/carolwhiskey.jpg', Carol_Azul: 'carol-img/carolazulcerto.jpg', Carol_Cafe: 'carol-img/carolcafecerto.jpg' }, desc: ['Duas formas: braço e transversal','Campeã de vendas','Fechamento em Zíper','Bolso Externo','Bolso Interno'] },
+  Modelo4: { ativo: true,  preco: 199, categoria: 'bolsa-transversal', imgs: ['celina-img/pretocelina.jpg'], nome: 'Celina',  cores: CORES_CELINA,  corImgs: { Celina_Preto: 'celina-img/pretocelina.jpg', Celina_Caramelo: 'celina-img/caramelocelina.jpg', Celina_Rubi: 'celina-img/rubicelina.jpg', Celina_Whiskey: 'celina-img/whiskeycelina.jpg', Celina_Azul: 'celina-img/azulcelina.jpg', Celina_Cafe: 'celina-img/cafecelina.jpg' }, desc: ['Bolsa média com bolso frontal','Fechamento em Zíper','Alça regulável'] },
+  Miranda: { ativo: true,  preco: 259, categoria: 'bolsa-ombro',       imgs: ['miranda-img/pretoliso01.jpg'], nome: 'Miranda', cores: CORES_MIRANDA, corImgs: { Miranda_PretoLiso: 'miranda-img/pretoliso01.jpg', Miranda_PretoGranulado: 'miranda-img/prenogranulado01.jpg', Miranda_PretoCroco: 'miranda-img/crocopreta.jpg', Miranda_CarameloGranulado: 'miranda-img/caramelogranulado01.jpg', Miranda_MarromMamute: 'miranda-img/marrommamute.jpg', Miranda_Mostarda: 'miranda-img/Mostarda.jpg', Miranda_VerdePetroleo: 'miranda-img/carolverdepetróleo.jpg', Miranda_OffWhite: 'miranda-img/mirandaoffwhite.jpg' }, desc: ['Possui bolso frontal','Modelo grande e super espaçoso','Design exclusivo e sofisticado','Alça confortável integrada ao modelo','Medidas: Altura 51cm x Largura 33cm x Espessura 2cm'] },
+  Lara:    { ativo: false, preco: 209, categoria: 'mochila-feminina',  imgs: ['Lara.jpg','lara02.jpg'], nome: 'Lara',    cores: CORES_BASE,   desc: ['Abertura principal nas costas','Bolso frontal','Fechamento nas costas, pega ladrão'] },
+  Adriana: { ativo: true,  preco: 189, categoria: 'bolsa-ombro',       imgs: ['adriana-img/bolsaadrianapreta.jpg','adriana-img/imagemadrianamedidas.jpg'], nome: 'Adriana', cores: CORES_ADRIANA, corImgs: { Adriana_Preto: 'adriana-img/bolsaadrianapreta.jpg', Adriana_Caramelo: 'adriana-img/caramelorenata.jpg', Adriana_AzulMarinho: 'adriana-img/adrianaazul.jpg', Adriana_MarromClaro: 'adriana-img/adrianamarromclaro.jpg', Adriana_OffWhite: 'adriana-img/adrianabranca.jpg' }, desc: ['Bolsa lateral estruturada','Pode ser usada como bolsa de mão','Fechamento em zíper'] },
+  Modelo3: { ativo: true,  preco: 189, categoria: 'mochila-feminina',  imgs: ['denise-img/denisepreta.jpg'], nome: 'Denise', cores: CORES_DENISE, corImgs: { Denise_Preto: 'denise-img/denisepreta.jpg', Denise_Whiskey: 'denise-img/denisewhiskey.jpg' }, desc: ['Pega ladrão mini','25x28cm','2 Bolsos externos','Abertura principal nas costas'] },
+  Julia:   { ativo: false, preco: 299, categoria: '2-alcas',           imgs: ['julia.jpg'], nome: 'Júlia', cores: CORES_BASE, desc: ['Duas opções de alça: mão e transversal','Vários bolsos externos','Fechamento em zíper'] },
+  Renata:  { ativo: true,  preco: 279, categoria: 'bolsa-ombro',       imgs: ['renata-img/pretarenata.jpg'], nome: 'Renata',  cores: CORES_RENATA,  corImgs: { Renata_Preto: 'renata-img/pretarenata.jpg', Renata_Caramelo: 'renata-img/caramelorenata.jpg', Renata_Rubi: 'renata-img/rubirenata.jpg', Renata_Whiskey: 'renata-img/whiskeyrenata.jpg', Renata_Azul: 'renata-img/azulrenata.jpg', Renata_Cafe: 'renata-img/caferenata.jpg' }, desc: ['Simplesmente maravilhosa!','Modelo elegante, sofisticado e super confortável de usar no dia a dia','Possui bolso lateral','Alça de ombro confortável','Modelo grande e bem espaçoso','Acompanha tag charmosa na lateral','Medidas: Altura 32cm x Alça 28cm x Largura 34cm'] },
+  Megan:    { ativo: true,  preco: 289, categoria: 'bolsa-ombro',       imgs: ['megan-img/meganpreta.jpg'],    nome: 'Megan',    cores: CORES_MEGAN,    corImgs: { Megan_Preto: 'megan-img/meganpreta.jpg', Megan_Caramelo: 'megan-img/megancaramelo.jpg', Megan_Whiskey: 'megan-img/whiskeymegan.jpg' }, desc: ['Couro Legítimo','Qualidade Hearts'] },
+  Maria:    { ativo: true,  preco: 269, categoria: 'maleta',            imgs: ['maria-img/mariabolsapreta.jpg','maria-img/mariapretamochila.jpg','maria-img/mariabolsacaramelo.jpg','maria-img/mariamochilacaramelo.jpg'], nome: 'Maria', cores: CORES_MARIA, corImgs: { Maria_Preto: 'maria-img/mariabolsapreta.jpg', Maria_Caramelo: 'maria-img/mariabolsacaramelo.jpg' }, desc: ['Nossa maior bolsa executiva!','Duas opções de alça: mão e transversal','Vários bolsos externos','Fechamento em zíper'] },
+  Manuela:  { ativo: true,  preco: 259, categoria: 'bolsa-ombro',       imgs: ['manuela-img/manuelapreta.jpg'], nome: 'Manuela',  cores: CORES_MANUELA,  corImgs: { Manuela_Preto: 'manuela-img/manuelapreta.jpg', Manuela_Grafite: 'manuela-img/manuelagrafite.jpg', Manuela_Telha: 'manuela-img/manuelatelha.jpg' }, desc: ['Couro Legítimo','Qualidade Hearts'] },
+  Michele: { ativo: true,  preco: 259, categoria: 'bolsa-2em1',        imgs: ['michele-img/michele.jpg'], nome: 'Michele', cores: CORES_MICHELE, corImgs: { Michele_Preto: 'michele-img/michele.jpg', Michele_Caramelo: 'michele-img/michelecaramelo.jpg', Michele_Rubi: 'michele-img/michelerubi.jpg', Michele_Whiskey: 'michele-img/michelewhiskey.jpg', Michele_Azul: 'michele-img/micheleazul.jpg', Michele_Cafe: 'michele-img/michelecafe.jpg' }, desc: ['Muito charmosa!','Tamanho médio mas bem espaçosa','Possui 3 aberturas','2 opções de alça: mão e transversal','UMA DE NOSSAS CAMPEÃS DE VENDAS!','Medidas: Altura 24cm x Alça 16cm x Largura 24cm'] },
 };
 
 /* ══════════════════════════════════════════
@@ -2458,13 +2470,15 @@ const PRODUTOS_INFO = {
 let TODOS_PRODUTOS_LISTA = [];
 let FILTRO_ATUAL    = 'todas';
 let PRECO_MAX_ATUAL = 0;
+let CATEGORIA_ATUAL = '';
 
 function aplicarFiltros() {
-  const busca    = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
-  const filtro   = FILTRO_ATUAL;
-  const precoMax = PRECO_MAX_ATUAL;
-  const grid     = document.querySelector('.products-grid');
-  const empty    = document.getElementById('empty-state');
+  const busca     = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
+  const filtro    = FILTRO_ATUAL;
+  const precoMax  = PRECO_MAX_ATUAL;
+  const categoria = CATEGORIA_ATUAL;
+  const grid      = document.querySelector('.products-grid');
+  const empty     = document.getElementById('empty-state');
 
   let lista = [...TODOS_PRODUTOS_LISTA];
 
@@ -2476,6 +2490,9 @@ function aplicarFiltros() {
   }
   if (precoMax > 0) {
     lista = lista.filter(p => p.preco <= precoMax);
+  }
+  if (categoria) {
+    lista = lista.filter(p => p.categoria === categoria);
   }
 
   if (filtro === 'menor-preco') {
@@ -2512,6 +2529,15 @@ function initFiltros() {
     document.querySelectorAll('#filter-chips .f-chip').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     FILTRO_ATUAL = btn.dataset.filter;
+    aplicarFiltros();
+  });
+
+  document.getElementById('category-chips')?.addEventListener('click', e => {
+    const btn = e.target.closest('.f-chip');
+    if (!btn) return;
+    document.querySelectorAll('#category-chips .f-chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    CATEGORIA_ATUAL = btn.dataset.category || '';
     aplicarFiltros();
   });
 
@@ -2576,7 +2602,8 @@ async function sincronizarProdutos() {
             chave: p.chave,
             nome: p.nome || (info && info.nome) || p.chave,
             preco: p.preco,
-            preco_original: p.preco_original || null
+            preco_original: p.preco_original || null,
+            categoria: p.categoria || (info && info.categoria) || ''
           });
         }
 
@@ -2666,12 +2693,14 @@ async function sincronizarProdutos() {
           </div>
           <div class="prod-select-btn">Ver detalhes</div>
         `;
+        PRODUTOS_INFO[p.chave].categoria = p.categoria || '';
         grid.appendChild(card);
         TODOS_PRODUTOS_LISTA.push({
           chave: p.chave,
           nome: p.nome,
           preco: p.preco,
-          preco_original: p.preco_original || null
+          preco_original: p.preco_original || null,
+          categoria: p.categoria || ''
         });
       }
     });

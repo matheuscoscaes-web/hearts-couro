@@ -1110,7 +1110,7 @@ app.put('/api/admin/produtos/:chave', async (req, res) => {
   if (senha !== process.env.ADMIN_SENHA) return res.status(401).json({ erro: 'Não autorizado.' });
 
   const { chave } = req.params;
-  const { nome, preco, preco_original, ativo, desc, imgs, cores, video, altura, largura, comprimento, peso } = req.body;
+  const { nome, preco, preco_original, ativo, desc, imgs, cores, video, altura, largura, comprimento, peso, categoria } = req.body;
   try {
     const update = {};
     if (nome           !== undefined) update.nome           = nome;
@@ -1125,6 +1125,7 @@ app.put('/api/admin/produtos/:chave', async (req, res) => {
     if (largura        !== undefined) update.largura        = largura;
     if (comprimento    !== undefined) update.comprimento    = comprimento;
     if (peso           !== undefined) update.peso           = peso;
+    if (categoria      !== undefined) update.categoria      = categoria || null;
 
     const { error } = await supabase.from('produtos').update(update).eq('chave', chave);
     if (error) throw error;
@@ -1139,7 +1140,7 @@ app.post('/api/admin/produtos', async (req, res) => {
   const { senha } = req.headers;
   if (senha !== process.env.ADMIN_SENHA) return res.status(401).json({ erro: 'Não autorizado.' });
 
-  const { chave, nome, preco, ativo, desc, ordem, cores, video, altura, largura, comprimento, peso } = req.body;
+  const { chave, nome, preco, ativo, desc, ordem, cores, video, altura, largura, comprimento, peso, categoria } = req.body;
   if (!chave || !nome || !preco) return res.status(400).json({ erro: 'chave, nome e preco são obrigatórios.' });
   try {
     const { error } = await supabase.from('produtos').insert([{
@@ -1152,7 +1153,8 @@ app.post('/api/admin/produtos', async (req, res) => {
       altura:      altura      || 11,
       largura:     largura     || 30,
       comprimento: comprimento || 32,
-      peso:        peso        || 1.0
+      peso:        peso        || 1.0,
+      categoria:   categoria   || null
     }]);
     if (error) throw error;
     res.json({ ok: true });

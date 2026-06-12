@@ -55,3 +55,8 @@ ON CONFLICT (chave) DO NOTHING;
 
 -- Adiciona coluna de imagens (se ainda não existir)
 ALTER TABLE produtos ADD COLUMN IF NOT EXISTS imgs JSONB DEFAULT '[]';
+
+-- Adiciona coluna de categoria (se ainda não existir)
+-- Valores: 'mochila-masculina', 'mochila-feminina', 'mala', 'bolsa-transversal',
+--          'bolsa-ombro', 'carteira', 'bolsa-2em1', 'maleta', '2-alcas'
+ALTER TABLE produtos ADD COLUMN IF NOT EXISTS categoria TEXT;
