@@ -345,6 +345,35 @@
         .cor-bar { height: 100%; border-radius: 4px; background: linear-gradient(to right, var(--gold-dim), var(--gold)); transition: width 0.7s cubic-bezier(0.22,1,0.36,1); }
         .cor-qtd { font-size: 0.85rem; color: var(--gold); font-weight: 600; width: 28px; text-align: right; flex-shrink: 0; }
 
+        /* ── PERÍODO RESUMO ── */
+        .rp-pills {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 1.4rem;
+        }
+        .rp-btn {
+            padding: 0.45rem 1.1rem;
+            border-radius: 50px;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+            color: var(--muted);
+            font-family: 'Jost', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.18s;
+            white-space: nowrap;
+        }
+        .rp-btn:hover { border-color: var(--gold-dim); color: var(--text); }
+        .rp-btn.rp-ativo {
+            background: var(--gold);
+            border-color: var(--gold);
+            color: #1a1510;
+            font-weight: 600;
+        }
+
         /* ── TOASTS ── */
         #toast-container {
             position: fixed;
@@ -826,6 +855,7 @@
         let database = [];
         let produtoAtivo = 'todos';
         let termoBusca = '';
+        let resumoPeriodo = 'mes';
 
         // ── TOAST ─────────────────────────────────────────────────────────
         function toast(msg, tipo = 'info', duracao = 4000) {
@@ -862,8 +892,11 @@
                 atualizarContadores();
                 atualizarFiltroProduto();
                 const abaAtiva = document.querySelector('.tab-btn[data-status].active')?.dataset.status || 'pagos';
-                if (abaAtiva === 'resumo') mostrarResumo();
-                else filtrar(abaAtiva);
+                if (abaAtiva === 'resumo') {
+                    // Atualiza só o conteúdo sem resetar o período selecionado
+                    if (document.getElementById('resumo-conteudo')) renderResumoConteudo();
+                    else mostrarResumo();
+                } else filtrar(abaAtiva);
             } catch (error) {
                 console.error("Erro ao carregar banco de dados:", error);
             }
@@ -1144,6 +1177,33 @@
         }
 
         // ── RESUMO ────────────────────────────────────────────────────────
+        function filtrarPorPeriodo(lista) {
+            const agora = new Date();
+            if (resumoPeriodo === 'hoje') {
+                const ini = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
+                return lista.filter(p => p.created_at && new Date(p.created_at) >= ini);
+            }
+            if (resumoPeriodo === 'quinzena') {
+                const ini = new Date(agora);
+                ini.setDate(ini.getDate() - 14);
+                ini.setHours(0, 0, 0, 0);
+                return lista.filter(p => p.created_at && new Date(p.created_at) >= ini);
+            }
+            if (resumoPeriodo === 'mes') {
+                const ini = new Date(agora.getFullYear(), agora.getMonth(), 1);
+                return lista.filter(p => p.created_at && new Date(p.created_at) >= ini);
+            }
+            return lista; // 'total'
+        }
+
+        function mudarPeriodoResumo(periodo) {
+            resumoPeriodo = periodo;
+            document.querySelectorAll('.rp-btn').forEach(b => {
+                b.classList.toggle('rp-ativo', b.dataset.periodo === periodo);
+            });
+            renderResumoConteudo();
+        }
+
         function mostrarResumo() {
             document.getElementById('grid').style.display = 'none';
             document.getElementById('produtos-view').style.display = 'none';
@@ -1160,15 +1220,43 @@
                 el.classList.toggle('active', el.id === 'side-resumo');
             });
 
-            // Resumo: pagos + enviados + retirados
-            const pagas = database.filter(p =>
+            const periodos = [
+                { key: 'hoje',     label: 'Hoje' },
+                { key: 'quinzena', label: 'Esta Quinzena' },
+                { key: 'mes',      label: 'Este Mês' },
+                { key: 'total',    label: 'Total Geral' },
+            ];
+
+            const container = document.getElementById('resumo-view');
+            container.innerHTML = `
+                <div class="rp-pills">
+                    ${periodos.map(p => `<button class="rp-btn${resumoPeriodo === p.key ? ' rp-ativo' : ''}" data-periodo="${p.key}" onclick="mudarPeriodoResumo('${p.key}')">${p.label}</button>`).join('')}
+                </div>
+                <div id="resumo-conteudo"></div>`;
+            container.style.display = 'block';
+            renderResumoConteudo();
+        }
+
+        function renderResumoConteudo() {
+            const PERIODO_SUB = {
+                hoje:     'vendas de hoje',
+                quinzena: 'últimos 15 dias',
+                mes:      'neste mês',
+                total:    'histórico completo',
+            };
+
+            const fmtBRL = v => 'R$ ' + v.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+            const todasPagas = database.filter(p =>
                 p.status === 'approved' || p.status === 'etiqueta_criada' || p.status === 'entregue' || p.status === 'retirado'
             );
-            const base = produtoAtivo === 'todos' ? pagas : pagas.filter(p => p.produto === produtoAtivo);
+            const pagas = filtrarPorPeriodo(todasPagas);
+            const base  = produtoAtivo === 'todos' ? pagas : pagas.filter(p => p.produto === produtoAtivo);
             const baseComProduto = base.filter(p => p.produto);
-            const total = baseComProduto.length;
+            const total      = baseComProduto.length;
             const totalValor = base.reduce((s, p) => s + (parseFloat(p.valor_total) || 0), 0);
-            const fmtBRL = v => 'R$ ' + v.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            const ticket     = total > 0 ? totalValor / total : 0;
+            const sub        = PERIODO_SUB[resumoPeriodo] || '';
 
             // Vendas por produto
             const porProduto = {};
@@ -1178,7 +1266,6 @@
             });
             const produtosOrdenados = Object.entries(porProduto).sort((a, b) => b[1] - a[1]);
             const maxProd = produtosOrdenados.length > 0 ? produtosOrdenados[0][1] : 1;
-
             const produtosHtml = produtosOrdenados.map(([nome, qtd]) => {
                 const pct = Math.round((qtd / maxProd) * 100);
                 return `<div class="cor-row"><span class="cor-nome">${nome}</span><div class="cor-bar-wrap"><div class="cor-bar" style="width:0%" data-pct="${pct}"></div></div><span class="cor-qtd">${qtd}</span></div>`;
@@ -1189,27 +1276,32 @@
             base.forEach(p => { const cor = p.cor || 'Não informada'; porCor[cor] = (porCor[cor] || 0) + 1; });
             const coresOrdenadas = Object.entries(porCor).sort((a, b) => b[1] - a[1]);
             const maxCor = coresOrdenadas.length > 0 ? coresOrdenadas[0][1] : 1;
-
             const coresHtml = coresOrdenadas.map(([cor, qtd]) => {
                 const label = COR_LABELS[cor] || cor;
                 const pct = Math.round((qtd / maxCor) * 100);
                 return `<div class="cor-row"><span class="cor-nome">${label}</span><div class="cor-bar-wrap"><div class="cor-bar" style="width:0%" data-pct="${pct}"></div></div><span class="cor-qtd">${qtd}</span></div>`;
             }).join('');
 
-            const container = document.getElementById('resumo-view');
-            container.innerHTML = `
-                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.4rem;">
+            const conteudo = document.getElementById('resumo-conteudo');
+            conteudo.innerHTML = `
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:1.4rem;">
                     <div class="resumo-stat" style="margin-bottom:0;">
                         <div class="stat-label">Bolsas Vendidas</div>
                         <div class="stat-number">${total}</div>
-                        <div class="stat-sub">pedidos confirmados</div>
+                        <div class="stat-sub">${sub}</div>
                     </div>
                     <div class="resumo-stat" style="margin-bottom:0;">
                         <div class="stat-label">Total em Vendas</div>
-                        <div class="stat-number" style="font-size:2.2rem;">${fmtBRL(totalValor)}</div>
-                        <div class="stat-sub">todos os produtos</div>
+                        <div class="stat-number" style="font-size:${totalValor >= 10000 ? '1.8' : '2.2'}rem;">${fmtBRL(totalValor)}</div>
+                        <div class="stat-sub">${sub}</div>
+                    </div>
+                    <div class="resumo-stat" style="margin-bottom:0;">
+                        <div class="stat-label">Ticket Médio</div>
+                        <div class="stat-number" style="font-size:2rem;">${total > 0 ? fmtBRL(ticket) : '—'}</div>
+                        <div class="stat-sub">por pedido</div>
                     </div>
                 </div>
+                ${total === 0 ? `<div class="resumo-table-card"><p style="color:var(--muted);font-size:0.85rem;text-align:center;padding:1rem 0;">Nenhuma venda encontrada no período.</p></div>` : `
                 ${produtosOrdenados.length > 1 ? `
                 <div class="resumo-table-card" style="margin-bottom:1.4rem;">
                     <h3>Vendas por Modelo</h3>
@@ -1218,11 +1310,10 @@
                 <div class="resumo-table-card">
                     <h3>Vendas por Cor</h3>
                     ${coresOrdenadas.length > 0 ? coresHtml : '<p style="color:var(--muted);font-size:0.8rem;">Nenhum pedido registrado ainda.</p>'}
-                </div>`;
-            container.style.display = 'block';
+                </div>`}`;
 
             requestAnimationFrame(() => {
-                container.querySelectorAll('.cor-bar').forEach(bar => { bar.style.width = bar.dataset.pct + '%'; });
+                conteudo.querySelectorAll('.cor-bar').forEach(bar => { bar.style.width = bar.dataset.pct + '%'; });
             });
         }
 
