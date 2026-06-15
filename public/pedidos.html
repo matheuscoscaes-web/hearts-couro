@@ -1465,28 +1465,39 @@
             renderSessoes(produtos);
         }
 
-        function renderSessoes(produtos) {
-            const view = document.getElementById('sessoes-view');
-            const semSessao = produtos.filter(p => !p.categoria);
+        function getCategorias(produto) {
+            const cat = produto.categoria;
+            if (Array.isArray(cat)) return cat.filter(Boolean);
+            if (!cat) return [];
+            return cat.split(',').map(s => s.trim()).filter(Boolean);
+        }
 
-            const selectOpts = produtos.map(p =>
-                `<option value="${p.chave}">${p.nome}</option>`
-            ).join('');
+        function renderSessoes(produtos) {
+            _sessoesProds = produtos;
+            const view = document.getElementById('sessoes-view');
+            const semSessao = produtos.filter(p => getCategorias(p).length === 0);
 
             const catCards = CATEGORIAS_DEF.map(cat => {
-                const prods = produtos.filter(p => p.categoria === cat.slug);
+                const prods = produtos.filter(p => getCategorias(p).includes(cat.slug));
                 const rows = prods.map(p => {
                     const img = (p.imgs && p.imgs[0]) ? `<img src="${p.imgs[0]}" style="width:44px;height:44px;object-fit:cover;border-radius:7px;flex-shrink:0;">` : `<div style="width:44px;height:44px;border-radius:7px;background:#f0ebe1;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.2rem;">📷</div>`;
                     return `<div style="display:flex;align-items:center;gap:0.7rem;padding:0.5rem 0;border-bottom:1px solid var(--border);">
                         ${img}
                         <span style="flex:1;font-size:0.85rem;font-weight:500;color:var(--text);">${p.nome}</span>
-                        <button onclick="moverParaSessao('${p.chave}', '', this)" title="Remover desta sessão" style="background:transparent;border:none;color:#aaa;font-size:1rem;cursor:pointer;padding:0.2rem 0.4rem;border-radius:5px;transition:color .15s;" onmouseover="this.style.color='#c0392b'" onmouseout="this.style.color='#aaa'">✕</button>
+                        <button onclick="removerDaSessao('${p.chave}', '${cat.slug}')" title="Remover desta sessão" style="background:transparent;border:none;color:#aaa;font-size:1rem;cursor:pointer;padding:0.2rem 0.4rem;border-radius:5px;transition:color .15s;" onmouseover="this.style.color='#c0392b'" onmouseout="this.style.color='#aaa'">✕</button>
                     </div>`;
                 }).join('');
 
                 const emptyMsg = prods.length === 0
                     ? `<div style="padding:1rem 0;text-align:center;color:var(--muted);font-size:0.78rem;font-style:italic;">Nenhum produto nesta sessão</div>`
                     : '';
+
+                const optsAdicionar = produtos
+                    .filter(p => !getCategorias(p).includes(cat.slug))
+                    .map(p => {
+                        const outrasSessionsLabels = getCategorias(p).map(s => CATEGORIAS_DEF.find(c => c.slug === s)?.label).filter(Boolean).join(', ');
+                        return `<option value="${p.chave}">${p.nome}${outrasSessionsLabels ? ' ('+outrasSessionsLabels+')' : ''}</option>`;
+                    }).join('');
 
                 return `
                 <div style="background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;">
@@ -1501,7 +1512,7 @@
                         <div style="display:flex;gap:0.5rem;align-items:center;">
                             <select id="add-sel-${cat.slug}" style="flex:1;padding:0.38rem 0.5rem;border:1px solid var(--border);border-radius:7px;font-size:0.8rem;font-family:'Jost',sans-serif;background:#fff;">
                                 <option value="">Adicionar produto…</option>
-                                ${produtos.filter(p => p.categoria !== cat.slug).map(p => `<option value="${p.chave}">${p.nome}${p.categoria ? ' ('+CATEGORIAS_DEF.find(c=>c.slug===p.categoria)?.label+')' : ''}</option>`).join('')}
+                                ${optsAdicionar}
                             </select>
                             <button onclick="adicionarNaSessao('${cat.slug}', 'add-sel-${cat.slug}')" style="background:rgba(130,80,200,0.15);border:1px solid #9060c0;color:#7040a0;border-radius:7px;padding:0.38rem 0.8rem;font-size:0.8rem;cursor:pointer;font-family:'Jost',sans-serif;white-space:nowrap;">+ Adicionar</button>
                         </div>
@@ -1515,8 +1526,8 @@
                 return `<div style="display:flex;align-items:center;gap:0.7rem;padding:0.5rem 0;border-bottom:1px solid var(--border);">
                     ${img}
                     <span style="flex:1;font-size:0.85rem;font-weight:500;color:var(--text);">${p.nome}</span>
-                    <select onchange="moverParaSessao('${p.chave}', this.value, null)" style="padding:0.3rem 0.5rem;border:1px solid var(--border);border-radius:6px;font-size:0.75rem;font-family:'Jost',sans-serif;background:#fff;max-width:130px;">
-                        <option value="">Mover para…</option>
+                    <select onchange="if(this.value){adicionarSessao('${p.chave}', this.value);this.value=''}" style="padding:0.3rem 0.5rem;border:1px solid var(--border);border-radius:6px;font-size:0.75rem;font-family:'Jost',sans-serif;background:#fff;max-width:130px;">
+                        <option value="">Adicionar à…</option>
                         ${optsCat}
                     </select>
                 </div>`;
@@ -1525,7 +1536,7 @@
             view.innerHTML = `
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:0.5rem;">
                     <h2 style="font-family:'Cormorant Garamond',serif;color:#7040a0;font-size:1.6rem;margin:0;">🗂 Sessões de Produtos</h2>
-                    <span style="font-size:0.78rem;color:var(--muted);">Clique em Salvar em cada produto ou use os botões abaixo</span>
+                    <span style="font-size:0.78rem;color:var(--muted);">Uma bolsa pode aparecer em mais de uma sessão</span>
                 </div>
 
                 ${semSessao.length > 0 ? `
@@ -1540,25 +1551,38 @@
             `;
         }
 
-        async function moverParaSessao(chave, novaCategoria, btnEl) {
+        async function salvarCategorias(chave, cats) {
             const resp = await fetch('/api/admin/produtos/' + chave, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'senha': _adminSenha },
-                body: JSON.stringify({ categoria: novaCategoria || null })
+                body: JSON.stringify({ categoria: cats.length ? cats.join(',') : null })
             });
             if (resp.ok) {
                 toast('Sessão atualizada!', 'success');
                 mostrarSessoes();
             } else {
-                toast('Erro ao mover produto.', 'error');
+                toast('Erro ao atualizar sessão.', 'error');
             }
+        }
+
+        async function adicionarSessao(chave, slug) {
+            const prod = _sessoesProds.find(p => p.chave === chave);
+            const cats = getCategorias(prod || { categoria: '' });
+            if (!cats.includes(slug)) cats.push(slug);
+            await salvarCategorias(chave, cats);
+        }
+
+        async function removerDaSessao(chave, slug) {
+            const prod = _sessoesProds.find(p => p.chave === chave);
+            const cats = getCategorias(prod || { categoria: '' }).filter(c => c !== slug);
+            await salvarCategorias(chave, cats);
         }
 
         async function adicionarNaSessao(slug, selectId) {
             const sel = document.getElementById(selectId);
             const chave = sel?.value;
             if (!chave) return;
-            await moverParaSessao(chave, slug, null);
+            await adicionarSessao(chave, slug);
         }
 
         function renderProdutos(produtos) {
@@ -1770,6 +1794,7 @@
 
         let _imgsEdicao = [];
         let _produtosData = [];
+        let _sessoesProds = [];
         let _npCores = [];
         let _coresEdicao = [];
         let _npImgs = [];

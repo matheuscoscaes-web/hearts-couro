@@ -2492,7 +2492,10 @@ function aplicarFiltros() {
     lista = lista.filter(p => p.preco <= precoMax);
   }
   if (categoria) {
-    lista = lista.filter(p => p.categoria === categoria);
+    lista = lista.filter(p => {
+      const cats = typeof p.categoria === 'string' ? p.categoria.split(',').map(s => s.trim()) : (p.categoria || []);
+      return cats.includes(categoria);
+    });
   }
 
   if (filtro === 'menor-preco') {
