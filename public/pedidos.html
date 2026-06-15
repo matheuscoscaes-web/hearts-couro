@@ -1342,7 +1342,6 @@
 
         // ── GERAR ETIQUETA ────────────────────────────────────────────────
         async function gerarEtiqueta(id) {
-            if (!confirm('Gerar etiqueta e enviar o código de rastreio automaticamente ao cliente?')) return;
             const btn = document.getElementById(`etiqueta-${id}`);
             if (btn) { btn.disabled = true; btn.textContent = 'Gerando...'; }
             try {
@@ -1352,7 +1351,15 @@
                     if (result.codigo_rastreio) {
                         toast(`Etiqueta gerada! Código ${result.codigo_rastreio} enviado ao cliente por e-mail.`, 'success');
                     } else {
-                        toast('Etiqueta gerada! Adicione o código de rastreio manualmente.', 'success');
+                        toast('Etiqueta gerada!', 'success');
+                    }
+                    // Atualiza o card imediatamente na UI sem esperar o reload completo
+                    const pedido = database.find(p => p.id === id);
+                    if (pedido) {
+                        pedido.status = 'etiqueta_criada';
+                        if (result.codigo_rastreio) pedido.codigo_rastreio = result.codigo_rastreio;
+                        const abaAtiva = document.querySelector('.tab-btn[data-status].active')?.dataset.status || 'pagos';
+                        filtrar(abaAtiva);
                     }
                     if (result.print_url) {
                         window.open('/api/imprimir-etiqueta?url=' + encodeURIComponent(result.print_url), '_blank');
