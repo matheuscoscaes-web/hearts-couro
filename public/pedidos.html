@@ -1079,7 +1079,9 @@
                 const totalBolsas = itens ? itens.reduce((s, i) => s + (i.quantidade || 1), 0) : 1;
                 const corLabel = itens ? itens.map(i => i.cor).join(', ') : (p.cor || '—');
                 const prodLabel = itens ? itens.map(i => `${i.produto} (${i.cor})${(i.quantidade||1) > 1 ? ` ×${i.quantidade}` : ''}`).join(' + ') : (p.produto || '');
-                const msgZap = itens
+                const msgZap = p.status === 'aguardando_pagamento'
+                    ? encodeURIComponent(`Oi, ${p.nome}! 😊 Vi que você estava dando uma olhada nas nossas bolsas e ficou com uma no carrinho... ficou com alguma dúvida ou precisou de ajuda para finalizar? Estou por aqui! 💛`)
+                    : itens
                     ? encodeURIComponent(`Olá ${p.nome}! Aqui é da Hearts Couro Legítimo. Recebemos seu pedido de ${totalBolsas} bolsa${totalBolsas > 1 ? 's' : ''}. Para prosseguir com a compra, estarei enviando o link:\n\nhttps://hearts-couro.onrender.com/`)
                     : encodeURIComponent(`Olá ${p.nome}! Aqui é da Hearts Couro Legítimo. Recebemos seu pedido de uma Bolsa na cor ${p.cor}. Para estar dando prosseguimento na compra da sua linda bolsa ${p.produto}, estarei enviando o link do site da compra!\n\nhttps://hearts-couro.onrender.com/`);
                 const fone = getWhatsAppPhone(p.whatsapp);
