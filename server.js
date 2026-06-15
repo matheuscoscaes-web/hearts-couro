@@ -1331,6 +1331,31 @@ app.put('/api/conta/perfil', async (req, res) => {
   res.json({ ok: true });
 });
 
+// ── ROTA: Alterar Senha (usuário logado) ──
+app.post('/api/conta/alterar-senha', async (req, res) => {
+  const sess = await validarSessao(req, res);
+  if (!sess) return;
+
+  const { senhaAtual, novaSenha } = req.body;
+  if (!senhaAtual || !novaSenha) return res.status(400).json({ erro: 'Senha atual e nova senha são obrigatórias.' });
+  if (novaSenha.length < 6) return res.status(400).json({ erro: 'A nova senha deve ter pelo menos 6 caracteres.' });
+
+  try {
+    const { data: conta } = await supabase.from('contas').select('senha_hash').eq('id', sess.id).single();
+    if (!conta) return res.status(404).json({ erro: 'Conta não encontrada.' });
+
+    const ok = await verificarSenha(senhaAtual, conta.senha_hash);
+    if (!ok) return res.status(401).json({ erro: 'Senha atual incorreta.' });
+
+    const novoHash = await hashSenha(novaSenha);
+    await supabase.from('contas').update({ senha_hash: novoHash }).eq('id', sess.id);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Erro ao alterar senha:', err);
+    res.status(500).json({ erro: 'Erro ao alterar senha.' });
+  }
+});
+
 // ── ROTA: Clientes CRM / Fidelidade ──
 app.get('/api/clientes', async (req, res) => {
   try {
