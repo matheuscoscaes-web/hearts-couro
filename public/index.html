@@ -547,6 +547,70 @@ body::before {
 }
 .edit-note::before { content: '✎'; color: var(--gold-dim); }
 
+/* ── TRUST STRIP ── */
+.trust-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  padding: 0.65rem 1rem;
+  margin-bottom: 1.6rem;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.67rem;
+  color: var(--muted);
+  letter-spacing: 0.03em;
+  font-weight: 500;
+}
+.trust-strip .ti { color: var(--gold); margin-right: 0.22rem; }
+.trust-sep { color: var(--border); user-select: none; }
+@media (max-width: 480px) { .trust-sep { display: none; } .trust-strip { gap: 0.3rem 0.7rem; } }
+
+/* ── FOOTER ── */
+.site-footer {
+  margin-top: 3rem;
+  padding: 2rem 1.5rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+.footer-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.3rem;
+}
+.footer-sub {
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  margin-bottom: 1.2rem;
+}
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.3rem 1.4rem;
+  margin-bottom: 1.2rem;
+}
+.footer-links a {
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--gold); }
+.footer-copy {
+  font-size: 0.62rem;
+  color: var(--muted);
+  opacity: 0.7;
+}
+
 /* ── FORM CARD ── */
 .card {
   background: var(--card-bg);
@@ -1621,6 +1685,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
 
   <div class="brand-header">
     <div class="clover"><img src="logo2.0.png" alt="Hearts Couro"></div>
+    <div class="brand-name">Hearts</div>
     <div class="brand-sub">Couro Legítimo</div>
     <div class="gold-line"></div>
     <div class="header-actions">
@@ -1633,6 +1698,17 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
         <span class="cart-badge" id="cart-badge" style="display:none">0</span>
       </button>
     </div>
+  </div>
+
+  <!-- TRUST STRIP -->
+  <div class="trust-strip">
+    <span><span class="ti">✦</span>Couro 100% Legítimo</span>
+    <span class="trust-sep">·</span>
+    <span><span class="ti">🚚</span>Entrega p/ todo Brasil</span>
+    <span class="trust-sep">·</span>
+    <span><span class="ti">🛡</span>Garantia de 6 meses</span>
+    <span class="trust-sep">·</span>
+    <span><span class="ti">💳</span>Até 12× s/ juros</span>
   </div>
 
   <!-- ══ SHOP TOOLBAR ══ -->
@@ -1678,7 +1754,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
       </div>
       <div class="prod-info">
         <div class="prod-tag">✦ Hearts Couro Legítimo</div>
-        <div class="prod-name">Ref: Paola</div>
+        <div class="prod-name">Paola</div>
         <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
         <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
           • Bolsão c/ Abertura p/ o Braço<br>
@@ -1706,7 +1782,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
       </div>
       <div class="prod-info">
         <div class="prod-tag">✦ Hearts Couro Legítimo</div>
-        <div class="prod-name">Ref: Carol</div>
+        <div class="prod-name">Carol</div>
         <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
         <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
           • Duas formas: braço e transversal<br>
@@ -1736,7 +1812,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
       </div>
       <div class="prod-info">
         <div class="prod-tag">✦ Hearts Couro Legítimo</div>
-        <div class="prod-name">Ref: Celina</div>
+        <div class="prod-name">Celina</div>
         <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
         <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
           • Bolsa média com bolso frontal<br>
@@ -1762,7 +1838,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
       </div>
       <div class="prod-info">
         <div class="prod-tag">✦ Hearts Couro Legítimo</div>
-        <div class="prod-name">Ref: Lara</div>
+        <div class="prod-name">Lara</div>
         <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
         <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
           • Abertura principal nas costas<br>
@@ -1788,7 +1864,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
       </div>
       <div class="prod-info">
         <div class="prod-tag">✦ Hearts Couro Legítimo</div>
-        <div class="prod-name">Ref: Adriana</div>
+        <div class="prod-name">Adriana</div>
         <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
         <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
           • Bolsa lateral estruturada<br>
@@ -1814,10 +1890,13 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
       </div>
       <div class="prod-info">
         <div class="prod-tag">✦ Hearts Couro Legítimo</div>
-        <div class="prod-name">Ref: Miranda</div>
+        <div class="prod-name">Miranda</div>
         <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
         <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
-          • Descrição em breve<br>• Couro Legítimo<br>• Qualidade Hearts
+          • Bolsa estruturada e elegante<br>
+          • Alça de ombro + alça transversal<br>
+          • Fechamento em zíper<br>
+          • Bolso interno com divisórias
         </div>
         <div class="prod-price-block">
           <div class="price-lbl">Valor</div>
@@ -1834,10 +1913,13 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
       </div>
       <div class="prod-info">
         <div class="prod-tag">✦ Hearts Couro Legítimo</div>
-        <div class="prod-name">Ref: Denise</div>
+        <div class="prod-name">Denise</div>
         <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
         <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
-          • Descrição em breve<br>• Couro Legítimo<br>• Qualidade Hearts
+          • Bolsa compacta e estilosa<br>
+          • Bolso frontal externo<br>
+          • Fechamento em zíper<br>
+          • Alça de ombro regulável
         </div>
         <div class="prod-price-block">
           <div class="price-lbl">Valor</div>
@@ -1854,7 +1936,7 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
       </div>
       <div class="prod-info">
         <div class="prod-tag">✦ Hearts Couro Legítimo</div>
-        <div class="prod-name">Ref: Júlia</div>
+        <div class="prod-name">Júlia</div>
         <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
         <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
           • Duas opções de alça: mão e transversal<br>
@@ -1876,10 +1958,13 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
       </div>
       <div class="prod-info">
         <div class="prod-tag">✦ Hearts Couro Legítimo</div>
-        <div class="prod-name">Ref: Renata</div>
+        <div class="prod-name">Renata</div>
         <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
         <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
-          • Descrição em breve<br>• Couro Legítimo<br>• Qualidade Hearts
+          • Bolsa espaçosa e versátil<br>
+          • Compartimento principal amplo<br>
+          • Alça regulável para ombro<br>
+          • Fechamento seguro em zíper
         </div>
         <div class="prod-price-block">
           <div class="price-lbl">Valor</div>
@@ -1896,10 +1981,13 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
       </div>
       <div class="prod-info">
         <div class="prod-tag">✦ Hearts Couro Legítimo</div>
-        <div class="prod-name">Ref: Megan</div>
+        <div class="prod-name">Megan</div>
         <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
         <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
-          • Descrição em breve<br>• Couro Legítimo<br>• Qualidade Hearts
+          • Design moderno e sofisticado<br>
+          • Compartimento principal espaçoso<br>
+          • Bolso interno organizado<br>
+          • Alça regulável
         </div>
         <div class="prod-price-block">
           <div class="price-lbl">Valor</div>
@@ -1916,10 +2004,13 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
       </div>
       <div class="prod-info">
         <div class="prod-tag">✦ Hearts Couro Legítimo</div>
-        <div class="prod-name">Ref: Manuela</div>
+        <div class="prod-name">Manuela</div>
         <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
         <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
-          • Couro Legítimo<br>• Qualidade Hearts
+          • Bolsa elegante com acabamento premium<br>
+          • Compartimento principal espaçoso<br>
+          • Bolso interno com zíper<br>
+          • Fechamento em imã + zíper
         </div>
         <div class="prod-price-block">
           <div class="price-lbl">Valor</div>
@@ -1936,10 +2027,13 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
       </div>
       <div class="prod-info">
         <div class="prod-tag">✦ Hearts Couro Legítimo</div>
-        <div class="prod-name">Ref: Maria</div>
+        <div class="prod-name">Maria</div>
         <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
         <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
-          • Couro Legítimo<br>• Qualidade Hearts
+          • Bolsa feminina clássica e espaçosa<br>
+          • Compartimentos bem organizados<br>
+          • Alça de ombro confortável<br>
+          • Fechamento em zíper
         </div>
         <div class="prod-price-block">
           <div class="price-lbl">Valor</div>
@@ -1955,10 +2049,13 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
       </div>
       <div class="prod-info">
         <div class="prod-tag">✦ Hearts Couro Legítimo</div>
-        <div class="prod-name">Ref: Michele</div>
+        <div class="prod-name">Michele</div>
         <div class="gold-line" style="margin:0.9rem 0;width:40px;"></div>
         <div class="prod-desc" style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
-          • Descrição em breve<br>• Couro Legítimo<br>• Qualidade Hearts
+          • Design exclusivo com detalhes refinados<br>
+          • Compartimento principal com divisórias<br>
+          • Bolso frontal com zíper<br>
+          • Alça de ombro regulável
         </div>
         <div class="prod-price-block">
           <div class="price-lbl">Valor</div>
@@ -1970,6 +2067,18 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
 
   </div>
   <!-- ══ FIM GRID DE PRODUTOS ══ -->
+
+  <!-- ══ FOOTER ══ -->
+  <footer class="site-footer" id="site-footer">
+    <div class="footer-logo">Hearts</div>
+    <div class="footer-sub">Couro Legítimo</div>
+    <div class="footer-links">
+      <a href="https://wa.me/5521966668724?text=Ol%C3%A1%2C%20vim%20pelo%20site%20e%20preciso%20de%20ajuda!" target="_blank" rel="noopener">💬 WhatsApp</a>
+      <a href="#" onclick="abrirMeusPedidos();return false;">📦 Meus Pedidos</a>
+      <a href="/fidelidade.html">♥ Clube de Fidelidade</a>
+    </div>
+    <div class="footer-copy">© 2025 Hearts Couro Legítimo · Todos os direitos reservados</div>
+  </footer>
 
   <!-- ══ FORM CARD ══ -->
 

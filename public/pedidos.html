@@ -564,6 +564,11 @@
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">Hearts</div>
 
+        <button class="sidebar-item" id="side-aguardando" onclick="filtrarSidebar('aguardando')" style="color:#a07020;">
+            <span class="sidebar-item-icon">⏳</span>
+            <span class="sidebar-item-label">Aguardando</span>
+            <span class="tab-count" id="side-count-aguardando" style="background:rgba(255,190,60,0.2);color:#a07020;">0</span>
+        </button>
         <button class="sidebar-item active" id="side-pagos" onclick="filtrarSidebar('pagos')">
             <span class="sidebar-item-icon">✅</span>
             <span class="sidebar-item-label">Pagos</span>
@@ -627,6 +632,7 @@
         </div>
 
         <div class="tabs">
+            <button class="tab-btn" data-status="aguardando" onclick="filtrar('aguardando')" style="background:rgba(255,190,60,0.1);border-color:rgba(255,190,60,0.4);color:#a07020;">⏳ Aguardando <span class="tab-count" id="count-aguardando" style="background:rgba(255,190,60,0.2);color:#a07020;">0</span></button>
             <button class="tab-btn active" data-status="pagos" onclick="filtrar('pagos')">Pagos <span class="tab-count" id="count-pagos">0</span></button>
             <button class="tab-btn" data-status="entregue" onclick="filtrar('entregue')">Enviados <span class="tab-count" id="count-entregue">0</span></button>
             <button class="tab-btn" data-status="retirado" onclick="filtrar('retirado')">Retirados <span class="tab-count" id="count-retirado">0</span></button>
@@ -884,11 +890,17 @@
                     if (el) el.textContent = v;
                 });
             });
+            // Destaca aba Aguardando se houver pedidos pendentes
+            const tabAg = document.querySelector('.tab-btn[data-status="aguardando"]');
+            if (tabAg) {
+                tabAg.style.fontWeight = counts.aguardando > 0 ? '700' : '500';
+                tabAg.style.borderColor = counts.aguardando > 0 ? '#e0a020' : 'rgba(255,190,60,0.4)';
+            }
         }
 
         // ── MENU HAMBÚRGUER ────────────────────────────────────────────────
         const sidebarLabels = {
-            aguardando: 'Aguardando', pagos: 'Pagos', enviado: 'Contactados',
+            aguardando: '⏳ Aguardando Pagamento', pagos: 'Pagos', enviado: 'Contactados',
             entregue: 'Enviados', retirado: 'Retirados', todos: 'Geral', resumo: 'Resumo de Vendas',
         };
 
@@ -1040,6 +1052,7 @@
                 const fone = getWhatsAppPhone(p.whatsapp);
                 const linkZap = fone ? `https://wa.me/55${fone}?text=${msgZap}` : '#';
                 const fmtValor = v => v ? 'R$ ' + parseFloat(v).toFixed(2).replace('.', ',') : '—';
+                const fmtDataCurta = d => d ? new Date(d).toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', timeZone:'America/Sao_Paulo' }) : '';
 
                 const badgeHtml = p.status === 'approved'
                     ? `<span class="status-badge status-approved" id="badge-${p.id}" onclick="handleBadgeClick(${p.id})" title="Clique 2× para cancelar" style="cursor:pointer;">Pago</span>`
@@ -1085,6 +1098,7 @@
                                 <span>🎨 ${itens ? totalBolsas + ' bolsa' + (totalBolsas > 1 ? 's' : '') : (p.cor || '—')}</span>
                                 <span>💳 ${p.pagamento || '—'}</span>
                                 <span>${fmtValor(p.valor_total)}</span>
+                                <span style="opacity:0.6;">#${p.id}${p.created_at ? ' · ' + fmtDataCurta(p.created_at) : ''}</span>
                             </div>
                         </div>
                         ${badgeHtml}
