@@ -1662,41 +1662,6 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
     </div>
   </div>
 
-<!-- ══ GAVETA DE FILTROS ══ -->
-<div class="filtros-overlay" id="filtros-overlay" onclick="fecharFiltros()"></div>
-<div class="filtros-drawer" id="filtros-drawer">
-  <div class="filtros-handle"></div>
-  <div class="filtros-header">
-    <span>Filtros</span>
-    <button onclick="fecharFiltros()">✕</button>
-  </div>
-
-  <div class="filtros-section">
-    <div class="filtros-section-title">Ordenar por</div>
-    <div class="filtros-opts" id="drawer-filter-opts">
-      <button class="filtros-opt active" data-filter="todas">Relevância</button>
-      <button class="filtros-opt promo-chip" data-filter="promo">🏷 Em Promoção</button>
-      <button class="filtros-opt" data-filter="menor-preco">↑ Menor preço</button>
-      <button class="filtros-opt" data-filter="maior-preco">↓ Maior preço</button>
-    </div>
-  </div>
-
-  <div class="filtros-section">
-    <div class="filtros-section-title">Faixa de Preço</div>
-    <div class="filtros-opts" id="drawer-price-opts">
-      <button class="filtros-opt active" data-price="0">Todos</button>
-      <button class="filtros-opt" data-price="200">Até R$ 200</button>
-      <button class="filtros-opt" data-price="250">Até R$ 250</button>
-      <button class="filtros-opt" data-price="300">Até R$ 300</button>
-    </div>
-  </div>
-
-  <div class="filtros-footer">
-    <button class="filtros-clear" onclick="limparFiltrosDrawer()">Limpar</button>
-    <button class="filtros-apply" onclick="fecharFiltros()">Ver resultados</button>
-  </div>
-</div>
-
   <div class="empty-state" id="empty-state">
     <div class="empty-state-icon">🔍</div>
     <h3>Nenhuma bolsa encontrada</h3>
@@ -2275,6 +2240,38 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
 
   </div>
 
+</div>
+
+<!-- ══ GAVETA DE FILTROS ══ -->
+<div class="filtros-overlay" id="filtros-overlay" onclick="fecharFiltros()"></div>
+<div class="filtros-drawer" id="filtros-drawer">
+  <div class="filtros-handle"></div>
+  <div class="filtros-header">
+    <span>Filtros</span>
+    <button onclick="fecharFiltros()">✕</button>
+  </div>
+  <div class="filtros-section">
+    <div class="filtros-section-title">Ordenar por</div>
+    <div class="filtros-opts" id="drawer-filter-opts">
+      <button class="filtros-opt active" data-filter="todas">Relevância</button>
+      <button class="filtros-opt promo-chip" data-filter="promo">🏷 Em Promoção</button>
+      <button class="filtros-opt" data-filter="menor-preco">↑ Menor preço</button>
+      <button class="filtros-opt" data-filter="maior-preco">↓ Maior preço</button>
+    </div>
+  </div>
+  <div class="filtros-section">
+    <div class="filtros-section-title">Faixa de Preço</div>
+    <div class="filtros-opts" id="drawer-price-opts">
+      <button class="filtros-opt active" data-price="0">Todos</button>
+      <button class="filtros-opt" data-price="200">Até R$ 200</button>
+      <button class="filtros-opt" data-price="250">Até R$ 250</button>
+      <button class="filtros-opt" data-price="300">Até R$ 300</button>
+    </div>
+  </div>
+  <div class="filtros-footer">
+    <button class="filtros-clear" onclick="limparFiltrosDrawer()">Limpar</button>
+    <button class="filtros-apply" onclick="fecharFiltros()">Ver resultados</button>
+  </div>
 </div>
 
 <!-- ══ MODAL DE PRODUTO ══ -->
