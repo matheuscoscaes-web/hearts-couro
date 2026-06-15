@@ -121,6 +121,193 @@ body::before {
   flex-direction: column;
   gap: 0.65rem;
 }
+
+/* Linha de categorias + botão Filtros */
+.cats-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.cats-filter-row .filter-row {
+  flex: 1;
+  min-width: 0;
+}
+
+.filtros-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.32rem;
+  padding: 0.42rem 0.9rem;
+  border-radius: 50px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--muted);
+  font-family: 'Jost', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  transition: all 0.18s;
+  -webkit-tap-highlight-color: transparent;
+}
+.filtros-btn:hover, .filtros-btn.ativo {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(201,150,60,0.08);
+}
+
+.filtros-badge {
+  position: absolute;
+  top: -4px; right: -4px;
+  background: var(--gold);
+  color: #1a1510;
+  font-size: 0.5rem;
+  font-weight: 700;
+  border-radius: 50%;
+  width: 14px; height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* ── GAVETA DE FILTROS ── */
+.filtros-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.28);
+  z-index: 480;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+.filtros-overlay.aberto { display: block; }
+
+.filtros-drawer {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 490;
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  padding: 0 1.4rem calc(1.4rem + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.13);
+  max-height: 75vh;
+  overflow-y: auto;
+}
+.filtros-drawer.aberto {
+  display: block;
+  animation: slideUp 0.28s cubic-bezier(0.22,1,0.36,1);
+}
+
+.filtros-handle {
+  width: 36px; height: 4px;
+  background: #e0d8cc;
+  border-radius: 2px;
+  margin: 0.85rem auto 1.1rem;
+}
+
+.filtros-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.6rem;
+}
+.filtros-header > span {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.02em;
+}
+.filtros-header > button {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: #f8f4ee;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.82rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+.filtros-header > button:hover { background: var(--gold); color: #fff; border-color: var(--gold); }
+
+.filtros-section { margin-bottom: 1.5rem; }
+
+.filtros-section-title {
+  font-size: 0.6rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+}
+
+.filtros-opts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.filtros-opt {
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--muted);
+  font-family: 'Jost', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.filtros-opt.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #1a1510;
+  font-weight: 600;
+}
+
+.filtros-footer {
+  display: flex;
+  gap: 0.7rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--border);
+  margin-top: 0.5rem;
+}
+.filtros-clear {
+  flex: 1;
+  padding: 0.9rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  font-family: 'Jost', sans-serif;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.filtros-clear:hover { background: #f0ebe1; }
+.filtros-apply {
+  flex: 2;
+  padding: 0.9rem;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, var(--gold-dim) 0%, var(--gold) 50%, var(--gold-light) 100%);
+  color: #1a1510;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+.filtros-apply:hover { filter: brightness(1.06); }
 .search-wrap {
   position: relative;
   display: flex;
@@ -1454,31 +1641,61 @@ input.invalid, select.invalid { border-color: #7a3020 !important; }
       <svg class="search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input type="search" id="search-input" class="search-input" placeholder="Buscar bolsa por nome..." autocomplete="off" inputmode="search">
     </div>
-    <div class="filter-row" id="filter-chips">
-      <button class="f-chip active" data-filter="todas">Todas</button>
-      <button class="f-chip promo-chip" data-filter="promo">🏷 Em Promoção</button>
-      <button class="f-chip" data-filter="menor-preco">↑ Menor preço</button>
-      <button class="f-chip" data-filter="maior-preco">↓ Maior preço</button>
-    </div>
-    <div class="filter-row" id="category-chips">
-      <button class="f-chip active" data-category="">Todas</button>
-      <button class="f-chip" data-category="mochila-masculina">Mochila Masculina</button>
-      <button class="f-chip" data-category="mochila-feminina">Mochila Feminina</button>
-      <button class="f-chip" data-category="mala">Mala</button>
-      <button class="f-chip" data-category="bolsa-transversal">Bolsa Transversal</button>
-      <button class="f-chip" data-category="bolsa-ombro">Bolsa de Ombro</button>
-      <button class="f-chip" data-category="carteira">Carteira</button>
-      <button class="f-chip" data-category="bolsa-2em1">Bolsa 2 em 1</button>
-      <button class="f-chip" data-category="maleta">Maleta</button>
-      <button class="f-chip" data-category="2-alcas">2 tipos de alça</button>
-    </div>
-    <div class="filter-row" id="price-chips">
-      <button class="f-chip active" data-price="0">Todos os valores</button>
-      <button class="f-chip" data-price="200">Até R$200</button>
-      <button class="f-chip" data-price="250">Até R$250</button>
-      <button class="f-chip" data-price="300">Até R$300</button>
+    <div class="cats-filter-row">
+      <div class="filter-row" id="category-chips">
+        <button class="f-chip active" data-category="">Todas</button>
+        <button class="f-chip" data-category="mochila-masculina">Mochila Masculina</button>
+        <button class="f-chip" data-category="mochila-feminina">Mochila Feminina</button>
+        <button class="f-chip" data-category="mala">Mala</button>
+        <button class="f-chip" data-category="bolsa-transversal">Bolsa Transversal</button>
+        <button class="f-chip" data-category="bolsa-ombro">Bolsa de Ombro</button>
+        <button class="f-chip" data-category="carteira">Carteira</button>
+        <button class="f-chip" data-category="bolsa-2em1">Bolsa 2 em 1</button>
+        <button class="f-chip" data-category="maleta">Maleta</button>
+        <button class="f-chip" data-category="2-alcas">2 tipos de alça</button>
+      </div>
+      <button class="filtros-btn" id="btn-filtros" onclick="abrirFiltros()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+        Filtros
+        <span class="filtros-badge" id="filtros-badge" style="display:none">2</span>
+      </button>
     </div>
   </div>
+
+<!-- ══ GAVETA DE FILTROS ══ -->
+<div class="filtros-overlay" id="filtros-overlay" onclick="fecharFiltros()"></div>
+<div class="filtros-drawer" id="filtros-drawer">
+  <div class="filtros-handle"></div>
+  <div class="filtros-header">
+    <span>Filtros</span>
+    <button onclick="fecharFiltros()">✕</button>
+  </div>
+
+  <div class="filtros-section">
+    <div class="filtros-section-title">Ordenar por</div>
+    <div class="filtros-opts" id="drawer-filter-opts">
+      <button class="filtros-opt active" data-filter="todas">Relevância</button>
+      <button class="filtros-opt promo-chip" data-filter="promo">🏷 Em Promoção</button>
+      <button class="filtros-opt" data-filter="menor-preco">↑ Menor preço</button>
+      <button class="filtros-opt" data-filter="maior-preco">↓ Maior preço</button>
+    </div>
+  </div>
+
+  <div class="filtros-section">
+    <div class="filtros-section-title">Faixa de Preço</div>
+    <div class="filtros-opts" id="drawer-price-opts">
+      <button class="filtros-opt active" data-price="0">Todos</button>
+      <button class="filtros-opt" data-price="200">Até R$ 200</button>
+      <button class="filtros-opt" data-price="250">Até R$ 250</button>
+      <button class="filtros-opt" data-price="300">Até R$ 300</button>
+    </div>
+  </div>
+
+  <div class="filtros-footer">
+    <button class="filtros-clear" onclick="limparFiltrosDrawer()">Limpar</button>
+    <button class="filtros-apply" onclick="fecharFiltros()">Ver resultados</button>
+  </div>
+</div>
 
   <div class="empty-state" id="empty-state">
     <div class="empty-state-icon">🔍</div>
@@ -2539,15 +2756,6 @@ function aplicarFiltros() {
 function initFiltros() {
   document.getElementById('search-input')?.addEventListener('input', aplicarFiltros);
 
-  document.getElementById('filter-chips')?.addEventListener('click', e => {
-    const btn = e.target.closest('.f-chip');
-    if (!btn) return;
-    document.querySelectorAll('#filter-chips .f-chip').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    FILTRO_ATUAL = btn.dataset.filter;
-    aplicarFiltros();
-  });
-
   document.getElementById('category-chips')?.addEventListener('click', e => {
     const btn = e.target.closest('.f-chip');
     if (!btn) return;
@@ -2557,14 +2765,63 @@ function initFiltros() {
     aplicarFiltros();
   });
 
-  document.getElementById('price-chips')?.addEventListener('click', e => {
-    const btn = e.target.closest('.f-chip');
-    if (!btn) return;
-    document.querySelectorAll('#price-chips .f-chip').forEach(b => b.classList.remove('active'));
+  document.getElementById('drawer-filter-opts')?.addEventListener('click', e => {
+    const btn = e.target.closest('.filtros-opt');
+    if (!btn || !btn.dataset.filter) return;
+    document.querySelectorAll('#drawer-filter-opts .filtros-opt').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    PRECO_MAX_ATUAL = parseInt(btn.dataset.price) || 0;
+    FILTRO_ATUAL = btn.dataset.filter;
+    atualizarBadgeFiltros();
     aplicarFiltros();
   });
+
+  document.getElementById('drawer-price-opts')?.addEventListener('click', e => {
+    const btn = e.target.closest('.filtros-opt');
+    if (!btn || !('price' in btn.dataset)) return;
+    document.querySelectorAll('#drawer-price-opts .filtros-opt').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    PRECO_MAX_ATUAL = parseInt(btn.dataset.price) || 0;
+    atualizarBadgeFiltros();
+    aplicarFiltros();
+  });
+}
+
+function atualizarBadgeFiltros() {
+  const count = (FILTRO_ATUAL && FILTRO_ATUAL !== 'todas' ? 1 : 0) + (PRECO_MAX_ATUAL > 0 ? 1 : 0);
+  const badge = document.getElementById('filtros-badge');
+  const btn   = document.getElementById('btn-filtros');
+  if (!badge || !btn) return;
+  if (count > 0) {
+    badge.textContent = count;
+    badge.style.display = 'flex';
+    btn.classList.add('ativo');
+  } else {
+    badge.style.display = 'none';
+    btn.classList.remove('ativo');
+  }
+}
+
+function abrirFiltros() {
+  document.getElementById('filtros-drawer').classList.add('aberto');
+  document.getElementById('filtros-overlay').classList.add('aberto');
+  document.body.style.overflow = 'hidden';
+}
+
+function fecharFiltros() {
+  document.getElementById('filtros-drawer').classList.remove('aberto');
+  document.getElementById('filtros-overlay').classList.remove('aberto');
+  document.body.style.overflow = '';
+}
+
+function limparFiltrosDrawer() {
+  FILTRO_ATUAL = 'todas';
+  PRECO_MAX_ATUAL = 0;
+  document.querySelectorAll('#drawer-filter-opts .filtros-opt').forEach(b => b.classList.remove('active'));
+  document.querySelector('#drawer-filter-opts .filtros-opt[data-filter="todas"]')?.classList.add('active');
+  document.querySelectorAll('#drawer-price-opts .filtros-opt').forEach(b => b.classList.remove('active'));
+  document.querySelector('#drawer-price-opts .filtros-opt[data-price="0"]')?.classList.add('active');
+  atualizarBadgeFiltros();
+  aplicarFiltros();
 }
 
 /* ══════════════════════════════════════════
