@@ -56,6 +56,19 @@ body::before {
   animation: fadeUp 0.9s cubic-bezier(0.22,1,0.36,1) both;
 }
 
+@media (min-width: 900px) {
+  .wrapper { max-width: 1080px; padding: 0 2rem; }
+  body { padding: 3rem 2rem 4rem; }
+  .brand-header { margin-bottom: 2.5rem; }
+  .products-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.1rem;
+  }
+  .products-grid .img-zone { height: 310px; }
+  .products-grid .prod-name { font-size: 1.15rem; }
+  .products-grid .prod-price { font-size: 1.4rem; }
+}
+
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(32px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -228,7 +241,7 @@ body::before {
   border-radius: 16px;
   overflow: hidden;
   margin-bottom: 1.2rem;
-  box-shadow: 0 0 0 1px rgba(201,150,60,0.07), 0 20px 60px rgba(0,0,0,0.6);
+  box-shadow: 0 1px 3px rgba(26,21,16,0.06), 0 6px 20px rgba(26,21,16,0.09);
 }
 
 .img-zone {
@@ -353,7 +366,7 @@ body::before {
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 2.4rem 2.2rem;
-  box-shadow: 0 0 0 1px rgba(201,150,60,0.07), 0 20px 60px rgba(0,0,0,0.5);
+  box-shadow: 0 1px 3px rgba(26,21,16,0.06), 0 6px 20px rgba(26,21,16,0.09);
 }
 
 .form-header { text-align: center; margin-bottom: 2.2rem; }
@@ -484,7 +497,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
 .produto-card-sel { cursor: pointer; transition: border-color 0.3s, box-shadow 0.3s; }
 .produto-card-sel.selecionado {
   border-color: var(--gold);
-  box-shadow: 0 0 0 2px rgba(201,150,60,0.15), 0 20px 60px rgba(0,0,0,0.6);
+  box-shadow: 0 0 0 2px rgba(201,150,60,0.25), 0 8px 28px rgba(201,150,60,0.14);
 }
 .prod-select-btn {
   text-align: center;
