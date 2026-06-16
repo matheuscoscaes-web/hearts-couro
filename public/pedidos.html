@@ -626,6 +626,10 @@
             <span class="sidebar-item-icon">🗂</span>
             <span class="sidebar-item-label">Sessões</span>
         </button>
+        <button class="sidebar-item" id="side-revendedores" onclick="fecharMenu(); mostrarRevendedores()">
+            <span class="sidebar-item-icon">👥</span>
+            <span class="sidebar-item-label">Revendedores</span>
+        </button>
 
         <div class="sidebar-divider"></div>
 
@@ -670,6 +674,7 @@
             <button id="btn-verificar-todos" class="tab-btn" onclick="verificarTodos()" style="background:rgba(80,160,255,0.15);border-color:#50a0ff;color:#50a0ff;">🔄 Verificar Todos</button>
             <button class="tab-btn" onclick="mostrarProdutos()" id="tab-produtos" style="background:rgba(201,150,60,0.15);border-color:var(--gold-light);color:var(--gold);">🛍 Produtos</button>
             <button class="tab-btn" onclick="mostrarSessoes()" id="tab-sessoes" style="background:rgba(130,80,200,0.12);border-color:#9060c0;color:#7040a0;">🗂 Sessões</button>
+            <button class="tab-btn" onclick="mostrarRevendedores()" id="tab-revendedores" style="background:rgba(37,211,102,0.12);border-color:#25d366;color:#1a9e4a;">👥 Revendedores</button>
             <button class="tab-btn" onclick="abrirModalVenda()" style="background:rgba(37,211,102,0.12);border-color:#25d366;color:#1a9e4a;">➕ Venda Manual</button>
         </div>
 
@@ -849,6 +854,7 @@
         <div class="resumo-container" id="resumo-view" style="display:none;"></div>
         <div id="produtos-view" style="display:none; padding:1.5rem 1rem; max-width:900px; margin:0 auto;"></div>
         <div id="sessoes-view" style="display:none; padding:1.5rem 1rem; max-width:1100px; margin:0 auto;"></div>
+        <div id="revendedores-view" style="display:none; padding:1.5rem 1rem; max-width:900px; margin:0 auto;"></div>
     </div>
 
     <script>
@@ -1048,6 +1054,7 @@
             document.getElementById('resumo-view').style.display = 'none';
             document.getElementById('produtos-view').style.display = 'none';
             document.getElementById('sessoes-view').style.display = 'none';
+            document.getElementById('revendedores-view').style.display = 'none';
             const grid = document.getElementById('grid');
             grid.style.display = 'grid';
             grid.innerHTML = '';
@@ -1210,6 +1217,7 @@
             document.getElementById('grid').style.display = 'none';
             document.getElementById('produtos-view').style.display = 'none';
             document.getElementById('sessoes-view').style.display = 'none';
+            document.getElementById('revendedores-view').style.display = 'none';
             document.getElementById('search-wrap').style.display = 'none';
 
             document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -1539,6 +1547,7 @@
             document.getElementById('grid').style.display = 'none';
             document.getElementById('resumo-view').style.display = 'none';
             document.getElementById('sessoes-view').style.display = 'none';
+            document.getElementById('revendedores-view').style.display = 'none';
             document.getElementById('search-wrap').style.display = 'none';
             document.getElementById('filtro-produto').style.display = 'none';
             const view = document.getElementById('produtos-view');
@@ -1568,6 +1577,7 @@
             document.getElementById('grid').style.display = 'none';
             document.getElementById('resumo-view').style.display = 'none';
             document.getElementById('produtos-view').style.display = 'none';
+            document.getElementById('revendedores-view').style.display = 'none';
             document.getElementById('search-wrap').style.display = 'none';
             document.getElementById('filtro-produto').style.display = 'none';
             const view = document.getElementById('sessoes-view');
@@ -1697,6 +1707,119 @@
             const chave = sel?.value;
             if (!chave) return;
             await adicionarSessao(chave, slug);
+        }
+
+        // ── REVENDEDORES ─────────────────────────────────────────────────
+        async function mostrarRevendedores() {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-revendedores').classList.add('active');
+            document.getElementById('grid').style.display = 'none';
+            document.getElementById('resumo-view').style.display = 'none';
+            document.getElementById('produtos-view').style.display = 'none';
+            document.getElementById('sessoes-view').style.display = 'none';
+            document.getElementById('search-wrap').style.display = 'none';
+            document.getElementById('filtro-produto').style.display = 'none';
+            const view = document.getElementById('revendedores-view');
+            view.style.display = 'block';
+            view.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem;">Carregando…</p>';
+
+            try {
+                const resp = await fetch('/api/admin/revendedores', { headers: { 'senha': _adminSenha } });
+                const revendedores = await resp.json();
+                renderRevendedores(revendedores);
+            } catch {
+                view.innerHTML = '<p style="color:#c0614a;text-align:center;padding:2rem;">Erro ao carregar revendedores.</p>';
+            }
+        }
+
+        function renderRevendedores(revendedores) {
+            const view = document.getElementById('revendedores-view');
+            const fmtVal = v => 'R$ ' + parseFloat(v || 0).toFixed(2).replace('.', ',');
+            const fmtData = d => d ? new Date(d).toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric' }) : '';
+
+            const pendentes = revendedores.filter(r => r.revendedor_status === 'pendente');
+            const aprovados = revendedores.filter(r => r.revendedor_status === 'aprovado');
+            const rejeitados = revendedores.filter(r => r.revendedor_status === 'rejeitado');
+
+            const cardPendente = r => `
+                <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem;margin-bottom:0.8rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.7rem;">
+                    <div>
+                        <div style="font-weight:600;color:var(--text);">${r.nome || ''} ${r.sobrenome || ''}</div>
+                        <div style="font-size:0.78rem;color:var(--muted);">${r.email || ''} ${r.whatsapp ? '· ' + r.whatsapp : ''}</div>
+                        <div style="font-size:0.72rem;color:var(--muted);margin-top:0.2rem;">Solicitado em ${fmtData(r.revendedor_solicitado_em)}</div>
+                    </div>
+                    <div style="display:flex;gap:0.5rem;">
+                        <button class="btn-action" onclick="atualizarRevendedor(${r.id}, 'aprovado')" style="background:rgba(37,211,102,0.15);border:1px solid #25d366;color:#1a9e4a;">✓ Aprovar</button>
+                        <button class="btn-action" onclick="atualizarRevendedor(${r.id}, 'rejeitado')" style="background:rgba(192,97,74,0.15);border:1px solid #c0614a;color:#c0614a;">✕ Rejeitar</button>
+                    </div>
+                </div>`;
+
+            const cardAprovado = r => `
+                <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem;margin-bottom:0.8rem;">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.7rem;margin-bottom:0.6rem;">
+                        <div>
+                            <div style="font-weight:600;color:var(--text);">${r.nome || ''} ${r.sobrenome || ''}</div>
+                            <div style="font-size:0.78rem;color:var(--muted);">${r.email || ''} ${r.whatsapp ? '· ' + r.whatsapp : ''}</div>
+                        </div>
+                        <button class="btn-action" onclick="atualizarRevendedor(${r.id}, 'rejeitado')" style="background:rgba(192,97,74,0.1);border:1px solid #c0614a;color:#c0614a;font-size:0.72rem;">Revogar</button>
+                    </div>
+                    <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
+                        <div style="background:rgba(201,150,60,0.08);border-radius:8px;padding:0.5rem 0.8rem;">
+                            <div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;">Cupom</div>
+                            <div style="font-weight:700;color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:1.05rem;">${r.revendedor_codigo}</div>
+                        </div>
+                        <div style="background:#faf7f2;border-radius:8px;padding:0.5rem 0.8rem;">
+                            <div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;">Desconto atual</div>
+                            <div style="font-weight:700;">${r.revendedor_desconto}%</div>
+                        </div>
+                        <div style="background:#faf7f2;border-radius:8px;padding:0.5rem 0.8rem;">
+                            <div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;">Vendas</div>
+                            <div style="font-weight:700;">${r.totalVendas}</div>
+                        </div>
+                        <div style="background:rgba(37,211,102,0.08);border-radius:8px;padding:0.5rem 0.8rem;">
+                            <div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;">Comissão confirmada</div>
+                            <div style="font-weight:700;color:#1a9e4a;">${fmtVal(r.comissaoConfirmada)}</div>
+                        </div>
+                        ${parseFloat(r.comissaoPendente) > 0 ? `
+                        <div style="background:rgba(255,190,60,0.1);border-radius:8px;padding:0.5rem 0.8rem;">
+                            <div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;">Comissão pendente</div>
+                            <div style="font-weight:700;color:#a07020;">${fmtVal(r.comissaoPendente)}</div>
+                        </div>` : ''}
+                    </div>
+                </div>`;
+
+            view.innerHTML = `
+                <h2 style="font-family:'Cormorant Garamond',serif;color:#1a9e4a;font-size:1.6rem;margin:0 0 1.2rem;text-align:center;">👥 Revendedores</h2>
+
+                ${pendentes.length ? `
+                <div style="font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:#a07020;font-weight:600;margin-bottom:0.8rem;">⏳ Pendentes (${pendentes.length})</div>
+                ${pendentes.map(cardPendente).join('')}` : ''}
+
+                <div style="font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:#1a9e4a;font-weight:600;margin:1.2rem 0 0.8rem;">✓ Aprovados (${aprovados.length})</div>
+                ${aprovados.length ? aprovados.map(cardAprovado).join('') : '<p style="color:var(--muted);text-align:center;padding:1rem;font-size:0.85rem;">Nenhum revendedor aprovado ainda.</p>'}
+
+                ${rejeitados.length ? `
+                <div style="font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:1.2rem 0 0.8rem;">Rejeitados (${rejeitados.length})</div>
+                ${rejeitados.map(cardPendente).join('')}` : ''}
+            `;
+        }
+
+        async function atualizarRevendedor(id, status) {
+            try {
+                const resp = await fetch('/api/admin/revendedores/' + id, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'senha': _adminSenha },
+                    body: JSON.stringify({ status })
+                });
+                if (resp.ok) {
+                    toast(status === 'aprovado' ? 'Revendedor aprovado!' : 'Revendedor rejeitado.', 'success');
+                    mostrarRevendedores();
+                } else {
+                    toast('Erro ao atualizar revendedor.', 'error');
+                }
+            } catch {
+                toast('Erro ao atualizar revendedor.', 'error');
+            }
         }
 
         function renderProdutos(produtos) {

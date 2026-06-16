@@ -284,6 +284,39 @@ async function precosDB(chaves) {
   } catch { return {}; }
 }
 
+// ── Cupom de revendedor: comissão = (50% − desconto do cupom) sobre o preço listado ──
+async function aplicarCupom(cupomCodigo, subtotalListado) {
+  if (!cupomCodigo) return { subtotalFinal: subtotalListado, comissaoValor: 0, revendedorContaId: null, cupomCodigo: null };
+  const { data } = await supabase.from('contas')
+    .select('id, revendedor_desconto')
+    .eq('revendedor_codigo', cupomCodigo)
+    .eq('revendedor_status', 'aprovado')
+    .single();
+  if (!data) throw new Error('Cupom inválido ou inativo.');
+  const desconto = Math.min(50, Math.max(10, parseFloat(data.revendedor_desconto) || 50)); // clamp defensivo
+  const subtotalFinal = Math.round(subtotalListado * (1 - desconto / 100) * 100) / 100;
+  const comissaoValor = Math.round(subtotalListado * (0.5 - desconto / 100) * 100) / 100;
+  return { subtotalFinal, comissaoValor, revendedorContaId: data.id, cupomCodigo };
+}
+
+function gerarCodigoRevendedor(nome, desconto, sufixo = '') {
+  const base = (nome || 'HEARTS').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z]/g, '').toUpperCase().slice(0, 8) || 'HEARTS';
+  return base + Math.round(desconto) + sufixo;
+}
+
+// O código termina sempre no % de desconto atual (ex.: 35% → "...35"); por isso é regerado a cada mudança de desconto.
+async function gerarCodigoUnico(nome, desconto, excluirId = null) {
+  for (let tentativa = 0; tentativa < 6; tentativa++) {
+    const sufixo = tentativa === 0 ? '' : String.fromCharCode(64 + tentativa); // '', 'A', 'B', ...
+    const codigo = gerarCodigoRevendedor(nome, desconto, sufixo);
+    let query = supabase.from('contas').select('id').eq('revendedor_codigo', codigo);
+    if (excluirId) query = query.neq('id', excluirId);
+    const { data: existente } = await query.single();
+    if (!existente) return codigo;
+  }
+  return gerarCodigoRevendedor(nome, desconto, Math.random().toString(36).slice(2, 4).toUpperCase());
+}
+
 // ── ROTA: Preparar Pedido (Step 1 — Bricks) ──
 app.post('/api/preparar-pedido', async (req, res) => {
   const body = req.body;
@@ -295,7 +328,14 @@ app.post('/api/preparar-pedido', async (req, res) => {
   const freteValor = parseFloat(body.frete_valor) || 0;
   const dbPrecos = await precosDB(itens.map(i => i.produto));
   const subtotal = itens.reduce((s, i) => s + (dbPrecos[i.produto] || PRODUTOS[i.produto] || i.preco || PRECO_PRODUTO) * (i.quantidade || 1), 0);
-  const total = Math.round((subtotal + freteValor) * 100) / 100;
+
+  let cupom;
+  try {
+    cupom = await aplicarCupom(body.cupom_codigo, subtotal);
+  } catch (err) {
+    return res.status(400).json({ erro: err.message });
+  }
+  const total = Math.round((cupom.subtotalFinal + freteValor) * 100) / 100;
 
   body.produto = itens[0].produto;
   body.cor     = itens[0].cor;
@@ -344,7 +384,9 @@ app.post('/api/preparar-pedido', async (req, res) => {
         frete_nome: body.frete_nome || null, frete_valor: freteValor || null,
         frete_prazo: body.frete_prazo || null, valor_total: total,
         produto: body.produto || null, status: 'aguardando_pagamento',
-        itens: (itens.length > 1 || itens.some(i => (i.quantidade || 1) > 1)) ? itens : null
+        itens: (itens.length > 1 || itens.some(i => (i.quantidade || 1) > 1)) ? itens : null,
+        cupom_codigo: cupom.cupomCodigo, revendedor_conta_id: cupom.revendedorContaId,
+        comissao_valor: cupom.comissaoValor
       }])
       .select().single();
 
@@ -447,7 +489,15 @@ app.post('/api/criar-pagamento', async (req, res) => {
   const freteValor = parseFloat(body.frete_valor) || 0;
   const dbPrecos = await precosDB(itens.map(i => i.produto));
   const subtotal = itens.reduce((s, i) => s + (dbPrecos[i.produto] || PRODUTOS[i.produto] || i.preco || PRECO_PRODUTO) * (i.quantidade || 1), 0);
-  const total = Math.round((subtotal + freteValor) * 100) / 100;
+
+  let cupom;
+  try {
+    cupom = await aplicarCupom(body.cupom_codigo, subtotal);
+  } catch (err) {
+    return res.status(400).json({ erro: err.message });
+  }
+  const descontoFator = subtotal > 0 ? cupom.subtotalFinal / subtotal : 1;
+  const total = Math.round((cupom.subtotalFinal + freteValor) * 100) / 100;
 
   // Campos legado para compatibilidade com Supabase
   const precoProduto = dbPrecos[itens[0].produto] || PRODUTOS[itens[0].produto] || PRECO_PRODUTO;
@@ -513,7 +563,9 @@ app.post('/api/criar-pagamento', async (req, res) => {
         valor_total: total,
         produto: body.produto || process.env.NOME_PRODUTO || null,
         status: 'aguardando_pagamento',
-        itens: (itens.length > 1 || itens.some(i => (i.quantidade || 1) > 1)) ? itens : null
+        itens: (itens.length > 1 || itens.some(i => (i.quantidade || 1) > 1)) ? itens : null,
+        cupom_codigo: cupom.cupomCodigo, revendedor_conta_id: cupom.revendedorContaId,
+        comissao_valor: cupom.comissaoValor
       }])
       .select()
       .single();
@@ -572,7 +624,7 @@ app.post('/api/criar-pagamento', async (req, res) => {
               id: `hearts-${(it.produto||'bolsa').toLowerCase()}-${pedidoId}-${idx}`,
               title: `Bolsa Hearts Couro - Ref: ${it.produto} (${it.cor})`,
               quantity: it.quantidade || 1,
-              unit_price: dbPrecos[it.produto] || PRODUTOS[it.produto] || it.preco || PRECO_PRODUTO,
+              unit_price: Math.round((dbPrecos[it.produto] || PRODUTOS[it.produto] || it.preco || PRECO_PRODUTO) * descontoFator * 100) / 100,
               currency_id: 'BRL'
             })),
             ...(freteValor > 0 ? [{
@@ -1026,6 +1078,92 @@ app.get('/api/conta/pedidos', async (req, res) => {
   }
 });
 
+// ── ROTA: Validar Cupom (preview público, sem expor o revendedor) ──
+app.get('/api/cupom/:codigo', async (req, res) => {
+  const { data } = await supabase.from('contas')
+    .select('revendedor_desconto')
+    .eq('revendedor_codigo', req.params.codigo.toUpperCase())
+    .eq('revendedor_status', 'aprovado')
+    .single();
+  if (!data) return res.status(404).json({ valido: false });
+  res.json({ valido: true, desconto: Math.min(50, Math.max(10, parseFloat(data.revendedor_desconto) || 50)) });
+});
+
+async function estatisticasRevendedor(contaId) {
+  const { data } = await supabase.from('pedidos')
+    .select('produto, valor_total, comissao_valor, status, created_at')
+    .eq('revendedor_conta_id', contaId)
+    .order('created_at', { ascending: false });
+  const vendas = data || [];
+  const confirmadas = vendas.filter(v => v.status === 'approved');
+  const canceladas  = ['rejected', 'cancelado'];
+  const pendentes   = vendas.filter(v => !canceladas.includes(v.status) && v.status !== 'approved');
+  return {
+    comissaoConfirmada: Math.round(confirmadas.reduce((s, v) => s + (parseFloat(v.comissao_valor) || 0), 0) * 100) / 100,
+    comissaoPendente: Math.round(pendentes.reduce((s, v) => s + (parseFloat(v.comissao_valor) || 0), 0) * 100) / 100,
+    totalVendas: confirmadas.length,
+    vendas: vendas.slice(0, 30).map(v => ({ produto: v.produto, valor_total: v.valor_total, comissao_valor: v.comissao_valor, status: v.status, created_at: v.created_at }))
+  };
+}
+
+// ── ROTA: Solicitar virar Revendedor ──
+app.post('/api/conta/revendedor/solicitar', async (req, res) => {
+  const sess = await validarSessao(req, res);
+  if (!sess) return;
+
+  const { data: conta } = await supabase.from('contas').select('nome, revendedor_status').eq('id', sess.id).single();
+  if (!conta) return res.status(404).json({ erro: 'Conta não encontrada.' });
+  if (conta.revendedor_status === 'pendente' || conta.revendedor_status === 'aprovado') {
+    return res.status(400).json({ erro: 'Você já tem uma solicitação em andamento.' });
+  }
+
+  const codigo = await gerarCodigoUnico(conta.nome, 50);
+
+  const { error } = await supabase.from('contas').update({
+    revendedor_status: 'pendente', revendedor_codigo: codigo,
+    revendedor_desconto: 50, revendedor_solicitado_em: new Date().toISOString()
+  }).eq('id', sess.id);
+  if (error) return res.status(500).json({ erro: 'Erro ao registrar solicitação.' });
+  res.json({ ok: true, status: 'pendente', codigo });
+});
+
+// ── ROTA: Consultar minha área de Revendedor ──
+app.get('/api/conta/revendedor', async (req, res) => {
+  const sess = await validarSessao(req, res);
+  if (!sess) return;
+
+  const { data: conta } = await supabase.from('contas')
+    .select('revendedor_status, revendedor_codigo, revendedor_desconto').eq('id', sess.id).single();
+  if (!conta) return res.status(404).json({ erro: 'Conta não encontrada.' });
+  if (conta.revendedor_status !== 'aprovado') {
+    return res.json({ status: conta.revendedor_status || null });
+  }
+
+  const stats = await estatisticasRevendedor(sess.id);
+  res.json({ status: 'aprovado', codigo: conta.revendedor_codigo, desconto: conta.revendedor_desconto, ...stats });
+});
+
+// ── ROTA: Ajustar % de desconto do meu cupom de Revendedor ──
+app.put('/api/conta/revendedor/desconto', async (req, res) => {
+  const sess = await validarSessao(req, res);
+  if (!sess) return;
+
+  const desconto = parseFloat(req.body.desconto);
+  if (!Number.isFinite(desconto) || desconto < 10 || desconto > 50) {
+    return res.status(400).json({ erro: 'O desconto precisa estar entre 10% e 50%.' });
+  }
+
+  const { data: conta } = await supabase.from('contas').select('nome, revendedor_status').eq('id', sess.id).single();
+  if (!conta || conta.revendedor_status !== 'aprovado') {
+    return res.status(403).json({ erro: 'Você ainda não é um revendedor aprovado.' });
+  }
+
+  const codigo = await gerarCodigoUnico(conta.nome, desconto, sess.id);
+  const { error } = await supabase.from('contas').update({ revendedor_desconto: desconto, revendedor_codigo: codigo }).eq('id', sess.id);
+  if (error) return res.status(500).json({ erro: 'Erro ao salvar desconto.' });
+  res.json({ ok: true, desconto, codigo });
+});
+
 // ── ROTA: Upload de Imagem para Supabase Storage ──
 app.post('/api/admin/upload-imagem', upload.single('imagem'), async (req, res) => {
   if (req.headers['senha'] !== process.env.ADMIN_SENHA) return res.status(401).json({ erro: 'Não autorizado.' });
@@ -1203,6 +1341,42 @@ app.post('/api/admin/cadastrar-venda', async (req, res) => {
     console.error('Erro ao cadastrar venda manual:', err);
     return res.status(500).json({ erro: 'Erro ao cadastrar venda.', detalhe: String(err?.message || err) });
   }
+});
+
+// ── ROTA: Listar Revendedores (pendentes, aprovados, rejeitados) ──
+app.get('/api/admin/revendedores', async (req, res) => {
+  if (req.headers['senha'] !== process.env.ADMIN_SENHA) return res.status(401).json({ erro: 'Não autorizado.' });
+
+  try {
+    const { data: contas, error } = await supabase.from('contas')
+      .select('id, nome, sobrenome, email, whatsapp, revendedor_status, revendedor_codigo, revendedor_desconto, revendedor_solicitado_em')
+      .not('revendedor_status', 'is', null)
+      .order('revendedor_solicitado_em', { ascending: false });
+    if (error) throw error;
+
+    const revendedores = await Promise.all((contas || []).map(async c => {
+      const stats = c.revendedor_status === 'aprovado' ? await estatisticasRevendedor(c.id) : { comissaoConfirmada: 0, comissaoPendente: 0, totalVendas: 0 };
+      return { ...c, ...stats };
+    }));
+    res.json(revendedores);
+  } catch (err) {
+    console.error('Erro ao listar revendedores:', err);
+    res.status(500).json({ erro: 'Erro ao listar revendedores.' });
+  }
+});
+
+// ── ROTA: Aprovar / Rejeitar / Revogar Revendedor ──
+app.put('/api/admin/revendedores/:id', async (req, res) => {
+  if (req.headers['senha'] !== process.env.ADMIN_SENHA) return res.status(401).json({ erro: 'Não autorizado.' });
+
+  const { status } = req.body;
+  if (!['aprovado', 'rejeitado'].includes(status)) {
+    return res.status(400).json({ erro: "Status precisa ser 'aprovado' ou 'rejeitado'." });
+  }
+
+  const { error } = await supabase.from('contas').update({ revendedor_status: status }).eq('id', req.params.id);
+  if (error) return res.status(500).json({ erro: 'Erro ao atualizar revendedor.' });
+  res.json({ ok: true, status });
 });
 
 // ── ROTA: Login Gestão ──
