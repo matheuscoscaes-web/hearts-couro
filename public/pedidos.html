@@ -746,20 +746,7 @@
           <div>
             <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:0.25rem;">Produto *</label>
             <select id="vm-produto" onchange="vmAtualizarCores()" style="width:100%;padding:0.55rem 0.7rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.88rem;background:#fff;outline:none;">
-              <option value="">Selecione…</option>
-              <option value="Paola">Paola</option>
-              <option value="Carol">Carol</option>
-              <option value="Modelo4">Celina</option>
-              <option value="Lara">Lara</option>
-              <option value="Adriana">Adriana</option>
-              <option value="Miranda">Miranda</option>
-              <option value="Manuela">Manuela</option>
-              <option value="Maria">Maria</option>
-              <option value="Modelo3">Denise</option>
-              <option value="Julia">Julia</option>
-              <option value="Renata">Renata</option>
-              <option value="Megan">Megan</option>
-              <option value="Michele">Michele</option>
+              <option value="">Carregando…</option>
             </select>
           </div>
           <div>
@@ -767,6 +754,7 @@
             <select id="vm-cor" style="width:100%;padding:0.55rem 0.7rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.88rem;background:#fff;outline:none;">
               <option value="">Selecione um produto primeiro</option>
             </select>
+            <input id="vm-cor-texto" type="text" placeholder="Digite a cor…" style="display:none;width:100%;padding:0.55rem 0.7rem;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:0.88rem;outline:none;box-sizing:border-box;">
           </div>
           <div>
             <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:0.25rem;">Quantidade</label>
@@ -2342,13 +2330,24 @@
         function vmAtualizarCores() {
             const produto = document.getElementById('vm-produto').value;
             const sel = document.getElementById('vm-cor');
-            sel.innerHTML = '<option value="">Selecione a cor…</option>';
-            (VM_CORES[produto] || []).forEach(c => {
-                const opt = document.createElement('option');
-                opt.value = c;
-                opt.textContent = c;
-                sel.appendChild(opt);
-            });
+            const txt = document.getElementById('vm-cor-texto');
+            const cores = VM_CORES[produto] || [];
+            if (cores.length > 0) {
+                sel.style.display = '';
+                txt.style.display = 'none';
+                txt.value = '';
+                sel.innerHTML = '<option value="">Selecione a cor…</option>';
+                cores.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c;
+                    opt.textContent = c;
+                    sel.appendChild(opt);
+                });
+            } else {
+                sel.style.display = 'none';
+                txt.style.display = '';
+                txt.value = '';
+            }
         }
 
         function vmToggleEndereco() {
@@ -2359,7 +2358,7 @@
             btn.textContent = aberto ? '+ Preencher endereço de entrega' : '− Ocultar endereço';
         }
 
-        function abrirModalVenda() {
+        async function abrirModalVenda() {
             // Limpa todos os campos
             ['vm-nome','vm-sobrenome','vm-whatsapp','vm-email','vm-cpf',
              'vm-frete-nome','vm-frete-valor','vm-obs',
@@ -2367,17 +2366,35 @@
                 const el = document.getElementById(id);
                 if (el) el.value = '';
             });
-            document.getElementById('vm-produto').value    = '';
             document.getElementById('vm-pagamento').value  = '';
             document.getElementById('vm-quantidade').value = '1';
             document.getElementById('vm-valor').value      = '';
             document.getElementById('vm-cor').innerHTML    = '<option value="">Selecione um produto primeiro</option>';
+            document.getElementById('vm-cor').style.display = '';
+            document.getElementById('vm-cor-texto').style.display = 'none';
+            document.getElementById('vm-cor-texto').value = '';
             document.getElementById('vm-erro').textContent = '';
             document.getElementById('vm-endereco').style.display = 'none';
             document.getElementById('vm-end-toggle').textContent = '+ Preencher endereço de entrega';
             document.getElementById('vm-btn-salvar').disabled = false;
             document.getElementById('vm-btn-salvar').textContent = 'Cadastrar';
             document.getElementById('modal-venda-manual').style.display = 'flex';
+
+            // Carrega produtos do banco dinamicamente
+            try {
+                const r = await fetch('/api/produtos');
+                const produtos = await r.json();
+                const sel = document.getElementById('vm-produto');
+                sel.innerHTML = '<option value="">Selecione…</option>';
+                produtos.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.chave;
+                    opt.textContent = p.nome;
+                    sel.appendChild(opt);
+                });
+            } catch(e) {
+                document.getElementById('vm-produto').innerHTML = '<option value="">Erro ao carregar</option>';
+            }
         }
 
         function fecharModalVenda() {
@@ -2391,7 +2408,9 @@
 
             const nome      = document.getElementById('vm-nome').value.trim();
             const produto   = document.getElementById('vm-produto').value;
-            const cor       = document.getElementById('vm-cor').value.trim();
+            const corSel = document.getElementById('vm-cor');
+            const corTxt = document.getElementById('vm-cor-texto');
+            const cor = (corSel.style.display === 'none' ? corTxt.value : corSel.value).trim();
             const valor     = document.getElementById('vm-valor').value;
             const pagamento = document.getElementById('vm-pagamento').value;
 
