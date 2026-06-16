@@ -3333,7 +3333,7 @@ function renderCarrinhoDrawer() {
     card.title = 'Clique para editar';
     card.onclick = () => { fecharCarrinho(); abrirModal(item.produto); };
     card.innerHTML = `
-      <img class="cart-item-img" src="${item.img}" alt="${item.nome}">
+      ${item.img ? `<img class="cart-item-img" src="${item.img}" alt="${item.nome}">` : `<div class="cart-item-img" style="background:var(--border);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">👜</div>`}
       <div class="cart-item-info">
         <div class="cart-item-nome">Ref: ${item.nome}</div>
         <div class="cart-item-cor">${item.corLabel}</div>
@@ -3368,7 +3368,7 @@ function renderCarrinhoForm() {
   lista.style.display  = 'block';
   lista.innerHTML = carrinho.map(item => `
     <div class="cart-resumo-item">
-      <img class="cart-resumo-img" src="${item.img}" alt="${item.nome}">
+      ${item.img ? `<img class="cart-resumo-img" src="${item.img}" alt="${item.nome}">` : `<div class="cart-resumo-img" style="background:var(--border);display:flex;align-items:center;justify-content:center;font-size:1.2rem;">👜</div>`}
       <div class="cart-resumo-desc">
         <div class="cart-resumo-nome">Ref: ${item.nome} × ${item.quantidade}</div>
         <div class="cart-resumo-cor">${item.corLabel}</div>
