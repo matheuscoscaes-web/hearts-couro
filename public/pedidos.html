@@ -885,6 +885,15 @@
                 database = await response.json();
                 atualizarContadores();
                 atualizarFiltroProduto();
+
+                // Se algum modal estiver aberto, não re-renderiza (evita perder o que o usuário está fazendo)
+                const modaisAbertos = ['modal-venda-manual', 'modal-desc', 'modal-novo-produto'];
+                if (modaisAbertos.some(id => { const el = document.getElementById(id); return el && el.style.display !== 'none'; })) return;
+
+                // Se o usuário estiver em outra view (Produtos, Sessões, Revendedores), não muda a tela
+                const viewsExternas = ['produtos-view', 'sessoes-view', 'revendedores-view'];
+                if (viewsExternas.some(id => { const el = document.getElementById(id); return el && el.style.display !== 'none'; })) return;
+
                 const abaAtiva = document.querySelector('.tab-btn[data-status].active')?.dataset.status || 'pagos';
                 if (abaAtiva === 'resumo') {
                     // Atualiza só o conteúdo sem resetar o período selecionado
