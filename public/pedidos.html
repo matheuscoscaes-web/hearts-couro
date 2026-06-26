@@ -2493,7 +2493,7 @@
                 _adminSenha = senha;
                 document.getElementById('login-overlay').style.display = 'none';
                 carregarPedidos();
-                setInterval(carregarPedidos, 30000);
+                setInterval(carregarPedidos, 600000);
             } else {
                 erro.textContent = 'Senha incorreta.';
                 document.getElementById('login-senha').value = '';
@@ -2506,7 +2506,7 @@
             const oito_horas = 8 * 60 * 60 * 1000;
             if (auth && Date.now() - parseInt(auth) < oito_horas && _adminSenha) {
                 carregarPedidos();
-                setInterval(carregarPedidos, 30000);
+                setInterval(carregarPedidos, 600000);
             } else {
                 localStorage.removeItem('admin_auth');
                 const overlay = document.getElementById('login-overlay');
